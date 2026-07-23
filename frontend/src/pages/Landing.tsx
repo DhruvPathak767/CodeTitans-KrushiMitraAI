@@ -152,43 +152,59 @@ export function Landing() {
             )}
           </motion.div>
 
-          {/* 3D Earth Globe & Connected Node Network Visualizer */}
+          {/* 3D Earth Globe & Connected Node Network Visualizer with AI Agriculture Hero Image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="mt-12 relative mx-auto max-w-4xl rounded-3xl glass-strong p-6 border border-white/50 dark:border-white/10 shadow-card"
+            className="mt-12 relative mx-auto max-w-5xl rounded-3xl glass-strong p-6 sm:p-8 border border-white/50 dark:border-white/10 shadow-card overflow-hidden"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
-              {/* 3D Crop Globe Canvas */}
-              <div className="lg:col-span-6 relative">
-                <CropGlobe3D className="w-full h-72" />
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 glass px-3 py-1 rounded-full text-[10px] font-bold text-brand-600 dark:text-brand-400">
-                  🌐 Live Satellite Crop Telemetry
+            <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-8">
+              {/* AI Agriculture Hero Photography Card */}
+              <div className="lg:col-span-6 relative group overflow-hidden rounded-3xl border border-brand-500/30 shadow-glow">
+                <img
+                  src="/images/hero_agriculture_ai.png"
+                  alt="KrishiMitra AI Precision Agriculture"
+                  className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent p-5 flex flex-col justify-end text-left">
+                  <div className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-[10px] font-bold text-brand-400 mb-1 border border-brand-500/30">
+                    <Sparkles className="h-3 w-3 text-brand-400 animate-pulse" /> Precision Drone & Telemetry Node
+                  </div>
+                  <p className="text-sm font-extrabold text-white">AI Field Companion for Indian Agriculture</p>
                 </div>
               </div>
 
-              {/* Connected Telemetry Diagram Nodes */}
-              <div className="lg:col-span-6 space-y-3 text-left">
-                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
-                  <Radio className="h-5 w-5 text-sky-500 animate-pulse" />
-                  <div>
-                    <p className="text-xs font-bold">ISRO Satellite Telemetry</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Soil Moisture & Evapotranspiration Radar</p>
+              {/* 3D Crop Globe & Telemetry Nodes */}
+              <div className="lg:col-span-6 space-y-4 text-left">
+                <div className="relative rounded-2xl glass p-2 border border-sky-500/20">
+                  <CropGlobe3D className="w-full h-44" />
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 glass px-3 py-1 rounded-full text-[10px] font-bold text-brand-600 dark:text-brand-400">
+                    🌐 Live ISRO Satellite Telemetry
                   </div>
                 </div>
-                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
-                  <Cpu className="h-5 w-5 text-brand-500" />
-                  <div>
-                    <p className="text-xs font-bold">Neural Disease Diagnostics</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">94% Instant Leaf Vision Accuracy</p>
+
+                <div className="grid grid-cols-1 gap-2.5">
+                  <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
+                    <Radio className="h-5 w-5 text-sky-500 animate-pulse shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold">Soil Moisture & Evapotranspiration Radar</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Real-time micro-climate sensors</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-amber-500/30">
-                  <Activity className="h-5 w-5 text-amber-500" />
-                  <div>
-                    <p className="text-xs font-bold">APMC Mandi Price Predictor</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Sell vs Store Financial Decision Engine</p>
+                  <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
+                    <Cpu className="h-5 w-5 text-brand-500 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold">94% Neural Disease Leaf Vision</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Instant AI diagnosis & organic remedies</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-amber-500/30">
+                    <Activity className="h-5 w-5 text-amber-500 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold">APMC Mandi Price Predictor</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Sell vs Store Financial Decision Engine</p>
+                    </div>
                   </div>
                 </div>
               </div>

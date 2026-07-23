@@ -20,8 +20,8 @@ export function DiseaseDetection() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const leafImages = [
+    '/images/crop_disease_leaf_scan.png',
     'https://images.pexels.com/photos/5944702/pexels-photo-5944702.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'https://images.pexels.com/photos/5944703/pexels-photo-5944703.jpeg?auto=compress&cs=tinysrgb&w=400',
     'https://images.pexels.com/photos/4750274/pexels-photo-4750274.jpeg?auto=compress&cs=tinysrgb&w=400',
   ];
 

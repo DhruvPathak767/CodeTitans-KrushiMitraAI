@@ -21,6 +21,24 @@ export function Irrigation() {
         </div>
       </div>
 
+      {/* Smart Drip Irrigation Photo Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl border border-sky-500/30 shadow-card h-48 sm:h-56"
+      >
+        <img
+          src="/images/smart_irrigation_sensor.png"
+          alt="Precision Smart Drip Irrigation"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent p-6 flex flex-col justify-center text-left">
+          <Badge variant="info" pulse className="w-fit mb-2">IoT Soil Telemetry</Badge>
+          <h2 className="font-display text-xl sm:text-2xl font-black text-white">Precision Drip Irrigation Control</h2>
+          <p className="text-xs text-slate-200 mt-1 max-w-md">Automated root-zone water delivery tailored to real-time solar evaporation and rainfall predictions.</p>
+        </div>
+      </motion.div>
+
       {/* Top Metrics Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card hover tilt>

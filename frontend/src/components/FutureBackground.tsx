@@ -114,6 +114,12 @@ export function FutureBackground() {
       {/* Layer 1: Animated Aurora Mesh */}
       <div className="absolute inset-0 bg-mesh-light dark:bg-mesh-dark opacity-80 animate-auroraDrift" />
 
+      {/* Satellite Imagery Ambient Backdrop */}
+      <div
+        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.07] bg-cover bg-center filter blur-[2px] pointer-events-none mix-blend-luminosity"
+        style={{ backgroundImage: `url('/images/satellite_field_monitoring.png')` }}
+      />
+
       {/* Layer 2: Floating Organic Color Blobs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/15 dark:bg-brand-500/20 rounded-full filter blur-3xl animate-float" />
       <div className="absolute top-1/3 -right-40 w-96 h-96 bg-sky-500/15 dark:bg-sky-500/20 rounded-full filter blur-3xl animate-float [animation-delay:2s]" />
