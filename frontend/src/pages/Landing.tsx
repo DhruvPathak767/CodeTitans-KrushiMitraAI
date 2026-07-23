@@ -4,11 +4,15 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Leaf, ScanLine, Cloud, Sprout, Droplets, Store, Scale, Landmark,
   MessageSquare, ArrowRight, Sun, CloudRain, TrendingUp, Star,
-  Download, Smartphone, Shield, Zap, Globe, type LucideIcon,
+  Download, Smartphone, Shield, Zap, Globe, Sparkles, Radio, Cpu, Activity,
+  type LucideIcon,
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { LanguageSwitcher, ThemeToggle } from '@/components/Controls';
-import { weatherNow, marketPrices, testimonials, cropIcon } from '@/data/mock';
+import { FutureBackground } from '@/components/FutureBackground';
+import { CursorSpotlight } from '@/components/CursorSpotlight';
+import { CropGlobe3D } from '@/components/3d/CropGlobe3D';
+import { weatherNow, marketPrices, testimonials } from '@/data/mock';
 import { WeatherIcon, getWeatherType } from '@/components/WeatherIcons';
 
 const stats = [
@@ -40,8 +44,7 @@ export function Landing() {
   const { t, lang, user } = useApp();
   const navigate = useNavigate();
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 400], [0, 80]);
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 400], [0, 60]);
   const [installEvent, setInstallEvent] = useState<any>(null);
 
   useEffect(() => {
@@ -60,292 +63,205 @@ export function Landing() {
     }
   }
 
-  const featureDesc: Record<string, string> = {
-    'disease.subtitle': t('disease.subtitle'),
-    'weather.subtitle': t('weather.subtitle'),
-    'advisory.subtitle': t('advisory.subtitle'),
-    'irrigation.subtitle': t('irrigation.subtitle'),
-    'market.subtitle': t('market.subtitle'),
-    'sellstore.subtitle': t('sellstore.subtitle'),
-    'schemes.subtitle': t('schemes.subtitle'),
-    'chat.subtitle': t('chat.subtitle'),
-  };
-
   return (
-    <div className="min-h-screen overflow-x-hidden">
-      {/* Nav */}
+    <div className="min-h-screen overflow-x-hidden relative">
+      {/* Background Layers */}
+      <FutureBackground />
+      <CursorSpotlight />
+
+      {/* Top Floating Glass Nav */}
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-0 z-50 flex w-full items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+        className="fixed top-0 z-50 flex w-full items-center justify-between px-4 py-4 sm:px-8 lg:px-12"
       >
-        <div className="flex items-center gap-2.5 rounded-2xl glass px-4 py-2">
-          <div className="grid place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 p-1.5 shadow-glow">
-            <Leaf className="h-4 w-4 text-white" />
+        <div className="flex items-center gap-3 rounded-2xl glass-strong px-4 py-2 border border-white/40 dark:border-white/10 shadow-card">
+          <div className="grid place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 p-2 shadow-glow">
+            <Leaf className="h-5 w-5 text-white" />
           </div>
-          <span className="font-display text-sm font-bold">{t('app.name')}</span>
+          <span className="font-display text-base font-extrabold tracking-tight gradient-text">{t('app.name')}</span>
         </div>
-        <div className="flex items-center gap-1 rounded-2xl glass px-2 py-1.5">
+
+        <div className="flex items-center gap-2 rounded-2xl glass-strong px-2.5 py-2 border border-white/40 dark:border-white/10 shadow-card">
           <ThemeToggle />
           <LanguageSwitcher />
           <button
             onClick={() => navigate(user ? '/app/dashboard' : '/login')}
-            className="btn-primary ml-1 px-4 py-2 text-xs"
+            className="btn-primary ml-1 px-5 py-2.5 text-xs shadow-glow"
           >
-            {t('common.login')}
+            {user ? t('nav.dashboard') : t('common.login')}
+            <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </motion.nav>
 
-      {/* Hero */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-4 pt-20 text-center">
-        {/* Animated background clouds */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative flex min-h-screen flex-col items-center justify-center px-4 pt-28 pb-16 text-center">
+        <motion.div style={{ y: heroY }} className="mx-auto max-w-5xl z-10">
+          {/* Futuristic AI Badge */}
           <motion.div
-            className="absolute -left-20 top-32 text-sky-200/30 dark:text-sky-500/10"
-            animate={{ x: [0, 100, 0] }}
-            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-          >
-            <Cloud className="h-40 w-40" />
-          </motion.div>
-          <motion.div
-            className="absolute right-10 top-48 text-sky-200/20 dark:text-sky-500/5"
-            animate={{ x: [0, -80, 0] }}
-            transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
-          >
-            <Cloud className="h-56 w-56" />
-          </motion.div>
-        </div>
-
-        {/* Floating particles */}
-        <div className="pointer-events-none absolute inset-0">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{ left: `${10 + i * 15}%`, top: `${20 + (i % 3) * 25}%` }}
-              animate={{ y: [0, -20, 0], rotate: [0, 180, 360] }}
-              transition={{ duration: 6 + i * 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <Leaf className="h-5 w-5 text-brand-400/30" />
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium"
+            className="inline-flex items-center gap-2 rounded-full glass-strong px-4 py-1.5 text-xs font-bold text-brand-700 dark:text-brand-300 border border-brand-500/30 shadow-glow mb-6"
           >
-            <span className="flex h-2 w-2 rounded-full bg-brand-500">
-              <span className="h-full w-full rounded-full bg-brand-500 animate-pulseRing" />
-            </span>
-            {t('app.subtitle')}
+            <Sparkles className="h-4 w-4 text-brand-500 animate-spin-slow" />
+            <span>Future Farming Intelligence OS 3.0</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-500 animate-ping" />
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-display text-4xl font-extrabold leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl"
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="font-display text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl lg:text-7xl text-balance leading-tight"
           >
-            {t('land.hero.title').split(' ').slice(0, -2).join(' ')}{' '}
-            <span className="gradient-text">{t('land.hero.title').split(' ').slice(-2).join(' ')}</span>
+            {t('land.hero.title')}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mt-5 max-w-xl text-base text-slate-600 dark:text-slate-300 sm:text-lg text-balance"
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mx-auto mt-6 max-w-2xl text-base text-slate-600 dark:text-slate-300 sm:text-xl text-balance leading-relaxed"
           >
-            {t('land.hero.subtitle')}
+            {t('land.hero.desc')}
           </motion.p>
 
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-4"
           >
-            <button onClick={() => navigate(user ? '/app/dashboard' : '/login')} className="btn-primary text-base">
-              {t('land.hero.cta')} <ArrowRight className="h-4 w-4" />
+            <button
+              onClick={() => navigate(user ? '/app/dashboard' : '/login')}
+              className="btn-primary text-base px-8 py-4 shadow-glow-strong"
+            >
+              {t('land.hero.cta')}
+              <ArrowRight className="h-5 w-5" />
             </button>
             {installEvent && (
-              <button onClick={handleInstall} className="btn-ghost text-base">
-                <Download className="h-4 w-4" /> {t('common.install')}
+              <button
+                onClick={handleInstall}
+                className="btn-glass text-base px-6 py-4 border-brand-500/40"
+              >
+                <Download className="h-5 w-5 text-brand-500" />
+                Install PWA App
               </button>
             )}
           </motion.div>
 
-          {/* Stats */}
+          {/* 3D Earth Globe & Connected Node Network Visualizer */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="mt-12 relative mx-auto max-w-4xl rounded-3xl glass-strong p-6 border border-white/50 dark:border-white/10 shadow-card"
           >
-            {stats.map((s) => (
-              <div key={s.key} className="rounded-2xl glass p-4">
-                <p className="font-display text-2xl font-bold gradient-text">{s.value}</p>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t(s.key)}</p>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="grid place-items-center rounded-full glass p-2"
-          >
-            <ArrowRight className="h-4 w-4 -rotate-90" />
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Live Weather + Market Ticker */}
-      <section className="relative z-10 -mt-8 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2">
-          {/* Weather card */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="card overflow-hidden p-5"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">{t('land.weather.title')}</p>
-              <span className="badge bg-brand-500/15 text-brand-700 dark:text-brand-300">● Live</span>
-            </div>
-            <div className="mt-4 flex items-center gap-4">
-              <WeatherIcon type={getWeatherType(weatherNow.condition)} className="h-14 w-14 text-sky-500" />
-              <div>
-                <p className="font-display text-4xl font-bold">{weatherNow.temp}°</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{weatherNow.condition}</p>
-              </div>
-              <div className="ml-auto grid grid-cols-3 gap-3 text-center">
-                <div>
-                  <Droplets className="mx-auto h-4 w-4 text-sky-500" />
-                  <p className="mt-1 text-xs font-semibold">{weatherNow.humidity}%</p>
-                  <p className="text-[10px] text-slate-400">{t('land.weather.humidity')}</p>
-                </div>
-                <div>
-                  <Cloud className="mx-auto h-4 w-4 text-slate-400" />
-                  <p className="mt-1 text-xs font-semibold">{weatherNow.wind}km/h</p>
-                  <p className="text-[10px] text-slate-400">{t('land.weather.wind')}</p>
-                </div>
-                <div>
-                  <CloudRain className="mx-auto h-4 w-4 text-sky-400" />
-                  <p className="mt-1 text-xs font-semibold">{weatherNow.rainProb}%</p>
-                  <p className="text-[10px] text-slate-400">{t('land.weather.rain')}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
+              {/* 3D Crop Globe Canvas */}
+              <div className="lg:col-span-6 relative">
+                <CropGlobe3D className="w-full h-72" />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 glass px-3 py-1 rounded-full text-[10px] font-bold text-brand-600 dark:text-brand-400">
+                  🌐 Live Satellite Crop Telemetry
                 </div>
               </div>
-            </div>
-          </motion.div>
 
-          {/* Market ticker */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="card overflow-hidden p-5"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">{t('land.market.title')}</p>
-              <span className="badge bg-amber-500/15 text-amber-700 dark:text-amber-300">● Live</span>
-            </div>
-            <div className="mt-4 space-y-2 max-h-[120px] overflow-hidden">
-              <div className="animate-[drift_25s_linear_infinite] space-y-2">
-                {[...marketPrices, ...marketPrices].map((m, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl bg-slate-100/50 dark:bg-white/5 px-3 py-1.5">
-                    <span className="flex items-center gap-2 text-sm font-medium">
-                      <span>{cropIcon[m.crop]}</span> {m.crop}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">₹{m.price.toLocaleString(lang === 'en' ? 'en-IN' : undefined)}</span>
-                      <span className={`text-xs font-bold ${m.change >= 0 ? 'text-brand-600 dark:text-brand-400' : 'text-red-500'}`}>
-                        {m.change >= 0 ? '▲' : '▼'} {Math.abs(m.change)}%
-                      </span>
-                    </span>
+              {/* Connected Telemetry Diagram Nodes */}
+              <div className="lg:col-span-6 space-y-3 text-left">
+                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
+                  <Radio className="h-5 w-5 text-sky-500 animate-pulse" />
+                  <div>
+                    <p className="text-xs font-bold">ISRO Satellite Telemetry</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Soil Moisture & Evapotranspiration Radar</p>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-brand-500/30">
+                  <Cpu className="h-5 w-5 text-brand-500" />
+                  <div>
+                    <p className="text-xs font-bold">Neural Disease Diagnostics</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">94% Instant Leaf Vision Accuracy</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 glass p-3 rounded-2xl border border-amber-500/30">
+                  <Activity className="h-5 w-5 text-amber-500" />
+                  <div>
+                    <p className="text-xs font-bold">APMC Mandi Price Predictor</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Sell vs Store Financial Decision Engine</p>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
-        </div>
-      </section>
 
-      {/* Features */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-10 text-center"
-          >
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{t('land.features.title')}</h2>
-            <p className="mt-3 text-slate-600 dark:text-slate-400">{t('land.features.subtitle')}</p>
-          </motion.div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <motion.button
-                  key={f.titleKey}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ y: -6 }}
-                  onClick={() => navigate(user ? `/app/${f.titleKey === 'nav.disease' ? 'disease' : f.titleKey === 'nav.weather' ? 'weather' : 'dashboard'}` : '/login')}
-                  className="card group p-5 text-left"
-                >
-                  <div className={`grid place-items-center rounded-2xl bg-slate-100 dark:bg-white/5 p-3 ${f.color} transition-transform group-hover:scale-110`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="mt-3 font-display text-base font-semibold">{t(f.titleKey)}</h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{featureDesc[f.descKey]}</p>
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Impact stats */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8 text-center"
-          >
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{t('land.impact.title')}</h2>
-          </motion.div>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {impactStats.map((s, i) => (
+          {/* Quick Stats Ticker */}
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {stats.map((s, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card p-6 text-center"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="glass-card p-4 text-center"
               >
-                <p className="font-display text-3xl font-extrabold gradient-text sm:text-4xl">{s.value}</p>
-                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
-                  {lang === 'hi' ? s.label_hi : lang === 'gu' ? s.label_gu : s.label}
+                <p className="text-3xl font-extrabold font-display gradient-text">{s.value}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{t(s.key)}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Core Features Grid Section */}
+      <section className="relative z-10 max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="badge variant-gold mb-3">Next-Gen Agricultural Tools</span>
+          <h2 className="font-display text-3xl font-extrabold sm:text-5xl gradient-text">
+            Precision Intelligence for Every Indian Field
+          </h2>
+          <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+            Empowering farmers with AI satellite telemetry, micro-climate weather forecasts, and disease diagnostics.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-card group cursor-pointer"
+                onClick={() => navigate(user ? '/app/dashboard' : '/login')}
+              >
+                <div className="grid place-items-center rounded-2xl bg-gradient-to-br from-brand-500/15 to-sky-500/15 p-4 w-14 h-14 mb-4 border border-white/20 dark:border-white/10 group-hover:scale-110 transition-transform shadow-glow">
+                  <Icon className={`h-7 w-7 ${f.color}`} />
+                </div>
+                <h3 className="font-display text-lg font-bold group-hover:text-brand-500 transition-colors">
+                  {t(f.titleKey)}
+                </h3>
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {t(f.descKey)}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Impact Stats */}
+      <section className="relative z-10 bg-gradient-to-r from-brand-900/30 via-slate-900/40 to-sky-900/30 py-16 backdrop-blur-2xl border-y border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            {impactStats.map((st, i) => (
+              <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
+                <p className="font-display text-4xl sm:text-5xl font-black gradient-text-gold">{st.value}</p>
+                <p className="mt-2 text-xs font-semibold text-slate-300">
+                  {lang === 'hi' ? st.label_hi : lang === 'gu' ? st.label_gu : st.label}
                 </p>
               </motion.div>
             ))}
@@ -354,108 +270,39 @@ export function Landing() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8 text-center font-display text-3xl font-bold tracking-tight sm:text-4xl"
-          >
-            {t('land.testimonials.title')}
-          </motion.h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {testimonials.map((tm, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card p-5"
-              >
-                <div className="flex gap-1 text-amber-400">
-                  {Array.from({ length: tm.rating }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">"{tm.text}"</p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-sky-500 text-sm font-bold text-white">
-                    {tm.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">{tm.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{tm.village}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+      <section className="relative z-10 max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="badge variant-success mb-3">Farmer Testimonials</span>
+          <h2 className="font-display text-3xl font-extrabold sm:text-4xl gradient-text">Trusted Across Indian Villages</h2>
         </div>
-      </section>
 
-      {/* Trust badges */}
-      <section className="px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-6">
-          {[
-            { icon: Shield, label: 'Bank-grade Security' },
-            { icon: Zap, label: 'Real-time AI' },
-            { icon: Globe, label: '3 Languages' },
-            { icon: Smartphone, label: 'Offline PWA' },
-          ].map((b, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
-            >
-              <b.icon className="h-4 w-4 text-brand-500" />
-              {b.label}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {testimonials.map((tItem, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="glass-card">
+              <div className="flex items-center gap-1 text-amber-400 mb-3">
+                {[...Array(tItem.rating)].map((_, s) => (
+                  <Star key={s} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-xs italic text-slate-600 dark:text-slate-300 leading-relaxed mb-4">"{tItem.text}"</p>
+              <div>
+                <p className="text-sm font-bold">{tItem.name}</p>
+                <p className="text-[10px] text-slate-400">{tItem.village}</p>
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="relative mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-brand-600 via-brand-500 to-sky-500 p-10 text-center text-white shadow-glow sm:p-16"
-        >
-          <div className="pointer-events-none absolute inset-0">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-white/10"
-                style={{ left: `${i * 12}%`, top: `${(i % 4) * 25}%`, width: 20 + i * 5, height: 20 + i * 5 }}
-                animate={{ y: [0, -30, 0], opacity: [0.1, 0.3, 0.1] }}
-                transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.3 }}
-              />
-            ))}
-          </div>
-          <h2 className="relative font-display text-3xl font-extrabold tracking-tight sm:text-4xl">{t('land.cta.title')}</h2>
-          <p className="relative mx-auto mt-3 max-w-md text-white/80">{t('land.cta.subtitle')}</p>
-          <button
-            onClick={() => navigate(user ? '/app/dashboard' : '/login')}
-            className="relative mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-brand-700 transition-transform hover:scale-105"
-          >
-            {t('land.cta.button')} <ArrowRight className="h-4 w-4" />
-          </button>
-        </motion.div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-slate-200/60 dark:border-white/5 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+      <footer className="relative z-10 border-t border-white/20 dark:border-white/10 glass-strong py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-brand-500" />
-            <span className="font-display text-sm font-bold">{t('app.name')}</span>
+            <Leaf className="h-4 w-4 text-brand-500" />
+            <span className="font-bold font-display text-slate-900 dark:text-white">KrishiMitra AI</span>
+            <span>— Precision Agriculture Platform</span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">© 2026 KrishiMitra AI · National Hackathon Edition</p>
+          <p>© 2026 KrishiMitra AI. Built for Indian Farmers.</p>
         </div>
       </footer>
     </div>

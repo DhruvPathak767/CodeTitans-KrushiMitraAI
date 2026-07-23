@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sprout, Droplets, FlaskConical, CalendarClock, Sparkles, Lightbulb } from 'lucide-react';
+import { Sprout, Droplets, FlaskConical, CalendarClock, Sparkles, Lightbulb, Activity, Volume2 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, ConfidenceMeter, AIResponsePanel } from '@/components/ui';
 import { advisoryData } from '@/data/mock';
@@ -17,100 +17,105 @@ export function Advisory() {
   const harvestKey = `harvest${langSuffix}` as 'harvest' | 'harvest_hi' | 'harvest_gu';
   const reasonKey = `reason${langSuffix}` as 'reason' | 'reason_hi' | 'reason_gu';
 
+  function speak(text: string) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'hi' ? 'hi-IN' : lang === 'gu' ? 'gu-IN' : 'en-US';
+    window.speechSynthesis.speak(u);
+  }
+
   function generate() {
     setLoading(true);
     setShow(false);
     setTimeout(() => {
       setLoading(false);
       setShow(true);
-    }, 2000);
+    }, 1800);
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">{t('advisory.title')}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('advisory.subtitle')}</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">{t('advisory.title')}</h1>
+          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">{t('advisory.subtitle')}</p>
         </div>
-        <button onClick={generate} className="btn-primary text-sm">
+        <button onClick={generate} className="btn-primary text-xs shadow-glow">
           <Sparkles className="h-4 w-4" /> {t('advisory.generate')}
         </button>
       </div>
 
-      {/* Growth stage timeline */}
-      <Card>
-        <SectionHeader title={t('advisory.growth')} />
-        <div className="mt-5 flex items-center justify-between">
+      {/* Growth Stage Roadmap Timeline */}
+      <Card hover tilt>
+        <SectionHeader title={t('advisory.growth')} subtitle="Interactive Stage-by-Stage Field Recommendations" />
+        <div className="mt-6 flex items-center justify-between px-2">
           {['Germination', 'Vegetative', 'Flowering', 'Grain Filling', 'Maturity'].map((stage, i) => {
             const isCurrent = stage === 'Flowering';
             const isPast = i < 2;
             return (
               <div key={stage} className="flex flex-1 flex-col items-center">
                 <div className="relative flex w-full items-center">
-                  {i > 0 && <div className={`h-0.5 flex-1 ${isPast ? 'bg-brand-500' : 'bg-slate-200 dark:bg-white/10'}`} />}
+                  {i > 0 && <div className={`h-1 flex-1 rounded ${isPast ? 'bg-gradient-to-r from-brand-600 to-brand-400' : 'bg-slate-200 dark:bg-white/10'}`} />}
                   <motion.div
-                    className={`h-4 w-4 rounded-full ${isCurrent ? 'bg-brand-500 ring-4 ring-brand-500/20' : isPast ? 'bg-brand-500' : 'bg-slate-300 dark:bg-white/10'}`}
-                    animate={isCurrent ? { scale: [1, 1.2, 1] } : {}}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    className={`h-5 w-5 rounded-full ${isCurrent ? 'bg-brand-500 ring-4 ring-brand-500/30 shadow-glow' : isPast ? 'bg-brand-500' : 'bg-slate-300 dark:bg-white/10'}`}
+                    animate={isCurrent ? { scale: [1, 1.25, 1] } : {}}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  {i < 4 && <div className={`h-0.5 flex-1 ${isPast ? 'bg-brand-500' : 'bg-slate-200 dark:bg-white/10'}`} />}
+                  {i < 4 && <div className={`h-1 flex-1 rounded ${isPast ? 'bg-gradient-to-r from-brand-600 to-brand-400' : 'bg-slate-200 dark:bg-white/10'}`} />}
                 </div>
-                <p className={`mt-2 text-[10px] font-medium text-center ${isCurrent ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400'}`}>{stage}</p>
+                <p className={`mt-3 text-[11px] font-bold text-center ${isCurrent ? 'text-brand-600 dark:text-brand-400 font-display' : 'text-slate-400'}`}>{stage}</p>
               </div>
             );
           })}
         </div>
-        <div className="mt-4 rounded-2xl bg-brand-500/10 p-3 text-center">
-          <p className="text-sm">
-            <span className="font-semibold text-brand-700 dark:text-brand-300">{t('advisory.growth')}: </span>
+        <div className="mt-5 rounded-2xl glass p-4 text-center border border-brand-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs sm:text-sm font-semibold">
+            <span className="font-bold text-brand-600 dark:text-brand-400">{t('advisory.growth')}: </span>
             {advisoryData[growthKey]}
           </p>
+          <button
+            onClick={() => speak(advisoryData[growthKey])}
+            className="btn-glass text-xs px-3 py-1.5 border-brand-500/30 shrink-0"
+          >
+            <Volume2 className="h-3.5 w-3.5 text-brand-500" /> Listen Voice Note
+          </button>
         </div>
       </Card>
 
       <AnimatePresence mode="wait">
         {loading ? (
           <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Card>
-              <div className="flex flex-col items-center gap-4 py-12">
-                <Sparkles className="h-8 w-8 animate-pulse text-brand-500" />
-                <p className="font-display text-lg font-semibold">{t('chat.thinking')}...</p>
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-2 w-2 rounded-full bg-brand-500 animate-typing" style={{ animationDelay: `${i * 0.2}s` }} />
-                  ))}
-                </div>
-              </div>
+            <Card hover tilt className="p-12 text-center">
+              <Sparkles className="mx-auto h-8 w-8 animate-spin-slow text-brand-500 mb-3" />
+              <p className="font-display text-lg font-bold gradient-text">{t('chat.thinking')}...</p>
+              <p className="text-xs text-slate-400 mt-1">Analyzing satellite imagery and soil nutrient data</p>
             </Card>
           </motion.div>
         ) : show ? (
-          <motion.div key="content" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-            {/* Recommendations grid */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <RecCard icon={<Droplets className="h-5 w-5 text-sky-500" />} title={t('advisory.water')} bg="bg-sky-500/15">
+          <motion.div key="content" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            {/* Advisory Recommendations Grid */}
+            <div className="grid gap-6 md:grid-cols-2">
+              <RecCard icon={<Droplets className="h-5 w-5 text-sky-500" />} title={t('advisory.water')} bg="bg-sky-500/20 shadow-glow-sky">
                 {advisoryData[waterKey]}
               </RecCard>
-              <RecCard icon={<FlaskConical className="h-5 w-5 text-amber-500" />} title={t('advisory.fertilizer')} bg="bg-amber-500/15">
+              <RecCard icon={<FlaskConical className="h-5 w-5 text-amber-500" />} title={t('advisory.fertilizer')} bg="bg-amber-500/20 shadow-glow-gold">
                 {advisoryData[fertilizerKey]}
               </RecCard>
-              <RecCard icon={<CalendarClock className="h-5 w-5 text-brand-500" />} title={t('advisory.harvest')} bg="bg-brand-500/15">
+              <RecCard icon={<CalendarClock className="h-5 w-5 text-brand-500" />} title={t('advisory.harvest')} bg="bg-brand-500/20 shadow-glow">
                 {advisoryData[harvestKey]}
               </RecCard>
-              <RecCard icon={<Lightbulb className="h-5 w-5 text-soil-500" />} title={t('common.alternative')} bg="bg-soil-500/15">
-                {advisoryData.alternatives.join(' · ')}
+              <RecCard icon={<Lightbulb className="h-5 w-5 text-soil-500" />} title={t('common.alternative')} bg="bg-soil-500/20">
+                {advisoryData.alternatives.join(' • ')}
               </RecCard>
             </div>
 
-            {/* Explainable AI */}
-            <Card>
-              <SectionHeader title={t('advisory.explainable')} />
+            {/* Explainable AI Decision Panel */}
+            <Card hover tilt>
+              <SectionHeader title={t('advisory.explainable')} subtitle="Explainable Neural Reasoning" />
               <div className="mt-4">
                 <ConfidenceMeter value={advisoryData.confidence} label={t('common.confidence')} />
               </div>
-              <p className="mt-4 rounded-2xl bg-slate-100/60 dark:bg-white/5 p-4 text-sm text-slate-600 dark:text-slate-300">
-                {advisoryData[reasonKey]}
-              </p>
               <div className="mt-4">
                 <AIResponsePanel
                   t={t}
@@ -135,12 +140,12 @@ export function Advisory() {
 
 function RecCard({ icon, title, bg, children }: { icon: React.ReactNode; title: string; bg: string; children: React.ReactNode }) {
   return (
-    <Card hover>
-      <div className="flex items-center gap-3">
-        <span className={`grid place-items-center rounded-2xl p-2.5 ${bg}`}>{icon}</span>
-        <h3 className="font-semibold text-sm">{title}</h3>
+    <Card hover tilt>
+      <div className="flex items-center gap-3 mb-3">
+        <span className={`grid place-items-center rounded-2xl p-3 ${bg}`}>{icon}</span>
+        <h3 className="font-display text-base font-bold">{title}</h3>
       </div>
-      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{children}</p>
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{children}</p>
     </Card>
   );
 }

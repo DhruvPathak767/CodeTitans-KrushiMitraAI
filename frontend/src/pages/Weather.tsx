@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import {
-  AreaChart, Area, BarChart, Bar, ResponsiveContainer,
+  AreaChart, Area, ResponsiveContainer,
   XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
-import { Droplets, Wind, Eye, Sun, CloudRain, AlertTriangle, Sparkles, Thermometer } from 'lucide-react';
+import { Droplets, Wind, Eye, Sun, CloudRain, AlertTriangle, Sparkles, ShieldCheck } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, AIResponsePanel } from '@/components/ui';
 import { WeatherIcon, getWeatherType } from '@/components/WeatherIcons';
@@ -17,28 +17,36 @@ export function Weather() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">{t('weather.title')}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('weather.subtitle')}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">{t('weather.title')}</h1>
+          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">{t('weather.subtitle')}</p>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-2xl glass px-4 py-2 border border-sky-500/30">
+          <ShieldCheck className="h-4 w-4 text-sky-500" />
+          <span className="text-xs font-bold">Pesticide Spray Window: <span className="text-brand-500">SAFE (06:00 - 10:00 AM)</span></span>
+        </div>
       </div>
 
-      {/* Current weather hero */}
-      <Card className="overflow-hidden">
+      {/* Current Weather Hero */}
+      <Card hover tilt className="overflow-hidden border-sky-500/30 bg-gradient-to-br from-sky-500/10 via-slate-900/5 to-amber-500/10">
         <div className="flex flex-col items-center gap-6 py-6 sm:flex-row sm:justify-between">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <motion.div
               animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="p-3 rounded-3xl bg-sky-500/10 border border-sky-500/20 shadow-glow-sky"
             >
               <WeatherIcon type={wType} className="h-20 w-20 text-sky-500" />
             </motion.div>
             <div>
-              <p className="font-display text-5xl font-extrabold">{weatherNow.temp}°C</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{weatherNow.condition}</p>
-              <p className="mt-1 text-xs text-slate-400">{t('weather.feels')}: {weatherNow.feels}°C</p>
+              <p className="font-display text-5xl font-extrabold tracking-tight">{weatherNow.temp}°C</p>
+              <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">{weatherNow.condition}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('weather.feels')}: {weatherNow.feels}°C • Micro-station Rajkot North</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 w-full sm:w-auto">
             <WeatherStat icon={<Droplets className="h-5 w-5 text-sky-500" />} value={`${weatherNow.humidity}%`} label={t('land.weather.humidity')} />
             <WeatherStat icon={<Wind className="h-5 w-5 text-slate-400" />} value={`${weatherNow.wind} km/h`} label={t('land.weather.wind')} />
             <WeatherStat icon={<Sun className="h-5 w-5 text-amber-500" />} value={`${weatherNow.uv}`} label={t('weather.uv')} />
@@ -47,7 +55,7 @@ export function Weather() {
         </div>
       </Card>
 
-      {/* Alerts */}
+      {/* Weather Hazard Alerts */}
       <div className="grid gap-4 md:grid-cols-2">
         {weatherAlerts.map((a, i) => (
           <motion.div
@@ -56,17 +64,17 @@ export function Weather() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className={a.severity === 'high' ? 'border-red-500/30' : 'border-amber-500/30'}>
-              <div className="flex items-start gap-3">
-                <div className={`grid place-items-center rounded-2xl p-2.5 ${a.severity === 'high' ? 'bg-red-500/15 text-red-500' : 'bg-amber-500/15 text-amber-500'}`}>
+            <Card hover tilt className={a.severity === 'high' ? 'border-red-500/40 bg-red-500/5' : 'border-amber-500/40 bg-amber-500/5'}>
+              <div className="flex items-start gap-3.5">
+                <div className={`grid place-items-center rounded-2xl p-3 shadow-glow ${a.severity === 'high' ? 'bg-red-500/20 text-red-500' : 'bg-amber-500/20 text-amber-500'}`}>
                   <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm">{a[titleKey]}</h3>
-                    <Badge variant={a.severity === 'high' ? 'error' : 'warning'}>{t(`common.${a.severity}`)}</Badge>
+                    <h3 className="font-bold text-sm">{a[titleKey]}</h3>
+                    <Badge variant={a.severity === 'high' ? 'error' : 'warning'} pulse>{t(`common.${a.severity}`)}</Badge>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{a.desc}</p>
+                  <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{a.desc}</p>
                 </div>
               </div>
             </Card>
@@ -74,36 +82,36 @@ export function Weather() {
         ))}
       </div>
 
-      {/* Hourly */}
-      <Card>
-        <SectionHeader title={t('weather.hourly')} />
-        <div className="mt-4 h-44">
+      {/* Hourly Forecast Curve */}
+      <Card hover tilt>
+        <SectionHeader title={t('weather.hourly')} subtitle="24-Hour Temperature & Rainfall Curve" />
+        <div className="mt-4 h-52">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={hourlyWeather}>
               <defs>
                 <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.3} />
+                  <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.4} />
                   <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
                   <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#94a3b820" />
               <XAxis dataKey="time" tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
-              <Tooltip contentStyle={{ borderRadius: 12, border: 'none', background: 'rgba(15,23,42,0.9)', color: '#fff', fontSize: 12 }} />
-              <Area type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={2.5} fill="url(#tempGrad)" />
-              <Area type="monotone" dataKey="rain" stroke="#3b82f6" strokeWidth={2} fill="url(#rainGrad)" />
+              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(15,23,42,0.9)', color: '#fff', fontSize: 12 }} />
+              <Area type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={3} fill="url(#tempGrad)" />
+              <Area type="monotone" dataKey="rain" stroke="#3b82f6" strokeWidth={2.5} fill="url(#rainGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </Card>
 
-      {/* 7-day */}
-      <Card>
-        <SectionHeader title={t('weather.weekly')} />
+      {/* 7-Day Forecast Grid */}
+      <Card hover tilt>
+        <SectionHeader title={t('weather.weekly')} subtitle="7-Day Micro-Climate Projection" />
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
           {weeklyWeather.map((d, i) => (
             <motion.div
@@ -111,15 +119,15 @@ export function Weather() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="flex flex-col items-center rounded-2xl bg-slate-100/50 dark:bg-white/5 p-3"
+              className="flex flex-col items-center rounded-2xl glass p-3 border border-white/40 dark:border-white/10 hover:border-brand-500/40"
             >
-              <p className="text-xs font-semibold">{d.day}</p>
-              <WeatherIcon type={d.icon} className="my-2 h-8 w-8 text-sky-500" />
+              <p className="text-xs font-bold font-display">{d.day}</p>
+              <WeatherIcon type={d.icon} className="my-2.5 h-8 w-8 text-sky-500" />
               <div className="text-center">
-                <p className="text-sm font-bold">{d.max}°</p>
-                <p className="text-xs text-slate-400">{d.min}°</p>
+                <p className="text-sm font-extrabold">{d.max}°</p>
+                <p className="text-[10px] text-slate-400 font-semibold">{d.min}°</p>
               </div>
-              <div className="mt-1.5 flex items-center gap-1 text-xs text-sky-500">
+              <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-sky-500">
                 <CloudRain className="h-3 w-3" /> {d.rain}%
               </div>
             </motion.div>
@@ -128,7 +136,7 @@ export function Weather() {
       </Card>
 
       {/* AI Weather Advice */}
-      <Card>
+      <Card hover tilt>
         <SectionHeader title={t('weather.ai.advice')} />
         <div className="mt-4">
           <AIResponsePanel
@@ -156,10 +164,10 @@ export function Weather() {
 
 function WeatherStat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl bg-slate-100/50 dark:bg-white/5 p-3">
+    <div className="flex flex-col items-center rounded-2xl glass p-3.5 border border-white/40 dark:border-white/10">
       {icon}
-      <p className="mt-1.5 text-sm font-bold">{value}</p>
-      <p className="text-[10px] text-slate-400">{label}</p>
+      <p className="mt-1.5 text-sm font-extrabold font-display">{value}</p>
+      <p className="text-[10px] font-semibold text-slate-400">{label}</p>
     </div>
   );
 }

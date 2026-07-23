@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Sparkles, CheckCircle2, Circle, Cloud } from 'lucide-react';
+import { CalendarDays, Sparkles, CheckCircle2, Circle, Cloud, Cpu } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, cn } from '@/components/ui';
 import { weeklyPlanner } from '@/data/mock';
@@ -19,7 +19,7 @@ export function Planner() {
 
   function generate() {
     setGenerating(true);
-    setTimeout(() => setGenerating(false), 2000);
+    setTimeout(() => setGenerating(false), 1800);
   }
 
   const dayKeys: Record<string, string> = {
@@ -31,31 +31,29 @@ export function Planner() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">{t('planner.title')}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('planner.subtitle')}</p>
+          <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-600 dark:text-brand-400 mb-1 border border-brand-500/20">
+            <Cpu className="h-3.5 w-3.5 text-brand-500 animate-pulse" />
+            <span>Seasonal Agricultural Schedule Generator</span>
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">{t('planner.title')}</h1>
+          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">{t('planner.subtitle')}</p>
         </div>
-        <button onClick={generate} className="btn-primary text-sm">
+        <button onClick={generate} className="btn-primary text-xs shadow-glow">
           <Sparkles className="h-4 w-4" /> {t('planner.generate')}
         </button>
       </div>
 
       {generating && (
-        <Card>
-          <div className="flex flex-col items-center gap-3 py-10">
-            <Sparkles className="h-8 w-8 animate-pulse text-brand-500" />
-            <p className="font-display text-lg font-semibold">{t('chat.thinking')}...</p>
-            <div className="flex gap-1.5">
-              {[0, 1, 2].map((i) => (
-                <span key={i} className="h-2 w-2 rounded-full bg-brand-500 animate-typing" style={{ animationDelay: `${i * 0.2}s` }} />
-              ))}
-            </div>
-          </div>
+        <Card hover tilt className="p-10 text-center glass-strong border border-brand-500/40">
+          <Sparkles className="mx-auto h-8 w-8 animate-spin-slow text-brand-500 mb-3" />
+          <p className="font-display text-lg font-bold gradient-text">{t('chat.thinking')}...</p>
+          <p className="text-xs text-slate-400 mt-1">Cross-referencing satellite precipitation models</p>
         </Card>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {plan.map((d, i) => (
           <motion.div
             key={d.day}
@@ -63,30 +61,33 @@ export function Planner() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
           >
-            <Card className={cn(i === todayIdx && 'border-brand-500/40 ring-2 ring-brand-500/10')}>
+            <Card hover tilt className={cn('h-full', i === todayIdx && 'border-brand-500/50 ring-2 ring-brand-500/30 bg-brand-500/5')}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CalendarDays className={cn('h-5 w-5', i === todayIdx ? 'text-brand-500' : 'text-slate-400')} />
-                  <h3 className="font-semibold text-sm">{t(dayKeys[d.day])}</h3>
+                <div className="flex items-center gap-2.5">
+                  <div className={cn('p-2 rounded-xl glass', i === todayIdx ? 'text-brand-500 shadow-glow' : 'text-slate-400')}>
+                    <CalendarDays className="h-4 w-4" />
+                  </div>
+                  <h3 className="font-display text-sm font-bold">{t(dayKeys[d.day])}</h3>
                 </div>
-                {i === todayIdx && <Badge variant="success">{t('common.today')}</Badge>}
+                {i === todayIdx && <Badge variant="success" pulse>{t('common.today')}</Badge>}
                 {d.tasks.some((tk, j) => tk.toLowerCase().includes('rain')) && (
-                  <Cloud className="h-4 w-4 text-sky-400" />
+                  <Cloud className="h-4 w-4 text-sky-400 animate-bounce" />
                 )}
               </div>
-              <div className="mt-3 space-y-2">
+
+              <div className="mt-4 space-y-2">
                 {d.tasks.map((task, j) => (
                   <button
                     key={j}
                     onClick={() => toggle(i, j)}
-                    className="flex w-full items-start gap-2.5 rounded-xl p-2 text-left transition-colors hover:bg-slate-100/60 dark:hover:bg-white/5"
+                    className="flex w-full items-start gap-3 rounded-2xl glass p-2.5 text-left transition-all hover:border-brand-500/40"
                   >
                     {d.done[j] ? (
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
                     ) : (
                       <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 dark:text-slate-600" />
                     )}
-                    <span className={cn('text-xs', d.done[j] && 'line-through opacity-50')}>{task}</span>
+                    <span className={cn('text-xs font-semibold', d.done[j] && 'line-through opacity-50')}>{task}</span>
                   </button>
                 ))}
               </div>
@@ -95,20 +96,22 @@ export function Planner() {
         ))}
       </div>
 
-      {/* AI weather-aware note */}
-      <Card className="border-sky-500/20 bg-gradient-to-br from-sky-500/5 to-brand-500/5">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-sky-500" />
-          <h3 className="font-display text-sm font-bold">
-            {lang === 'hi' ? 'AI मौसम-जागरूक योजना' : lang === 'gu' ? 'AI હવામાન-જાગૃત યોજના' : 'AI Weather-Aware Plan'}
+      {/* AI Weather-Aware Planner Note */}
+      <Card hover tilt className="border-sky-500/30 bg-gradient-to-br from-sky-500/10 via-slate-900/5 to-brand-500/10">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="grid place-items-center rounded-2xl bg-sky-500/20 p-2 text-sky-500 shadow-glow-sky">
+            <Sparkles className="h-4 w-4" />
+          </span>
+          <h3 className="font-display text-base font-bold">
+            {lang === 'hi' ? 'AI मौसम-जागरूक योजना' : lang === 'gu' ? 'AI હવામાન-જાગૃત યોજના' : 'AI Weather-Aware Field Schedule'}
           </h3>
         </div>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           {lang === 'hi'
             ? 'बुध-गुरु को भारी बारिश अपेक्षित — छिड़काव टाला गया। शुक्रवार को बारिश के बाद रोग जांच जोड़ी गई।'
             : lang === 'gu'
             ? 'બુધ-ગુરુને ભારે વરસાદ — છંટકાવ ટાળ્યો. શુક્રવારે વરસાદ પછી રોગ ચકાસણી ઉમેરી.'
-            : 'Heavy rain Wed-Thu — spraying deferred. Post-rain disease scouting added for Friday.'}
+            : 'Heavy precipitation forecast for Wed-Thu — pesticide spraying deferred. Post-rain fungal scouting automatically appended for Friday morning.'}
         </p>
       </Card>
     </div>
