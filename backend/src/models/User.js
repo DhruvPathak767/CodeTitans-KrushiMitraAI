@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    activeFarm: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Farm',
+    },
     lastLogin: {
       type: Date,
     },

@@ -6,32 +6,53 @@ const weatherCacheSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Farm',
       required: [true, 'Farm ID is required'],
+      unique: true,
       index: true,
     },
-    temperature: {
+    latitude: {
       type: Number,
-      required: [true, 'Temperature is required'],
+      required: true,
     },
-    humidity: {
+    longitude: {
       type: Number,
-      required: [true, 'Humidity is required'],
+      required: true,
     },
-    rainfall: {
-      type: Number,
-      default: 0,
+    location: {
+      type: Object,
+      required: true,
     },
-    windSpeed: {
-      type: Number,
-      default: 0,
+    current: {
+      type: Object,
+      required: true,
     },
-    weatherCondition: {
-      type: String,
-      required: [true, 'Weather condition is required'],
-      trim: true,
+    hourly: {
+      type: Array,
+      default: [],
     },
-    fetchedAt: {
+    daily: {
+      type: Array,
+      default: [],
+    },
+    airQuality: {
+      type: Object,
+      default: {},
+    },
+    agriculture: {
+      type: Object,
+      default: {},
+    },
+    alerts: {
+      type: Array,
+      default: [],
+    },
+    lastUpdated: {
       type: Date,
       default: Date.now,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: { expires: 0 }, // MongoDB TTL Index: expires at expiresAt
     },
   },
   {
@@ -39,12 +60,6 @@ const weatherCacheSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
-
-// Indexes
-weatherCacheSchema.index({ farmId: 1, fetchedAt: -1 });
-
-// TTL index - Expire documents after 1 hour (3600 seconds)
-weatherCacheSchema.index({ fetchedAt: 1 }, { expireAfterSeconds: 3600 });
 
 const WeatherCache = mongoose.model('WeatherCache', weatherCacheSchema);
 export default WeatherCache;

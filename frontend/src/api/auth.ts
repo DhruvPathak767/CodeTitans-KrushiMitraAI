@@ -9,6 +9,7 @@ export interface UserProfile {
   preferredLanguage?: string;
   profileImage?: string;
   emailVerified?: boolean;
+  activeFarm?: string | any;
   createdAt?: string;
 }
 
