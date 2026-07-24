@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useFarm } from './FarmContext';
-import { getDashboardWeatherApi, type WeatherNormalizedData } from '@/api/weather';
+import { useApp } from '@/i18n/AppContext';
+import { getDashboardWeatherApi, type WeatherApiResponse } from '@/api/weather';
 
 interface WeatherContextType {
-  weatherData: WeatherNormalizedData | null;
+  weatherData: WeatherApiResponse | null;
   loading: boolean;
   error: string | null;
   refreshWeather: () => Promise<void>;
@@ -13,7 +14,8 @@ const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
 
 export function WeatherProvider({ children }: { children: ReactNode }) {
   const { activeFarm } = useFarm();
-  const [weatherData, setWeatherData] = useState<WeatherNormalizedData | null>(null);
+  const { lang } = useApp();
+  const [weatherData, setWeatherData] = useState<WeatherApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +23,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await getDashboardWeatherApi();
+      const res = await getDashboardWeatherApi(lang);
       if (res.data) {
         setWeatherData(res.data);
       }
@@ -48,7 +50,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     }, 30 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [activeFarm?._id]);
+  }, [activeFarm?._id, lang]);
 
   return (
     <WeatherContext.Provider

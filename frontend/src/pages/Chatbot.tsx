@@ -72,7 +72,7 @@ export function Chatbot() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-600 dark:text-brand-400 mb-1 border border-brand-500/20">
             <Cpu className="h-3.5 w-3.5 text-brand-500 animate-pulse" />
-            <span>Multilingual Agricultural Neural Engine</span>
+            <span>{t('chat.engineLabel')}</span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">{t('chat.title')}</h1>
         </div>
@@ -87,7 +87,7 @@ export function Chatbot() {
           >
             <Plus className="h-4 w-4" /> {t('chat.new')}
           </button>
-          <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Previous Telemetry Logs</p>
+          <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">{t('chat.sidebarTitle')}</p>
           <div className="flex-1 space-y-2 overflow-y-auto scrollbar-hide mt-2">
             {[
               { title: 'Weather this week', time: '2m ago' },
@@ -113,7 +113,7 @@ export function Chatbot() {
                   <Sparkles className="h-8 w-8 text-brand-500 animate-spin-slow" />
                 </div>
                 <h3 className="font-display text-xl font-extrabold gradient-text">{t('chat.welcome')}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Ask any question regarding crop diseases, weather, fertilizer calculation, or APMC mandi rates.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('chat.askHint')}</p>
                 <div className="flex flex-wrap justify-center gap-2 pt-2">
                   {chatSuggestions[lang].map((s) => (
                     <button

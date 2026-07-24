@@ -1,12 +1,14 @@
 import weatherService from '../../services/weather/weather.service.js';
+import resolveLang from '../../utils/resolveLang.js';
 
 class WeatherController {
   getWeather = async (req, res, next) => {
     try {
-      const data = await weatherService.getWeatherForActiveFarm(req.user);
+      const lang = resolveLang(req);
+      const data = await weatherService.getWeatherForActiveFarm(req.user, lang);
       res.status(200).json({
         success: true,
-        message: 'Live OpenWeather data fetched successfully',
+        message: 'Live weather data fetched successfully',
         data,
       });
     } catch (error) {
@@ -24,10 +26,11 @@ class WeatherController {
 
   getForecast = async (req, res, next) => {
     try {
-      const data = await weatherService.getWeatherForActiveFarm(req.user);
+      const lang = resolveLang(req);
+      const data = await weatherService.getWeatherForActiveFarm(req.user, lang);
       res.status(200).json({
         success: true,
-        message: 'Live OpenWeather forecast fetched successfully',
+        message: 'Live forecast fetched successfully',
         data: {
           location: data.location,
           hourly: data.hourly,
@@ -41,10 +44,11 @@ class WeatherController {
 
   getDebugWeather = async (req, res, next) => {
     try {
-      const data = await weatherService.getDebugWeatherData(req.user);
+      const lang = resolveLang(req);
+      const data = await weatherService.getDebugWeatherData(req.user, lang);
       res.status(200).json({
         success: true,
-        message: 'OpenWeather Debug Pipeline Audit Output',
+        message: 'Weather debug pipeline output',
         data,
       });
     } catch (error) {

@@ -51,7 +51,7 @@ export function Notifications() {
             <Check className="h-3.5 w-3.5 text-brand-500" /> {t('notif.markAll')}
           </button>
           <button onClick={clearAll} className="btn-ghost text-xs text-red-500 hover:bg-red-500/10">
-            <Trash2 className="h-3.5 w-3.5" /> Clear All
+            <Trash2 className="h-3.5 w-3.5" /> {t('common.clearAll')}
           </button>
         </div>
       </div>

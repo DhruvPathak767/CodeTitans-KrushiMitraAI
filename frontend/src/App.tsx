@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AppProvider, useApp } from '@/i18n/AppContext';
 import { FarmProvider, useFarm } from '@/context/FarmContext';
 import { WeatherProvider } from '@/context/WeatherContext';
+import { AdvisoryProvider } from '@/context/AdvisoryContext';
 import { Landing } from '@/pages/Landing';
 import { Login, Signup } from '@/pages/Login';
 import { OnboardingFarm } from '@/pages/OnboardingFarm';
@@ -100,31 +101,33 @@ export default function App() {
     <AppProvider>
       <FarmProvider>
         <WeatherProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/onboarding/farm" element={<OnboardingRouteGuard />} />
-              <Route path="/app" element={<ProtectedRoutes />}>
-                <Route index element={<Navigate to="/app/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="weather" element={<Weather />} />
-                <Route path="disease" element={<DiseaseDetection />} />
-                <Route path="advisory" element={<Advisory />} />
-                <Route path="irrigation" element={<Irrigation />} />
-                <Route path="market" element={<Market />} />
-                <Route path="sellstore" element={<SellStore />} />
-                <Route path="schemes" element={<Schemes />} />
-                <Route path="chatbot" element={<Chatbot />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="farm" element={<FarmRegistration />} />
-                <Route path="planner" element={<Planner />} />
-                <Route path="reports" element={<Reports />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
+          <AdvisoryProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/onboarding/farm" element={<OnboardingRouteGuard />} />
+                <Route path="/app" element={<ProtectedRoutes />}>
+                  <Route index element={<Navigate to="/app/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="weather" element={<Weather />} />
+                  <Route path="disease" element={<DiseaseDetection />} />
+                  <Route path="advisory" element={<Advisory />} />
+                  <Route path="irrigation" element={<Irrigation />} />
+                  <Route path="market" element={<Market />} />
+                  <Route path="sellstore" element={<SellStore />} />
+                  <Route path="schemes" element={<Schemes />} />
+                  <Route path="chatbot" element={<Chatbot />} />
+                  <Route path="notifications" element={<Notifications />} />
+                  <Route path="farm" element={<FarmRegistration />} />
+                  <Route path="planner" element={<Planner />} />
+                  <Route path="reports" element={<Reports />} />
+                </Route>
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </AdvisoryProvider>
         </WeatherProvider>
       </FarmProvider>
     </AppProvider>

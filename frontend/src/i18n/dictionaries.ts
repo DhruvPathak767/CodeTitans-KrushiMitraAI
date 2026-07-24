@@ -252,6 +252,46 @@ const en: Dict = {
   'reports.water': 'Water Usage',
   'reports.income': 'Income',
   'reports.disease': 'Disease History',
+  'reports.diseaseTimeline': 'Disease Incidents Log',
+
+  'common.clearAll': 'Clear All',
+  'common.recommended': 'Recommended',
+  'common.appSubmitted': 'Application Submitted',
+  'common.telemetryLogs': 'Previous Telemetry Logs',
+  'common.sampleScans': 'Sample Diagnostic Scans',
+  'common.noAdvisory': 'No AI advisory data available.',
+  'common.soilMoisture': 'Soil Moisture',
+
+  'irrigation.soilOptimal': 'OPTIMAL',
+  'irrigation.drip': 'Precision Drip Irrigation Control',
+  'irrigation.dripSubtitle': 'Automated root-zone water delivery tailored to real-time solar evaporation and rainfall predictions.',
+
+  'planner.bannerTitle': 'Dynamic Precision Crop Operations',
+  'planner.bannerSubtitle': 'Synchronized with real-time soil moisture sensors, satellite weather patterns, and local crop growth stages for maximum yield optimization.',
+  'planner.aiScheduleLabel': 'AI Automated Field Calendar & Tasks',
+  'planner.weatherAware': 'AI Weather-Aware Field Schedule',
+  'planner.weatherAwareHint': 'Heavy precipitation forecast for Wed-Thu — pesticide spraying deferred. Post-rain fungal scouting automatically appended for Friday morning.',
+
+  'advisory.synthesizing': 'Synthesizing telemetry, micro-climate, and AI rules...',
+
+  'schemes.submitted': 'Submit Government Scheme Claim',
+  'schemes.bannerSuffix': 'Active Schemes',
+  'schemes.bannerMatched': 'Matched for Your Farm Profile & Location',
+
+  'market.aiforecast.title': 'AI Mandi Price Forecast',
+  'market.aiforecast.subtitle': '92% Historical Predictive Accuracy',
+  'market.aiforecast.text': 'Tomato prices projected to reach ₹2,100/qtl in 3 weeks (+14%). Recommended strategy: Sell 40% now for liquid cashflow, store 60% for peak pricing window.',
+
+  'chat.sidebarTitle': 'Previous Telemetry Logs',
+  'chat.engineLabel': 'Multilingual Agricultural Neural Engine',
+  'chat.askHint': 'Ask any question regarding crop diseases, weather, fertilizer calculation, or APMC mandi rates.',
+
+  'onboard.badge': 'First-Time Farmer Onboarding',
+  'onboard.title': "Let's Register Your First Farm",
+  'onboard.subtitle': 'We need your farm details to generate personalized AI crop advisories, soil analytics, and live mandi market prices.',
+  'onboard.step1': 'Farm Details',
+  'onboard.step2': 'Location & Map',
+  'onboard.step3': 'Complete',
 };
 
 const hi: Dict = {
@@ -498,6 +538,46 @@ const hi: Dict = {
   'reports.water': 'जल उपयोग',
   'reports.income': 'आय',
   'reports.disease': 'रोग इतिहास',
+  'reports.diseaseTimeline': 'रोग घटना लॉग',
+
+  'common.clearAll': 'सभी हटाएं',
+  'common.recommended': 'अनुशंसित',
+  'common.appSubmitted': 'आवेदन जमा किया',
+  'common.telemetryLogs': 'पिछले टेलीमेट्री लॉग',
+  'common.sampleScans': 'नमूना डायग्नोस्टिक स्कैन',
+  'common.noAdvisory': 'AI सलाह उपलब्ध नहीं है।',
+  'common.soilMoisture': 'मिट्टी नमी',
+
+  'irrigation.soilOptimal': 'उत्तम',
+  'irrigation.drip': 'प्रिसिजन ड्रिप सिंचाई नियंत्रण',
+  'irrigation.dripSubtitle': 'वास्तविक समय के सौर वाष्पीकरण और वर्षा पूर्वानुमान के आधार पर स्वचालित जड़-क्षेत्र जल आपूर्ति।',
+
+  'planner.bannerTitle': 'डायनेमिक प्रिसिजन फसल संचालन',
+  'planner.bannerSubtitle': 'वास्तविक समय के मिट्टी नमी सेंसर, उपग्रह मौसम पैटर्न और स्थानीय फसल वृद्धि चरणों के साथ समन्वित।',
+  'planner.aiScheduleLabel': 'AI स्वचालित फील्ड कैलेंडर और कार्य',
+  'planner.weatherAware': 'AI मौसम-जागरूक खेत अनुसूची',
+  'planner.weatherAwareHint': 'बुध-गुरु को भारी बारिश अपेक्षित — छिड़काव टाला गया। शुक्रवार को बारिश के बाद रोग जांच जोड़ी गई।',
+
+  'advisory.synthesizing': 'टेलीमेट्री, माइक्रो-क्लाइमेट और AI नियम संकलित हो रहे हैं...',
+
+  'schemes.submitted': 'सरकारी योजना दावा जमा करें',
+  'schemes.bannerSuffix': 'सक्रिय योजनाएं',
+  'schemes.bannerMatched': 'आपके खेत प्रोफाइल और स्थान से मिलान',
+
+  'market.aiforecast.title': 'AI मंडी मूल्य पूर्वानुमान',
+  'market.aiforecast.subtitle': '92% ऐतिहासिक पूर्वानुमान सटीकता',
+  'market.aiforecast.text': 'टमाटर भाव 3 सप्ताह में ₹2,100 तक पहुंच सकते हैं (+14%)। अभी 40% बेचें, 60% रखें।',
+
+  'chat.sidebarTitle': 'पिछले टेलीमेट्री लॉग',
+  'chat.engineLabel': 'बहुभाषी कृषि तंत्रिका इंजन',
+  'chat.askHint': 'फसल रोग, मौसम, उर्वरक गणना या APMC मंडी दरों के बारे में कुछ भी पूछें।',
+
+  'onboard.badge': 'पहली बार किसान पंजीकरण',
+  'onboard.title': 'आइए आपका पहला खेत पंजीकृत करें',
+  'onboard.subtitle': 'व्यक्तिगत AI फसल सलाह, मिट्टी विश्लेषण और लाइव मंडी भाव के लिए खेत विवरण जरूरी है।',
+  'onboard.step1': 'खेत विवरण',
+  'onboard.step2': 'स्थान और नक्शा',
+  'onboard.step3': 'पूर्ण',
 };
 
 const gu: Dict = {
@@ -744,6 +824,47 @@ const gu: Dict = {
   'reports.water': 'જળ વપરાશ',
   'reports.income': 'આવક',
   'reports.disease': 'રોગ ઇતિહાસ',
+  'reports.diseaseTimeline': 'રોગ ઘટના લૉગ',
+
+  'common.clearAll': 'બધું કાઢો',
+  'common.recommended': 'ભલામણ',
+  'common.appSubmitted': 'અરજી સબમિટ',
+  'common.telemetryLogs': 'પૂર્વ ટેલિમેટ્રી લૉગ',
+  'common.sampleScans': 'નમૂના ડાયગ્નોસ્ટિક સ્કેન',
+  'common.noAdvisory': 'AI સલાહ ઉપલબ્ધ નથી.',
+  'common.soilMoisture': 'જમીન ભેજ',
+
+  'irrigation.soilOptimal': 'ઉત્તમ',
+  'irrigation.drip': 'પ્રિસિઝન ડ્રિપ સિંચાઈ નિયંત્રણ',
+  'irrigation.dripSubtitle': 'રીઅલ-ટાઈમ સૌર બાષ્પીભવન અને વરસાદ આગાહી પ્રમાણે સ્વચાલિત મૂળ-ઝોન જળ વિતરણ.',
+
+  'planner.bannerTitle': 'ડાયનેમિક પ્રિસિઝન પાક સંચાલન',
+  'planner.bannerSubtitle': 'રીઅલ-ટાઈમ જમીન ભેજ સેન્સર, ઉપગ્રહ હવામાન અને સ્થાનિક પાક વૃદ્ધિ તબક્કા સાથે સંકલિત.',
+  'planner.aiScheduleLabel': 'AI સ્વચાલિત ક્ષેત્ર કૅલેન્ડર & કાર્ય',
+  'planner.weatherAware': 'AI હવામાન-જાગૃત ખેત સુનિયોજન',
+  'planner.weatherAwareHint': 'બુધ-ગુરુને ભારે વરસાદ — છંટકાવ ટાળ્યો. શુક્રવારે વરસાદ પછી રોગ ચકાસણી ઉમેરી.',
+
+  'advisory.synthesizing': 'ટેલિમેટ્રી, માઇક્રો-ક્લાઇમેટ અને AI નિયમ સંકલિત થઈ રહ્યા છે...',
+
+  'schemes.submitted': 'સરકારી યોજના દાવો સબમિટ કરો',
+  'schemes.bannerSuffix': 'સક્રિય યોજનાઓ',
+  'schemes.bannerMatched': 'તમારી ખેત પ્રોફાઇલ & સ્થાન સાથે મળ',
+
+  'market.aiforecast.title': 'AI મંડી ભાવ આગાહી',
+  'market.aiforecast.subtitle': '92% ઐતિહાસિક આગાહી ચોક્સાઈ',
+  'market.aiforecast.text': 'ટમાટર ભાવ 3 અઠવાડિયામાં ₹2,100 સુધી (+14%). અત્યારે 40% વેચો, 60% સાચવો.',
+
+  'chat.sidebarTitle': 'પૂર્વ ટેલિમેટ્રી લૉગ',
+  'chat.engineLabel': 'બહુભાષી કૃષિ ન્યૂરલ એન્જિન',
+  'chat.askHint': 'પાક રોગ, હવામાન, ખાતર ગણતરી અથવા APMC મંડી ભાવ વિશે કંઈ પણ પૂછો.',
+
+  'onboard.badge': 'પ્રથમ-વખત ખેડૂત નોંધણી',
+  'onboard.title': 'ચાલો તમારું પ્રથમ ખેતર નોંધાવીએ',
+  'onboard.subtitle': 'વ્યક્તિગત AI પાક સલાહ, જમીન વિશ્લેષણ અને લાઈવ મંડી ભાવ માટે ખેતર વિગત જરૂરી છે.',
+  'onboard.step1': 'ખેતર વિગત',
+  'onboard.step2': 'સ્થાન અને નકશો',
+  'onboard.step3': 'પૂર્ણ',
 };
+
 
 export const dictionaries: Record<Lang, Dict> = { en, hi, gu };

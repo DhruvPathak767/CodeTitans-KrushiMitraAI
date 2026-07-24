@@ -1,74 +1,62 @@
-import { getAccessToken } from './auth';
+import { getAccessToken, getStoredLang } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export interface LocationData {
+export interface WeatherLocation {
+  farmId?: string;
   farmName: string;
   village: string;
-  taluka: string;
   district: string;
   state: string;
   country: string;
-  pincode: string;
   latitude: number;
   longitude: number;
-  formattedAddress: string;
   weatherLocationName: string;
 }
 
-export interface CurrentWeatherData {
+export interface CurrentWeather {
   temperature: number;
   feelsLike: number;
   minimumTemperature: number;
   maximumTemperature: number;
   humidity: number;
   pressure: number;
-  visibility: number;
-  cloudCoverage: number;
   windSpeed: number;
   windDirection: number;
   windGust: number;
-  rainProbability: number;
-  rainVolume: number;
-  snowVolume: number;
-  uvIndex: number;
-  dewPoint: number;
-  sunrise: string;
-  sunset: string;
+  cloudCoverage: number;
   weatherCondition: string;
   weatherDescription: string;
   weatherIcon: string;
-  lastUpdated: string;
-}
-
-export interface HourlyData {
-  time: string;
-  temperature: number;
-  feelsLike: number;
-  humidity: number;
-  rainChance: number;
-  windSpeed: number;
-  pressure: number;
-  cloudCoverage: number;
-}
-
-export interface DailyData {
-  date: string;
-  dayName: string;
-  maximumTemperature: number;
-  minimumTemperature: number;
-  humidity: number;
-  rainChance: number;
-  wind: number;
-  pressure: number;
-  clouds: number;
+  rainProbability: number;
+  rainVolume: number;
+  uvIndex: number;
+  visibility: number;
+  dewPoint: number;
   sunrise: string;
   sunset: string;
+}
+
+export interface HourlyForecast {
+  time: string;
+  temperature: number;
+  rainChance: number;
+  windSpeed: number;
   condition: string;
   icon: string;
 }
 
-export interface AirQualityData {
+export interface DailyForecast {
+  date: string;
+  dayName: string;
+  minimumTemperature: number;
+  maximumTemperature: number;
+  condition: string;
+  icon: string;
+  rainChance: number;
+}
+
+export interface AirQuality {
   aqi: number;
   aqiStatus: string;
   pm25: number;
@@ -80,7 +68,7 @@ export interface AirQualityData {
   nh3: number;
 }
 
-export interface AgricultureData {
+export interface AgricultureRules {
   diseaseRisk: string;
   heatStress: string;
   sprayWindow: string;
@@ -89,23 +77,21 @@ export interface AgricultureData {
   fieldWorkRecommendation: string;
 }
 
-export interface AlertData {
-  type: string;
+export interface WeatherAlert {
   title: string;
-  severity: string;
   message: string;
+  severity: string;
 }
 
-export interface WeatherNormalizedData {
+export interface WeatherApiResponse {
+  location: WeatherLocation;
+  current: CurrentWeather;
+  hourly: HourlyForecast[];
+  daily: DailyForecast[];
+  airQuality: AirQuality;
+  agriculture: AgricultureRules;
+  alerts: WeatherAlert[];
   isCached?: boolean;
-  isStale?: boolean;
-  location: LocationData;
-  current: CurrentWeatherData;
-  hourly: HourlyData[];
-  daily: DailyData[];
-  airQuality: AirQualityData;
-  agriculture: AgricultureData;
-  alerts: AlertData[];
   lastUpdated: string;
 }
 
@@ -113,12 +99,15 @@ export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
+  error?: string;
 }
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+async function request<T>(endpoint: string, options: RequestInit = {}, lang?: string): Promise<ApiResponse<T>> {
   const token = getAccessToken();
+  const targetLang = lang || getStoredLang();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Accept-Language': targetLang,
     ...(options.headers as Record<string, string>),
   };
 
@@ -126,7 +115,10 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const separator = endpoint.includes('?') ? '&' : '?';
+  const url = `${API_BASE_URL}${endpoint}${separator}lang=${encodeURIComponent(targetLang)}`;
+
+  const res = await fetch(url, {
     ...options,
     headers,
   });
@@ -134,32 +126,24 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   const data = await res.json();
 
   if (!res.ok) {
-    const errorMsg = data.message || 'Weather Service Unavailable';
-    const error: any = new Error(errorMsg);
-    error.status = data.statusCode || res.status;
-    throw error;
+    throw new Error(data.message || 'Weather API request failed');
   }
 
   return data;
 }
 
-/**
- * GET Dashboard Weather Endpoint (Single Source of Truth)
- */
-export async function getDashboardWeatherApi() {
-  return request<WeatherNormalizedData>('/api/weather/dashboard');
+export async function getWeatherApi(lang?: string): Promise<ApiResponse<WeatherApiResponse>> {
+  return request<WeatherApiResponse>('/api/weather', {}, lang);
 }
 
-/**
- * GET Current Weather Endpoint
- */
-export async function getCurrentWeatherApi() {
-  return request<WeatherNormalizedData>('/api/weather/current');
+export async function getDashboardWeatherApi(lang?: string): Promise<ApiResponse<WeatherApiResponse>> {
+  return request<WeatherApiResponse>('/api/weather/dashboard', {}, lang);
 }
 
-/**
- * GET Forecast Endpoint
- */
-export async function getForecastApi() {
-  return request<{ location: LocationData; hourly: HourlyData[]; daily: DailyData[] }>('/api/weather/forecast');
+export async function getForecastApi(lang?: string): Promise<ApiResponse<{ location: WeatherLocation; hourly: HourlyForecast[]; daily: DailyForecast[] }>> {
+  return request<{ location: WeatherLocation; hourly: HourlyForecast[]; daily: DailyForecast[] }>('/api/weather/forecast', {}, lang);
+}
+
+export async function getDebugWeatherApi(lang?: string): Promise<ApiResponse<any>> {
+  return request<any>('/api/weather/debug', {}, lang);
 }

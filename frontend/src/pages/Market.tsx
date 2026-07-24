@@ -154,16 +154,12 @@ export function Market() {
             <Sparkles className="h-5 w-5" />
           </span>
           <div>
-            <h3 className="font-display text-base font-bold">AI Mandi Price Forecast</h3>
-            <p className="text-[10px] text-slate-400">92% Historical Predictive Accuracy</p>
+            <h3 className="font-display text-base font-bold">{t('market.aiforecast.title')}</h3>
+            <p className="text-[10px] text-slate-400">{t('market.aiforecast.subtitle')}</p>
           </div>
         </div>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          {lang === 'hi'
-            ? 'टमाटर भाव 3 सप्ताह में ₹2,100 तक पहुंच सकते हैं (+14%)। अभी 40% बेचें, 60% रखें। कपास भी मजबूत रुझान में है।'
-            : lang === 'gu'
-            ? 'ટમાટર ભાવ 3 અઠવાડિયામાં ₹2,100 સુધી (+14%). અત્યારે 40% વેચો, 60% સાચવો. કપાસ પણ મજબૂત.'
-            : 'Tomato prices projected to reach ₹2,100/qtl in 3 weeks (+14%). Recommended strategy: Sell 40% now for liquid cashflow, store 60% for peak pricing window.'}
+          {t('market.aiforecast.text')}
         </p>
       </Card>
     </div>

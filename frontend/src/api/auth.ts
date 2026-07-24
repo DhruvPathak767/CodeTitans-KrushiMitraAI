@@ -26,6 +26,15 @@ export const TOKEN_KEYS = {
   USER: 'km_user',
 };
 
+export function getStoredLang(): string {
+  try {
+    const l = localStorage.getItem('km_lang');
+    return l ? JSON.parse(l) : 'en';
+  } catch {
+    return 'en';
+  }
+}
+
 export const getAccessToken = (): string | null => localStorage.getItem(TOKEN_KEYS.ACCESS);
 export const getRefreshToken = (): string | null => localStorage.getItem(TOKEN_KEYS.REFRESH);
 

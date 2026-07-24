@@ -129,7 +129,7 @@ export function Reports() {
 
       {/* Disease Timeline */}
       <Card hover tilt>
-        <SectionHeader title="Disease Incidents Log" subtitle="Historical Monthly Scan Frequency" />
+        <SectionHeader title={t('reports.diseaseTimeline')} subtitle="Historical Monthly Scan Frequency" />
         <div className="mt-4 h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={diseaseTimeline}>

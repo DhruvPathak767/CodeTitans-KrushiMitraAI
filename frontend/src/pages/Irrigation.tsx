@@ -17,7 +17,7 @@ export function Irrigation() {
         </div>
         <div className="inline-flex items-center gap-2 rounded-2xl glass px-4 py-2 border border-brand-500/30">
           <Droplets className="h-4 w-4 text-sky-500 animate-pulse" />
-          <span className="text-xs font-bold">Soil Moisture: <span className="text-brand-500">82% (OPTIMAL)</span></span>
+          <span className="text-xs font-bold">{t('common.soilMoisture')}: <span className="text-brand-500">82% ({t('irrigation.soilOptimal')})</span></span>
         </div>
       </div>
 
@@ -34,8 +34,8 @@ export function Irrigation() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent p-6 flex flex-col justify-center text-left">
           <Badge variant="info" pulse className="w-fit mb-2">IoT Soil Telemetry</Badge>
-          <h2 className="font-display text-xl sm:text-2xl font-black text-white">Precision Drip Irrigation Control</h2>
-          <p className="text-xs text-slate-200 mt-1 max-w-md">Automated root-zone water delivery tailored to real-time solar evaporation and rainfall predictions.</p>
+          <h2 className="font-display text-xl sm:text-2xl font-black text-white">{t('irrigation.drip')}</h2>
+          <p className="text-xs text-slate-200 mt-1 max-w-md">{t('irrigation.dripSubtitle')}</p>
         </div>
       </motion.div>
 
@@ -153,11 +153,7 @@ export function Irrigation() {
             t={t}
             confidence={89}
             priority="medium"
-            reason={lang === 'hi'
-              ? '28mm बारिश अपेक्षित, मिट्टी नमी 82%, फसल चरण और वाष्पन-उत्सर्जन डेटा आधार पर।'
-              : lang === 'gu'
-              ? 'વરસાદ ૨૮mm હોવાની આગાહી, જમીન ભેજ ૮૨%, પાક તબક્કો અને બાષ્પીભવન ડેટા આધારે.'
-              : '28mm rain expected, soil moisture at 82%, based on crop stage and evapotranspiration data.'}
+            reason={t('planner.weatherAwareHint')}
             actions={[
               lang === 'hi' ? 'इस सप्ताह सिंचाई 30% कम करें' : lang === 'gu' ? 'આ અઠવાડિયે સિંચાઈ 30% ઘટાડો' : 'Reduce irrigation 30% this week',
               lang === 'hi' ? 'बारिश के बाद नमी जांचें' : lang === 'gu' ? 'વરસાદ પછી ભેજ ચકાસો' : 'Check moisture after rain',

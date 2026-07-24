@@ -20,13 +20,13 @@ import {
   MapPin,
   AlertTriangle,
   Loader2,
-  Sparkles,
   ShieldAlert,
   Compass,
-  Activity,
   CheckCircle2,
   Calendar,
   Clock,
+  Sparkles,
+  Activity,
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { useWeather } from '@/context/WeatherContext';
@@ -48,19 +48,19 @@ const customMarkerIcon = L.icon({
 function WeatherIconRenderer({ icon, className = 'h-8 w-8' }: { icon?: string; className?: string }) {
   switch (icon) {
     case 'sun':
-      return <Sun className={`${className} text-amber-400 animate-spin`} style={{ animationDuration: '20s' }} />;
+      return <Sun className={`${className} text-amber-400`} />;
     case 'cloud-sun':
       return <CloudSun className={`${className} text-amber-300`} />;
+    case 'cloud':
+      return <Cloud className={`${className} text-slate-400`} />;
     case 'cloud-rain':
       return <CloudRain className={`${className} text-sky-400`} />;
     case 'cloud-lightning':
       return <CloudLightning className={`${className} text-purple-400`} />;
-    case 'cloud-fog':
-    case 'snowflake':
-      return <CloudDrizzle className={`${className} text-sky-300`} />;
-    case 'cloud':
+    case 'cloud-drizzle':
+      return <CloudDrizzle className={`${className} text-blue-300`} />;
     default:
-      return <Cloud className={`${className} text-slate-300`} />;
+      return <Sun className={`${className} text-amber-400`} />;
   }
 }
 
@@ -83,7 +83,7 @@ export function Weather() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-              Live Micro-Climate Station
+              {t('weather.current')}
             </span>
             {weatherData?.isCached && (
               <span className="text-[10px] font-bold text-slate-400 bg-slate-500/10 px-2 py-0.5 rounded-full">
@@ -92,10 +92,10 @@ export function Weather() {
             )}
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">
-            Agriculture Weather Intelligence
+            {t('weather.title')}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            Live OpenWeather atmospheric telemetry, Air Quality Index, 24-hour hourly forecast, 7-day micro-climate, and rule-based agronomy insights.
+            Live atmospheric telemetry, Air Quality Index, 24-hour hourly forecast, 7-day micro-climate, and rule-based agronomy insights.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export function Weather() {
           className="btn-glass text-xs py-2.5 px-4 rounded-2xl flex items-center gap-2 shrink-0 border border-slate-200 dark:border-white/10 hover:border-emerald-500"
         >
           <RefreshCw className={`h-4 w-4 text-emerald-500 ${loading ? 'animate-spin' : ''}`} />
-          <span>{loading ? 'Refreshing...' : 'Refresh Weather'}</span>
+          <span>{loading ? t('common.loading') : 'Refresh Weather'}</span>
         </button>
       </div>
 
@@ -121,7 +121,7 @@ export function Weather() {
       {loading && !weatherData ? (
         <div className="flex flex-col items-center justify-center p-20 text-slate-400">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-500 mb-2" />
-          <p className="text-xs font-semibold">Loading live OpenWeather telemetry for active farm...</p>
+          <p className="text-xs font-semibold">{t('common.loading')}</p>
         </div>
       ) : current && location ? (
         <>
@@ -174,329 +174,247 @@ export function Weather() {
                 </div>
 
                 <div className="flex items-center gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
-                  <span>Feels like <strong>{current.feelsLike ?? '--'}°C</strong></span>
+                  <span>{t('weather.feels')} <strong>{current.feelsLike ?? '--'}°C</strong></span>
                   <span>•</span>
                   <span>H: <strong>{current.maximumTemperature ?? '--'}°</strong> L: <strong>{current.minimumTemperature ?? '--'}°</strong></span>
                 </div>
               </div>
 
-              {/* Middle: Detailed OpenWeather Atmospheric Parameters Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 lg:col-span-2">
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Droplets className="h-3 w-3 text-sky-400" /> Humidity
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.humidity ?? '--'}%</p>
+              {/* Right: Telemetry Grid (6 Metrics) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:col-span-2">
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <Droplets className="h-3.5 w-3.5 text-sky-400" />
+                    <span>{t('land.weather.humidity')}</span>
+                  </div>
+                  <p className="text-lg font-bold font-display text-slate-900 dark:text-white">{current.humidity}%</p>
+                  <p className="text-[10px] text-slate-400">Dew Point: {current.dewPoint}°C</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Wind className="h-3 w-3 text-teal-400" /> Wind Speed
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.windSpeed ?? '--'} km/h</p>
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <Wind className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>{t('land.weather.wind')}</span>
+                  </div>
+                  <p className="text-lg font-bold font-display text-slate-900 dark:text-white">{current.windSpeed} km/h</p>
+                  <p className="text-[10px] text-slate-400">Gust: {current.windGust} km/h</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Compass className="h-3 w-3 text-purple-400" /> Direction / Gust
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.windDirection ?? '--'}° / {current.windGust ?? '--'} km/h</p>
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <CloudRain className="h-3.5 w-3.5 text-blue-400" />
+                    <span>{t('weather.rain.prob')}</span>
+                  </div>
+                  <p className="text-lg font-bold font-display text-slate-900 dark:text-white">{current.rainProbability}%</p>
+                  <p className="text-[10px] text-slate-400">Vol: {current.rainVolume} mm</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <CloudRain className="h-3 w-3 text-blue-400" /> Rain Chance
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.rainProbability ?? 0}% ({current.rainVolume ?? 0}mm)</p>
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <Gauge className="h-3.5 w-3.5 text-purple-400" />
+                    <span>Pressure</span>
+                  </div>
+                  <p className="text-lg font-bold font-display text-slate-900 dark:text-white">{current.pressure} hPa</p>
+                  <p className="text-[10px] text-slate-400">Clouds: {current.cloudCoverage}%</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Gauge className="h-3 w-3 text-purple-400" /> Pressure
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.pressure ?? '--'} hPa</p>
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <Eye className="h-3.5 w-3.5 text-amber-400" />
+                    <span>{t('weather.visibility')}</span>
+                  </div>
+                  <p className="text-lg font-bold font-display text-slate-900 dark:text-white">{current.visibility} km</p>
+                  <p className="text-[10px] text-slate-400">UV Index: {current.uvIndex}</p>
                 </div>
 
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Eye className="h-3 w-3 text-amber-400" /> Visibility
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.visibility ?? '--'} km</p>
-                </div>
-
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Sun className="h-3 w-3 text-amber-500" /> UV / Dew Point
-                  </span>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{current.uvIndex ?? '--'} / {current.dewPoint ?? '--'}°C</p>
-                </div>
-
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/50 dark:border-white/5 space-y-1">
-                  <span className="text-[10px] font-semibold text-slate-400 block flex items-center gap-1">
-                    <Sunrise className="h-3 w-3 text-amber-500" /> Sun Schedule
-                  </span>
-                  <p className="text-[11px] font-bold text-slate-900 dark:text-white">↑ {current.sunrise ?? '--'} • ↓ {current.sunset ?? '--'}</p>
+                <div className="rounded-2xl glass p-3.5 border border-slate-200/60 dark:border-white/10 space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                    <Sunrise className="h-3.5 w-3.5 text-amber-500" />
+                    <span>Sun Cycle</span>
+                  </div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">🌅 {current.sunrise}</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">🌇 {current.sunset}</p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* 2. AGRICULTURE RULE ENGINE INSIGHTS CARD & AIR QUALITY CARD */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Agriculture Agronomy Insights */}
-            {agriculture && (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl glass-strong border border-slate-200/80 dark:border-white/10 p-6 shadow-card space-y-4 transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="grid place-items-center rounded-xl bg-emerald-500/20 p-2 text-emerald-500">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-                      Agronomy & Field Operations Insights
-                    </h3>
-                    <p className="text-xs text-slate-400">Deterministic rule-based agronomic recommendations</p>
-                  </div>
+          {/* 2. RULE-BASED AGRONOMY ADVICE */}
+          {agriculture && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-3xl glass-strong border border-emerald-500/30 p-6 space-y-4 shadow-card"
+            >
+              <div className="flex items-center gap-2 text-emerald-400 font-bold text-base border-b border-white/10 pb-3">
+                <Sparkles className="h-5 w-5 animate-pulse" />
+                <span>Agricultural Rule Engine Insights</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div className="rounded-2xl glass p-4 border border-white/10 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Disease Risk</span>
+                  <p className="font-bold text-emerald-400 text-sm">{agriculture.diseaseRisk}</p>
                 </div>
-
-                <div className="space-y-2.5 text-xs">
-                  <div className="flex items-start gap-2.5 rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-800 dark:text-slate-200">Disease Risk: </strong>
-                      <span className="text-slate-600 dark:text-slate-300">{agriculture.diseaseRisk}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-800 dark:text-slate-200">Chemical Spray Window: </strong>
-                      <span className="text-slate-600 dark:text-slate-300">{agriculture.sprayWindow}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-800 dark:text-slate-200">Irrigation Advice: </strong>
-                      <span className="text-slate-600 dark:text-slate-300">{agriculture.irrigationAdvice}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-800 dark:text-slate-200">Heat & Thermal Stress: </strong>
-                      <span className="text-slate-600 dark:text-slate-300">{agriculture.heatStress}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-800 dark:text-slate-200">Field Work Recommendation: </strong>
-                      <span className="text-slate-600 dark:text-slate-300">{agriculture.fieldWorkRecommendation}</span>
-                    </div>
-                  </div>
+                <div className="rounded-2xl glass p-4 border border-white/10 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Chemical Spray Window</span>
+                  <p className="font-bold text-amber-400 text-sm">{agriculture.sprayWindow}</p>
                 </div>
-              </motion.div>
-            )}
-
-            {/* Air Quality Index Card */}
-            {airQuality && (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl glass-strong border border-slate-200/80 dark:border-white/10 p-6 shadow-card space-y-4 transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="grid place-items-center rounded-xl bg-teal-500/20 p-2 text-teal-500">
-                        <Activity className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-                          Air Quality Telemetry
-                        </h3>
-                        <p className="text-xs text-slate-400">OpenWeather Air Pollution Sensor Data</p>
-                      </div>
-                    </div>
-
-                    <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                      AQI: {airQuality.aqi} ({airQuality.aqiStatus})
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-xs">
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">PM2.5</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.pm25 ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">PM10</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.pm10 ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">NO₂</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.no2 ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">SO₂</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.so2 ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">O₃</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.o3 ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5">
-                      <span className="text-[10px] font-semibold text-slate-400 block">CO</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.co ?? '--'} µg/m³</strong>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-500/5 p-3 border border-slate-200/40 dark:border-white/5 col-span-2">
-                      <span className="text-[10px] font-semibold text-slate-400 block">NH₃ (Ammonia)</span>
-                      <strong className="text-sm text-slate-800 dark:text-white">{airQuality.nh3 ?? '--'} µg/m³</strong>
-                    </div>
-                  </div>
+                <div className="rounded-2xl glass p-4 border border-white/10 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">{t('weather.irrigation.tip')}</span>
+                  <p className="font-bold text-sky-400 text-sm">{agriculture.irrigationAdvice}</p>
                 </div>
+              </div>
+            </motion.div>
+          )}
 
-                <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-200/40 dark:border-white/5">
-                  Optimal air quality supports uninhibited crop stomatal respiration.
+          {/* 3. AIR QUALITY INDEX CARD */}
+          {airQuality && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-3xl glass p-6 border border-slate-200/80 dark:border-white/10 space-y-4 shadow-card"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-emerald-400" />
+                  <h3 className="font-bold font-display text-base text-slate-900 dark:text-white">Air Quality Telemetry</h3>
                 </div>
-              </motion.div>
-            )}
-          </div>
-
-          {/* 3. 24-HOUR HOURLY FORECAST (8 x 3-Hour slots) */}
-          {hourly.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display text-lg font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-emerald-500" /> 24-Hour Micro-Climate Hourly Forecast (Every 3 Hours)
-                </h2>
-                <span className="text-xs font-semibold text-slate-400">Next 24 Hours</span>
+                <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30">
+                  AQI {airQuality.aqi} • {airQuality.aqiStatus}
+                </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
-                {hourly.map((h, i) => (
-                  <div key={i} className="rounded-2xl glass-strong p-3 border border-slate-200/60 dark:border-white/10 text-center space-y-1.5 transition-all hover:border-emerald-500">
-                    <p className="text-[10px] font-extrabold text-slate-400">{h.time}</p>
-                    <p className="text-base font-extrabold text-slate-900 dark:text-white">{h.temperature ?? '--'}°C</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Feels {h.feelsLike ?? '--'}°</p>
-                    <div className="pt-1 border-t border-slate-200/40 dark:border-white/5 text-[9px] font-semibold text-slate-400 flex flex-col gap-0.5">
-                      <span className="text-sky-400">☔ {h.rainChance}%</span>
-                      <span>💨 {h.windSpeed ?? '--'}k</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs">
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">PM 2.5</span>
+                  <span className="font-bold text-slate-200">{airQuality.pm25} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">PM 10</span>
+                  <span className="font-bold text-slate-200">{airQuality.pm10} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">CO</span>
+                  <span className="font-bold text-slate-200">{airQuality.co} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">NO₂</span>
+                  <span className="font-bold text-slate-200">{airQuality.no2} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">SO₂</span>
+                  <span className="font-bold text-slate-200">{airQuality.so2} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">O₃</span>
+                  <span className="font-bold text-slate-200">{airQuality.o3} µg/m³</span>
+                </div>
+                <div className="rounded-xl glass p-2.5 border border-white/5">
+                  <span className="text-[10px] text-slate-400 uppercase block">NH₃</span>
+                  <span className="font-bold text-slate-200">{airQuality.nh3 || 'N/A'}</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* 4. HOURLY FORECAST (24 HOURS / 8 SLOTS) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl glass p-6 border border-slate-200/80 dark:border-white/10 space-y-4 shadow-card"
+          >
+            <div className="flex items-center gap-2 text-base font-bold font-display text-slate-900 dark:text-white border-b border-white/10 pb-3">
+              <Clock className="h-5 w-5 text-emerald-400" />
+              <span>{t('weather.hourly')}</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {hourly.map((h, i) => (
+                <div key={i} className="flex flex-col items-center justify-between rounded-2xl glass p-3 border border-white/10 text-center space-y-2 hover:border-emerald-500 transition-colors">
+                  <span className="text-xs font-semibold text-slate-400">{h.time}</span>
+                  <span className="text-lg font-bold font-display text-slate-900 dark:text-white">{h.temperature}°C</span>
+                  <div className="flex items-center gap-1 text-[11px] font-semibold text-sky-400">
+                    <CloudRain className="h-3 w-3" />
+                    <span>{h.rainChance}%</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400">{h.windSpeed} km/h</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 5. 7-DAY DAILY FORECAST & LIVE LEAFLET MAP */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 7-Day Forecast */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:col-span-2 rounded-3xl glass p-6 border border-slate-200/80 dark:border-white/10 space-y-4 shadow-card"
+            >
+              <div className="flex items-center gap-2 text-base font-bold font-display text-slate-900 dark:text-white border-b border-white/10 pb-3">
+                <Calendar className="h-5 w-5 text-emerald-400" />
+                <span>{t('weather.weekly')}</span>
+              </div>
+
+              <div className="space-y-2.5">
+                {daily.map((d, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-2xl glass px-4 py-3 border border-white/5 hover:border-emerald-500/50 transition-all text-xs">
+                    <div className="flex items-center gap-3 w-28 shrink-0">
+                      <WeatherIconRenderer icon={d.icon} className="h-5 w-5" />
+                      <span className="font-bold text-slate-900 dark:text-white">{d.dayName}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-slate-400 font-medium w-24">
+                      <span className="capitalize">{d.condition}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 font-display text-sm font-bold w-24 justify-center">
+                      <span className="text-slate-900 dark:text-white">{d.maximumTemperature}°</span>
+                      <span className="text-slate-400 font-normal">{d.minimumTemperature}°</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-sky-400 font-semibold w-16 justify-end">
+                      <CloudRain className="h-3.5 w-3.5" />
+                      <span>{d.rainChance}%</span>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            </motion.div>
 
-          {/* 4. 7-DAY DAILY FORECAST SECTION */}
-          {daily.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display text-lg font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-emerald-500" /> 7-Day Micro-Climate Projection
-                </h2>
-                <span className="text-xs font-semibold text-slate-400">7 Days Outlook</span>
+            {/* Live Leaflet Station Map */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-3xl glass p-6 border border-slate-200/80 dark:border-white/10 space-y-4 shadow-card flex flex-col"
+            >
+              <div className="flex items-center gap-2 text-base font-bold font-display text-slate-900 dark:text-white border-b border-white/10 pb-3">
+                <MapPin className="h-5 w-5 text-emerald-400" />
+                <span>Active Farm Location</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-3">
-                {daily.map((day, idx) => (
-                  <motion.div
-                    key={day.date || idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="rounded-3xl glass-strong p-4 border border-slate-200/70 dark:border-white/10 text-center space-y-3 transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                  >
-                    <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                      {day.dayName}
-                    </p>
-
-                    <div className="grid place-items-center py-1">
-                      <WeatherIconRenderer icon={day.icon} className="h-8 w-8" />
-                    </div>
-
-                    <div>
-                      <p className="text-lg font-extrabold font-display text-slate-900 dark:text-white">
-                        {day.maximumTemperature ?? '--'}°C
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-400">
-                        Low: {day.minimumTemperature ?? '--'}°C
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-200/50 dark:border-white/5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span>☔ Rain:</span>
-                        <strong className="text-sky-400">{day.rainChance}%</strong>
+              <div className="relative flex-1 min-h-[260px] rounded-2xl overflow-hidden border border-white/10 shadow-inner">
+                <MapContainer
+                  center={[location.latitude, location.longitude]}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                  className="h-full w-full rounded-2xl z-0"
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  />
+                  <Marker position={[location.latitude, location.longitude]} icon={customMarkerIcon}>
+                    <Popup>
+                      <div className="text-xs font-sans">
+                        <strong className="font-bold text-emerald-600 block">{location.farmName}</strong>
+                        <span>{location.weatherLocationName}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span>💨 Wind:</span>
-                        <span>{day.wind ?? '--'} km/h</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>💧 Humid:</span>
-                        <span>{day.humidity ?? '--'}%</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </Popup>
+                  </Marker>
+                </MapContainer>
               </div>
-            </div>
-          )}
-
-          {/* 5. INTERACTIVE LEAFLET FARM MAP */}
-          <div className="rounded-3xl glass-strong border border-slate-200/80 dark:border-white/10 p-6 shadow-card space-y-4 transition-all duration-300 hover:border-emerald-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-emerald-500" /> Farm Weather Location Map
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Latitude: <strong>{location.latitude}</strong> • Longitude: <strong>{location.longitude}</strong> ({location.weatherLocationName})
-                </p>
-              </div>
-            </div>
-
-            <div className="h-72 w-full rounded-2xl overflow-hidden border border-slate-200/60 dark:border-white/10 z-10 relative">
-              <MapContainer
-                center={[location.latitude, location.longitude]}
-                zoom={13}
-                scrollWheelZoom={false}
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[location.latitude, location.longitude]} icon={customMarkerIcon}>
-                  <Popup>
-                    <div className="p-1 space-y-1 text-xs">
-                      <strong className="font-bold text-emerald-600 block">{location.farmName}</strong>
-                      <p className="text-slate-600">{location.weatherLocationName}</p>
-                      <hr className="my-1" />
-                      <p><strong>Temp:</strong> {current.temperature}°C (Feels {current.feelsLike}°C)</p>
-                      <p><strong>Humidity:</strong> {current.humidity}%</p>
-                      <p><strong>Wind:</strong> {current.windSpeed} km/h</p>
-                    </div>
-                  </Popup>
-                </Marker>
-              </MapContainer>
-            </div>
+            </motion.div>
           </div>
         </>
       ) : null}

@@ -47,8 +47,8 @@ export function Schemes() {
               <BadgeCheck className="h-9 w-9 text-brand-400" />
             </div>
             <div>
-              <p className="font-display text-3xl sm:text-4xl font-black text-white">{schemes.length} Active Schemes</p>
-              <p className="text-xs sm:text-sm font-bold text-slate-200">{t('schemes.eligible')} Matched for Your Farm Profile & Location</p>
+              <p className="font-display text-3xl sm:text-4xl font-black text-white">{schemes.length} {t('schemes.bannerSuffix')}</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-200">{t('schemes.eligible')} {t('schemes.bannerMatched')}</p>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ export function Schemes() {
                   )}
                 >
                   {isApplied ? (
-                    <><CheckCircle2 className="h-4 w-4" /> Application Submitted</>
+                    <><CheckCircle2 className="h-4 w-4" /> {t('common.appSubmitted')}</>
                   ) : (
                     <>{t('schemes.apply')} <ArrowRight className="h-4 w-4" /></>
                   )}
@@ -168,7 +168,7 @@ export function Schemes() {
                     }}
                     className="btn-primary w-full shadow-glow"
                   >
-                    <CheckCircle2 className="h-4 w-4" /> Submit Government Scheme Claim
+                    <CheckCircle2 className="h-4 w-4" /> {t('schemes.submitted')}
                   </button>
                 </div>
               </Card>

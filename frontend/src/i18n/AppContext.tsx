@@ -98,7 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE.lang, JSON.stringify(lang));
+    // Keep html lang attribute in sync
     document.documentElement.lang = lang;
   }, [lang]);
 
@@ -121,7 +121,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE.farm, JSON.stringify(farm));
   }, [farm]);
 
-  const setLang = useCallback((l: Lang) => setLangState(l), []);
+  const setLang = useCallback((l: Lang) => {
+    // Write synchronously to localStorage BEFORE state update so
+    // getStoredLang() reads the correct value immediately on the next fetch.
+    localStorage.setItem(STORAGE.lang, JSON.stringify(l));
+    setLangState(l);
+  }, []);
   const toggleTheme = useCallback(
     () => setThemeState((p) => (p === 'light' ? 'dark' : 'light')),
     []

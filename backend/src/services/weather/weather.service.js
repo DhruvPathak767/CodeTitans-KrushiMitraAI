@@ -50,7 +50,7 @@ class WeatherService {
   /**
    * Single WeatherAPI request call with strict coordinate verification and logging
    */
-  async fetchWeatherApiData(farm, lat, lng) {
+  async fetchWeatherApiData(farm, lat, lng, lang = 'en') {
     const apiKey = process.env.WEATHERAPI_KEY || process.env.WEATHER_API_KEY;
     const baseUrl = process.env.WEATHERAPI_BASE_URL || 'https://api.weatherapi.com/v1';
 
@@ -88,7 +88,7 @@ class WeatherService {
       const hourly = formatHourlyForecastList(hoursList);
       const daily = formatDailyForecastList(forecastDays);
       const airQuality = formatAirQualityObject(raw.current?.air_quality);
-      const agriculture = evaluateAgricultureRules(current || {});
+      const agriculture = evaluateAgricultureRules(current || {}, lang);
       const alerts = formatAlertsList(raw.alerts, current || {});
 
       if (!current) {
@@ -107,19 +107,7 @@ class WeatherService {
       };
 
       // STEP 7: PRINT SEPARATED USER FARM LOCATION VS WEATHER API STATION LOCATION LOGS
-      const addr = farm.address || {};
-      console.log('\n====================================');
-      console.log('USER FARM LOCATION (DB):');
-      console.log(`village:   ${addr.village || 'N/A'}`);
-      console.log(`district:  ${addr.district || 'N/A'}`);
-      console.log(`state:     ${addr.state || 'N/A'}`);
-      console.log(`country:   ${addr.country || 'India'}`);
-      console.log(`display:   ${location.weatherLocationName}`);
-      console.log('\nWEATHER API STATION LOCATION (IGNORED FOR DISPLAY):');
-      console.log(`name:      ${raw.location?.name}`);
-      console.log(`region:    ${raw.location?.region}`);
-      console.log(`country:   ${raw.location?.country}`);
-      console.log('====================================\n');
+      logger.debug(`Weather location mapped: farmLocation=${location.weatherLocationName}, stationLocation=${raw.location?.name}`);
 
       return {
         rawResponse: raw,
@@ -170,12 +158,12 @@ class WeatherService {
   /**
    * Get Live WeatherAPI Data for Active Farm (Cache completely disabled)
    */
-  async getWeatherForActiveFarm(user) {
+  async getWeatherForActiveFarm(user, lang = 'en') {
     const startTime = Date.now();
     const { farm, lat, lng } = await this.resolveActiveFarm(user);
 
     logger.info(`Fetching live WeatherAPI data for user [${user?._id || 'guest'}] farmId [${farm._id}] at lat:${lat}, lng:${lng}`);
-    const payload = await this.fetchWeatherApiData(farm, lat, lng);
+    const payload = await this.fetchWeatherApiData(farm, lat, lng, lang);
 
     if (user?._id) {
       await this.saveWeatherNotifications(user._id, farm._id, farm.farmName, payload.formattedResponse.alerts);

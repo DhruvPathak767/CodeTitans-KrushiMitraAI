@@ -33,7 +33,6 @@ export function FarmRegistration() {
     pagination,
     filters,
     setFilters,
-    fetchFarms,
     createFarm,
     updateFarm,
     deleteFarm,
@@ -205,10 +204,10 @@ export function FarmRegistration() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-extrabold tracking-tight gradient-text">
-            Farm Management System
+            {t('farm.title')}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
-            Manage your registered farms, geographic locations, soil analytics, and active AI monitoring context.
+            {t('farm.subtitle')}
           </p>
         </div>
         <motion.button
@@ -217,7 +216,7 @@ export function FarmRegistration() {
           onClick={handleOpenAddModal}
           className="btn-primary shadow-glow flex items-center gap-2 text-xs py-2.5 px-4 rounded-2xl shrink-0 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-bold"
         >
-          <Plus className="h-4 w-4" /> Add New Farm
+          <Plus className="h-4 w-4" /> {t('farm.complete')}
         </motion.button>
       </div>
 
@@ -251,7 +250,7 @@ export function FarmRegistration() {
 
           <div className="flex items-center gap-3 w-full sm:w-auto z-10">
             <div className="text-right hidden md:block">
-              <p className="text-[10px] text-slate-400 font-semibold uppercase">Area & Irrigation</p>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase">{t('farm.area')} & {t('farm.irrigation')}</p>
               <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 {activeFarm.area} {activeFarm.areaUnit || 'ACRE'} • {activeFarm.irrigationType || 'Drip'}
               </p>
@@ -275,7 +274,7 @@ export function FarmRegistration() {
             type="text"
             value={filters.search || ''}
             onChange={handleSearchChange}
-            placeholder="Search farm, crop, village, district..."
+            placeholder={t('common.search')}
             className="input pl-10 text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10"
           />
         </div>
@@ -287,7 +286,7 @@ export function FarmRegistration() {
             type="text"
             value={filters.crop || ''}
             onChange={(e) => setFilters((p) => ({ ...p, crop: e.target.value, page: 1 }))}
-            placeholder="Filter by Crop (e.g. Wheat)"
+            placeholder={`${t('farm.crop')} filter...`}
             className="input pl-10 text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10"
           />
         </div>
@@ -328,12 +327,6 @@ export function FarmRegistration() {
             <option value="farmName" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
               Sort: Farm Name (A-Z)
             </option>
-            <option value="cropName" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-              Sort: Crop Name
-            </option>
-            <option value="area" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-              Sort: Area (Highest)
-            </option>
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
         </div>
@@ -343,7 +336,7 @@ export function FarmRegistration() {
       {loading ? (
         <div className="flex flex-col items-center justify-center p-16 text-slate-400">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-500 mb-2" />
-          <p className="text-xs font-semibold">Loading farm records...</p>
+          <p className="text-xs font-semibold">{t('common.loading')}</p>
         </div>
       ) : farms.length === 0 ? (
         /* Empty State */
@@ -354,14 +347,14 @@ export function FarmRegistration() {
           <h3 className="font-display text-lg font-bold">No Farm Records Found</h3>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
             {filters.search || filters.crop || filters.status
-              ? 'No farms match your search filters. Try resetting search criteria.'
-              : 'Register your first farm to get AI crop advisories, soil analytics, and live mandi market prices.'}
+              ? 'No farms match your search criteria.'
+              : 'Register your first farm to unlock AI crop advisories, soil analytics, and live market prices.'}
           </p>
           <button
             onClick={handleOpenAddModal}
             className="btn-primary mt-6 shadow-glow text-xs py-2.5 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-bold"
           >
-            + Register First Farm
+            + {t('farm.title')}
           </button>
         </div>
       ) : (
@@ -422,19 +415,19 @@ export function FarmRegistration() {
                   {/* Attributes Grid */}
                   <div className="grid grid-cols-2 gap-2 text-xs bg-slate-500/5 rounded-2xl p-3 border border-white/5 mb-4">
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 block">Area</span>
+                      <span className="text-[10px] font-semibold text-slate-400 block">{t('farm.area')}</span>
                       <span className="font-bold text-slate-800 dark:text-slate-200">
                         {farm.area} {farm.areaUnit || 'ACRE'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 block">Soil Type</span>
+                      <span className="text-[10px] font-semibold text-slate-400 block">{t('farm.soil')}</span>
                       <span className="font-bold text-slate-800 dark:text-slate-200 truncate block">
                         {farm.soilType || 'Black Soil'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 block">Irrigation</span>
+                      <span className="text-[10px] font-semibold text-slate-400 block">{t('farm.irrigation')}</span>
                       <span className="font-bold text-slate-800 dark:text-slate-200 truncate block">
                         {farm.irrigationType || 'Drip'}
                       </span>
@@ -505,7 +498,7 @@ export function FarmRegistration() {
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-white/10 text-xs">
           <span className="text-slate-500 dark:text-slate-400 font-medium">
-            Showing Page <strong className="text-slate-800 dark:text-white">{pagination.page}</strong> of{' '}
+            Page <strong className="text-slate-800 dark:text-white">{pagination.page}</strong> of{' '}
             <strong className="text-slate-800 dark:text-white">{pagination.totalPages}</strong> ({pagination.total} total farms)
           </span>
 
@@ -545,10 +538,10 @@ export function FarmRegistration() {
                   </div>
                   <div>
                     <h2 className="font-display text-lg font-bold">
-                      {editingFarm ? 'Edit Farm Record' : 'Register New Farm'}
+                      {editingFarm ? 'Edit Farm Record' : t('farm.title')}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {editingFarm ? 'Update farm attributes & coordinates' : 'Pin your farm location on the map and fill in details'}
+                      {editingFarm ? 'Update farm attributes & coordinates' : t('farm.subtitle')}
                     </p>
                   </div>
                 </div>
@@ -574,7 +567,7 @@ export function FarmRegistration() {
                 {/* INTERACTIVE LEAFLET MAP LOCATION PICKER */}
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Farm Interactive Map Location (Drag marker or Search)
+                    {t('farm.location')} (Map Picker)
                   </label>
                   <LeafletMapPicker
                     initialLat={formState.latitude}
@@ -587,7 +580,7 @@ export function FarmRegistration() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Farm Name *
+                      {t('farm.name')} *
                     </label>
                     <input
                       type="text"
@@ -600,7 +593,7 @@ export function FarmRegistration() {
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Crop Name *
+                      {t('farm.crop')} *
                     </label>
                     <input
                       type="text"
@@ -617,7 +610,7 @@ export function FarmRegistration() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Farm Area *
+                      {t('farm.area')} *
                     </label>
                     <input
                       type="number"
@@ -655,7 +648,7 @@ export function FarmRegistration() {
                   {/* SOIL TYPE DROPDOWN */}
                   <div className="relative">
                     <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Soil Type
+                      {t('farm.soil')}
                     </label>
                     <div className="relative">
                       <select
@@ -704,7 +697,7 @@ export function FarmRegistration() {
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Irrigation Type
+                      {t('farm.irrigation')}
                     </label>
                     <input
                       type="text"
@@ -748,21 +741,21 @@ export function FarmRegistration() {
                       type="text"
                       value={formState.address.village}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, village: e.target.value } }))}
-                      placeholder="Village"
+                      placeholder={t('farm.village')}
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
                       type="text"
                       value={formState.address.district}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, district: e.target.value } }))}
-                      placeholder="District"
+                      placeholder={t('farm.district')}
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
                       type="text"
                       value={formState.address.state}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, state: e.target.value } }))}
-                      placeholder="State"
+                      placeholder={t('farm.state')}
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
@@ -785,14 +778,14 @@ export function FarmRegistration() {
                     }}
                     className="btn-ghost text-xs py-2.5 px-4 rounded-xl"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="btn-primary text-xs py-2.5 px-5 shadow-glow flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-bold"
                   >
-                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : editingFarm ? 'Update Farm' : 'Save Farm'}
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : editingFarm ? t('common.save') : t('farm.complete')}
                   </button>
                 </div>
               </form>
@@ -837,7 +830,7 @@ export function FarmRegistration() {
                   onClick={() => setViewingMapFarm(null)}
                   className="btn-primary text-xs py-1.5 px-4 rounded-xl"
                 >
-                  Close Map
+                  {t('common.close')}
                 </button>
               </div>
             </motion.div>
@@ -869,7 +862,7 @@ export function FarmRegistration() {
                   onClick={() => setDeletingFarmId(null)}
                   className="btn-ghost text-xs py-2 px-4 rounded-xl"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleConfirmDelete}

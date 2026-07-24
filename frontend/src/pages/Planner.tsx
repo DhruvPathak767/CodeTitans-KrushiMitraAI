@@ -61,13 +61,11 @@ export function Planner() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent p-6 sm:p-8 flex flex-col justify-between text-left">
           <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-400 border border-brand-500/30 w-fit backdrop-blur-md animate-float">
             <Sparkles className="h-3.5 w-3.5 text-brand-400 animate-spin-slow" />
-            <span>AI Automated Field Calendar & Tasks</span>
+            <span>{t('planner.aiScheduleLabel')}</span>
           </div>
           <div>
-            <h2 className="font-display text-xl sm:text-2xl font-black text-white">Dynamic Precision Crop Operations</h2>
-            <p className="text-xs text-slate-200 mt-1 max-w-lg leading-relaxed">
-              Synchronized with real-time soil moisture sensors, satellite weather patterns, and local crop growth stages for maximum yield optimization.
-            </p>
+            <h2 className="font-display text-xl sm:text-2xl font-black text-white">{t('planner.bannerTitle')}</h2>
+            <p className="text-xs text-slate-200 mt-1 max-w-lg leading-relaxed">{t('planner.bannerSubtitle')}</p>
           </div>
         </div>
       </motion.div>
@@ -130,15 +128,11 @@ export function Planner() {
             <Sparkles className="h-4 w-4" />
           </span>
           <h3 className="font-display text-base font-bold">
-            {lang === 'hi' ? 'AI मौसम-जागरूक योजना' : lang === 'gu' ? 'AI હવામાન-જાગૃત યોજના' : 'AI Weather-Aware Field Schedule'}
+            {t('planner.weatherAware')}
           </h3>
         </div>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          {lang === 'hi'
-            ? 'बुध-गुरु को भारी बारिश अपेक्षित — छिड़काव टाला गया। शुक्रवार को बारिश के बाद रोग जांच जोड़ी गई।'
-            : lang === 'gu'
-            ? 'બુધ-ગુરુને ભારે વરસાદ — છંટકાવ ટાળ્યો. શુક્રવારે વરસાદ પછી રોગ ચકાસણી ઉમેરી.'
-            : 'Heavy precipitation forecast for Wed-Thu — pesticide spraying deferred. Post-rain fungal scouting automatically appended for Friday morning.'}
+          {t('planner.weatherAwareHint')}
         </p>
       </Card>
     </div>

@@ -23,7 +23,7 @@ import { LanguageSwitcher, ThemeToggle } from '@/components/Controls';
 import { type ReverseGeocodeResult } from '@/services/geocoding';
 
 export function OnboardingFarm() {
-  const { user } = useApp();
+  const { user, t, lang } = useApp();
   const { createFarm } = useFarm();
   const navigate = useNavigate();
 
@@ -150,13 +150,13 @@ export function OnboardingFarm() {
             animate={{ scale: 1, opacity: 1 }}
             className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-2"
           >
-            <Sparkles className="h-3.5 w-3.5" /> First-Time Farmer Onboarding
+            <Sparkles className="h-3.5 w-3.5" /> {t('onboard.badge')}
           </motion.div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">
-            Let's Register Your First Farm
+            {t('onboard.title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1.5 max-w-md mx-auto">
-            We need your farm details to generate personalized AI crop advisories, soil analytics, and live mandi market prices.
+            {t('onboard.subtitle')}
           </p>
         </div>
 
@@ -200,7 +200,7 @@ export function OnboardingFarm() {
                 {currentStep > 1 ? <Check className="h-5 w-5 stroke-[3]" /> : '1'}
               </motion.div>
               <span className={`text-[11px] font-semibold transition-colors duration-300 ${currentStep >= 1 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500'}`}>
-                Farm Details
+                {t('onboard.step1')}
               </span>
             </div>
 
@@ -229,7 +229,7 @@ export function OnboardingFarm() {
                 {currentStep > 2 ? <Check className="h-5 w-5 stroke-[3]" /> : '2'}
               </motion.div>
               <span className={`text-[11px] font-semibold transition-colors duration-300 ${currentStep >= 2 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500'}`}>
-                Location & Map
+                {t('onboard.step2')}
               </span>
             </div>
 
@@ -258,7 +258,7 @@ export function OnboardingFarm() {
                 3
               </motion.div>
               <span className={`text-[11px] font-semibold transition-colors duration-300 ${currentStep === 3 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-500'}`}>
-                Complete
+                {t('onboard.step3')}
               </span>
             </div>
           </div>

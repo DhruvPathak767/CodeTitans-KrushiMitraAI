@@ -1,8 +1,10 @@
+import { getTranslation } from './i18n.util.js';
+
 /**
  * Agriculture Rule Engine (Non-AI agronomy rules)
- * Evaluates weather metrics against agronomic threshold rules.
+ * Evaluates weather metrics against agronomic threshold rules supporting multi-language.
  */
-export function evaluateAgricultureRules(weather = {}) {
+export function evaluateAgricultureRules(weather = {}, lang = 'en') {
   const temp = weather.temperature ?? 30;
   const humidity = weather.humidity ?? 65;
   const windSpeed = weather.windSpeed ?? 12;
@@ -11,55 +13,47 @@ export function evaluateAgricultureRules(weather = {}) {
   const uv = weather.uvIndex ?? 6;
 
   // 1. Disease Risk
-  let diseaseRisk = 'Low Disease Risk';
+  let diseaseRisk = getTranslation('lowDiseaseRisk', lang);
   if (humidity > 80 && temp >= 20 && temp <= 32) {
-    diseaseRisk = 'High Disease Risk (High humidity & fungal spore favorability)';
+    diseaseRisk = getTranslation('highDiseaseRisk', lang);
   } else if (humidity > 70) {
-    diseaseRisk = 'Moderate Disease Risk (Monitor leaf moisture)';
+    diseaseRisk = getTranslation('mediumDiseaseRisk', lang);
   }
 
   // 2. Heat Stress
-  let heatStress = 'Optimal Thermal Range';
+  let heatStress = getTranslation('optimalThermal', lang);
   if (temp > 38) {
-    heatStress = 'Extreme Heat Stress (High transpiration loss risk)';
+    heatStress = getTranslation('highHeatStress', lang);
   } else if (temp > 34) {
-    heatStress = 'Moderate Heat Stress (Ensure adequate soil moisture)';
-  } else if (temp < 12) {
-    heatStress = 'Cold Stress (Slow crop metabolic growth)';
+    heatStress = getTranslation('mediumHeatStress', lang);
   }
 
   // 3. Chemical Spray Window
-  let sprayWindow = 'Favorable Spray Window';
+  let sprayWindow = getTranslation('favorableSpray', lang);
   if (windSpeed > 25) {
-    sprayWindow = `Avoid Spraying (High wind drift at ${windSpeed} km/h)`;
+    sprayWindow = getTranslation('avoidSprayingWind', lang);
   } else if (rainProb > 50 || rainVol > 0) {
-    sprayWindow = 'Avoid Spraying (Chemical wash-off risk from expected rain)';
-  } else if (temp > 35) {
-    sprayWindow = 'Spray Only Early Morning (High chemical evaporation)';
+    sprayWindow = getTranslation('avoidSprayingRain', lang);
   }
 
   // 4. Irrigation Advice
-  let irrigationAdvice = 'Normal Irrigation Schedule';
+  let irrigationAdvice = getTranslation('normalIrrigation', lang);
   if (rainProb > 50 || rainVol > 0.5) {
-    irrigationAdvice = 'Delay Irrigation (Natural precipitation expected)';
+    irrigationAdvice = getTranslation('delayIrrigation', lang);
   } else if (humidity < 35 || temp > 35) {
-    irrigationAdvice = 'Increase Irrigation Frequency (High evapotranspiration rate)';
+    irrigationAdvice = getTranslation('eveningIrrigation', lang);
   }
 
   // 5. Crop Comfort Index
-  let cropComfort = 'Optimal';
+  let cropComfort = getTranslation('optimalComfort', lang);
   if (temp > 36 || humidity > 85) {
-    cropComfort = 'Challenging';
-  } else if (temp < 15) {
-    cropComfort = 'Dormant';
+    cropComfort = getTranslation('challengingComfort', lang);
   }
 
   // 6. Field Work Recommendation
-  let fieldWorkRecommendation = 'Favorable for Field Operations';
-  if (uv > 8) {
-    fieldWorkRecommendation = 'Avoid Midday Field Work (High UV index > 8)';
-  } else if (rainProb > 70) {
-    fieldWorkRecommendation = 'Prepare Drainage & Cover Stored Grain';
+  let fieldWorkRecommendation = getTranslation('favorableFieldwork', lang);
+  if (rainProb > 70) {
+    fieldWorkRecommendation = getTranslation('prepareDrainage', lang);
   }
 
   return {
