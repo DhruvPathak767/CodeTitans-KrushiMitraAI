@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(LANGUAGES),
       default: LANGUAGES.ENGLISH,
     },
+    language: {
+      type: String,
+      enum: ['en', 'hi', 'gu'],
+      default: 'en',
+    },
     profileImage: {
       type: String,
       trim: true,

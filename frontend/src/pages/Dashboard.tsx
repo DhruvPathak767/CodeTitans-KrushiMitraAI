@@ -6,15 +6,14 @@ import {
 import {
   Droplets, Thermometer, MapPin, CloudRain, Sun,
   Cpu, RotateCw, Sparkles, AlertTriangle, CheckCircle2,
+  ScanLine, MessageSquare, Bell, Store, CalendarDays,
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { useFarm } from '@/context/FarmContext';
 import { useWeather } from '@/context/WeatherContext';
 import { useAdvisory } from '@/context/AdvisoryContext';
 import { Card, StatCard, Badge, ProgressBar, SectionHeader } from '@/components/ui';
-import {
-  yieldTrend, monthlyIncome,
-} from '@/data/mock';
+import { yieldTrend, monthlyIncome } from '@/data/mock';
 import { useNavigate } from 'react-router-dom';
 
 export function Dashboard() {
@@ -28,8 +27,17 @@ export function Dashboard() {
   const location = weatherData?.location;
   const advisory = advisoryData?.advisory;
 
+  const quickActions = [
+    { title: 'Disease Scan', icon: ScanLine, path: '/app/disease', color: 'from-red-500 to-rose-600' },
+    { title: 'AI Assistant', icon: MessageSquare, path: '/app/chatbot', color: 'from-brand-500 to-emerald-600' },
+    { title: 'Weather', icon: Sun, path: '/app/weather', color: 'from-amber-500 to-orange-600' },
+    { title: 'Market', icon: Store, path: '/app/market', color: 'from-sky-500 to-blue-600' },
+    { title: 'Planner', icon: CalendarDays, path: '/app/planner', color: 'from-purple-500 to-indigo-600' },
+    { title: 'Alerts', icon: Bell, path: '/app/notifications', color: 'from-pink-500 to-rose-500' },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       {/* AI Command Center Greeting Banner */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -75,6 +83,27 @@ export function Dashboard() {
           </div>
         </div>
       </motion.div>
+
+      {/* Quick Launchpad Buttons */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {quickActions.map((act) => {
+          const Icon = act.icon;
+          return (
+            <motion.button
+              key={act.title}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate(act.path)}
+              className="flex items-center gap-3 p-3.5 rounded-2xl glass border border-slate-200/50 dark:border-white/10 hover:border-brand-500/40 shadow-sm transition-all text-left"
+            >
+              <div className={`p-2.5 rounded-xl bg-gradient-to-br ${act.color} text-white shadow-glow shrink-0`}>
+                <Icon className="h-4 w-4" />
+              </div>
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">{act.title}</span>
+            </motion.button>
+          );
+        })}
+      </div>
 
       {/* Top 4 Telemetry Stat Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

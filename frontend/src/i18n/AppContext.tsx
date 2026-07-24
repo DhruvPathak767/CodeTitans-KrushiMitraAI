@@ -126,6 +126,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // getStoredLang() reads the correct value immediately on the next fetch.
     localStorage.setItem(STORAGE.lang, JSON.stringify(l));
     setLangState(l);
+
+    // Sync user language preference with backend database asynchronously
+    import('@/api/user').then(({ updateUserLanguageApi }) => {
+      updateUserLanguageApi(l).catch((err) => console.warn('Failed to sync lang with backend:', err));
+    });
   }, []);
   const toggleTheme = useCallback(
     () => setThemeState((p) => (p === 'light' ? 'dark' : 'light')),

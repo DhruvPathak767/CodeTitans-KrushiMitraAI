@@ -1,71 +1,75 @@
 import mongoose from 'mongoose';
 
-/**
- * Notification Types Enum
- */
-export const NOTIFICATION_TYPES = {
-  WEATHER: 'WEATHER',
-  RAIN: 'RAIN',
-  DISEASE: 'DISEASE',
-  HARVEST: 'HARVEST',
-  MARKET: 'MARKET',
-  GENERAL: 'GENERAL',
-};
-
-/**
- * Notification Priority Enum
- */
-export const NOTIFICATION_PRIORITY = {
-  HIGH: 'HIGH',
-  MEDIUM: 'MEDIUM',
-  LOW: 'LOW',
-};
-
 const notificationSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'User ID is required'],
+      required: true,
       index: true,
     },
     farmId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Farm',
+      default: null,
     },
     title: {
       type: String,
-      required: [true, 'Notification title is required'],
-      trim: true,
+      required: true,
     },
     message: {
       type: String,
-      required: [true, 'Notification message is required'],
-      trim: true,
+      required: true,
     },
     type: {
       type: String,
-      enum: Object.values(NOTIFICATION_TYPES),
-      default: NOTIFICATION_TYPES.GENERAL,
+      enum: ['rain', 'disease', 'heat', 'harvest', 'irrigation', 'spray', 'ai', 'scheme', 'market', 'system'],
+      default: 'ai',
     },
     priority: {
       type: String,
-      enum: Object.values(NOTIFICATION_PRIORITY),
-      default: NOTIFICATION_PRIORITY.LOW,
+      enum: ['critical', 'high', 'medium', 'low'],
+      default: 'medium',
     },
-    isRead: {
+    language: {
+      type: String,
+      enum: ['en', 'hi', 'gu'],
+      default: 'en',
+    },
+    read: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-// Indexes
-notificationSchema.index({ userId: 1, isRead: 1, createdAt: -1 });
+notificationSchema.index({ userId: 1, createdAt: -1 });
+notificationSchema.index({ userId: 1, read: 1 });
+
+export const NOTIFICATION_TYPES = {
+  RAIN: 'rain',
+  DISEASE: 'disease',
+  HEAT: 'heat',
+  HARVEST: 'harvest',
+  IRRIGATION: 'irrigation',
+  SPRAY: 'spray',
+  AI: 'ai',
+  SCHEME: 'scheme',
+  MARKET: 'market',
+  SYSTEM: 'system',
+};
+
+export const NOTIFICATION_PRIORITY = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+};
 
 const Notification = mongoose.model('Notification', notificationSchema);
+
 export default Notification;

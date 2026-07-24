@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, Bell, Search, LogOut, ChevronDown, Sparkles, CloudSun, MapPin } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { LanguageSwitcher, ThemeToggle } from '@/components/Controls';
+import { NotificationBell } from '@/components/NotificationBell';
 import { FutureBackground } from '@/components/FutureBackground';
 import { CursorSpotlight } from '@/components/CursorSpotlight';
 import { useApp } from '@/i18n/AppContext';
@@ -86,19 +87,7 @@ export function AppLayout() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <LanguageSwitcher />
-
-            {/* Notifications Button */}
-            <NavLink
-              to="/app/notifications"
-              className="relative rounded-2xl p-2.5 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
-            >
-              <Bell className="h-5 w-5 text-slate-700 dark:text-slate-200" />
-              {unread > 0 && (
-                <span className="absolute right-1.5 top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-glow">
-                  {unread}
-                </span>
-              )}
-            </NavLink>
+            <NotificationBell />
 
             {/* Profile Dropdown */}
             <div className="relative ml-1">

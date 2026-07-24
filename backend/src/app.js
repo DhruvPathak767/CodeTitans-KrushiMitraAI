@@ -10,6 +10,9 @@ import diseaseRoutes from './routes/disease.routes.js';
 import farmRoutes from './routes/farm.routes.js';
 import weatherRoutes from './routes/weather.routes.js';
 import advisoryRoutes from './routes/advisory.routes.js';
+import chatRoutes from './routes/chat.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
+import userRoutes from './routes/user.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -72,6 +75,18 @@ app.use('/api/weather', weatherRoutes);
 // Mount AI Crop Advisory Routes
 app.use('/advisory', advisoryRoutes);
 app.use('/api/advisory', advisoryRoutes);
+
+// Mount AI Chat Assistant Routes
+app.use('/chat', chatRoutes);
+app.use('/api/chat', chatRoutes);
+
+// Mount Notification Routes
+app.use('/notifications', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
+
+// Mount User Preference Routes
+app.use('/user', userRoutes);
+app.use('/api/user', userRoutes);
 
 // 404 Route Handler
 app.use(notFoundMiddleware);
