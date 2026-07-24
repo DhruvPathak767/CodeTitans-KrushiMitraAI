@@ -26,16 +26,21 @@ def is_plant_leaf_image(img_np: np.ndarray) -> Tuple[bool, float, dict]:
     mask_green = cv2.inRange(hsv, lower_green, upper_green)
 
     # 2. Yellowish / Chlorotic Halo Mask (Hue [10, 35])
-    lower_yellow = np.array([10, 40, 40])
-    upper_yellow = np.array([35, 255, 255])
+    lower_yellow = np.array([10, 30, 30])
+    upper_yellow = np.array([38, 255, 255])
     mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
-    # 3. Dark Necrotic Lesion Mask (Low Value/Brightness on leaf)
-    gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
-    _, mask_dark_spots = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY_INV)
+    # 3. Brownish / Necrotic Lesion Spectrum (Hue [0, 25])
+    lower_brown = np.array([0, 20, 20])
+    upper_brown = np.array([25, 255, 220])
+    mask_brown = cv2.inRange(hsv, lower_brown, upper_brown)
 
-    # Combined foliage mask
-    foliage_mask = cv2.bitwise_or(mask_green, mask_yellow)
+    # 4. Dark Necrotic Lesion Mask (Low Value/Brightness on leaf)
+    gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+    _, mask_dark_spots = cv2.threshold(gray, 115, 255, cv2.THRESH_BINARY_INV)
+
+    # Combined foliage mask including diseased brown leaf regions
+    foliage_mask = cv2.bitwise_or(cv2.bitwise_or(mask_green, mask_yellow), mask_brown)
 
     total_pixels = img_np.shape[0] * img_np.shape[1]
     foliage_pixels = np.sum(foliage_mask > 0)

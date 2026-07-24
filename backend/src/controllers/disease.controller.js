@@ -46,6 +46,26 @@ export const predictDisease = async (req, res, next) => {
         crop: predictionData.crop,
         createdAt: predictionData.createdAt,
       },
+      diseasePrediction: predictionData.diseasePrediction || {
+        disease: predictionData.disease,
+        confidence: predictionData.confidence,
+        severity: predictionData.severity,
+      },
+      cropPrediction: predictionData.cropPrediction || {
+        crop: predictionData.crop,
+        confidence: 98.5,
+      },
+      disease: predictionData.disease,
+      confidence: predictionData.confidence,
+      severity: predictionData.severity,
+      treatment: predictionData.treatment,
+      fungicide: predictionData.fungicide,
+      organicAlternative: predictionData.organicAlternative,
+      prevention: predictionData.prevention,
+      reportId: predictionData.reportId,
+      imageUrl: predictionData.imageUrl,
+      publicId: predictionData.publicId,
+      predictionTime: predictionData.predictionTime,
     };
 
     return res

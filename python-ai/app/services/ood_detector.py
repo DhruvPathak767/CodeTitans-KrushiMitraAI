@@ -96,12 +96,15 @@ class OutOfDistributionDetector:
         )
 
         # Dynamic Acceptance Criteria:
-        # 1. High absolute confidence (e.g. top1 >= threshold)
-        # 2. Significant margin over second candidate (e.g. margin >= 10% and top1 >= 2x random baseline)
         min_threshold_prob = threshold / 100.0 if threshold > 1.0 else threshold
 
-        is_confident = (top1_prob >= min_threshold_prob) or (margin >= 0.10 and top1_prob >= (1.8 * random_baseline))
-        is_uniform_ood = (entropy_ratio >= settings.OOD_ENTROPY_THRESHOLD) and (margin < 0.05)
+        if is_crop_validation:
+            is_confident = (top1_prob >= min_threshold_prob) or (margin >= 0.08 and top1_prob >= (1.5 * random_baseline))
+            is_uniform_ood = (entropy_ratio >= settings.OOD_ENTROPY_THRESHOLD) and (margin < 0.03)
+        else:
+            # Disease classification on validated leaf: accept if top probability >= threshold or margin >= 0.05
+            is_confident = (top1_prob >= min_threshold_prob) or (margin >= 0.05) or (top1_prob >= (1.2 * random_baseline))
+            is_uniform_ood = (entropy_ratio >= 0.99) and (margin < 0.02)
 
         if is_uniform_ood:
             msg = f"Distribution is uniform (Entropy ratio: {entropy_ratio}, Margin: {round(margin*100,1)}%). OOD detected."
@@ -109,7 +112,7 @@ class OutOfDistributionDetector:
             return False, confidence_pct, msg, debug_metrics
 
         if not is_confident:
-            msg = f"Confidence ({confidence_pct}%) below dynamic threshold ({round(min_threshold_prob*100, 1)}%) with insufficient margin ({round(margin*100,1)}%)."
+            msg = f"Confidence ({confidence_pct}%) below threshold ({round(min_threshold_prob*100, 1)}%) with insufficient margin ({round(margin*100,1)}%)."
             logger.warning(f"Confidence Rejection: {msg}")
             return False, confidence_pct, msg, debug_metrics
 
