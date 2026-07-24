@@ -43,3 +43,12 @@ Thumbs.db
 
 # Bolt.new / StackBlitz metadata
 .bolt/
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
