@@ -14,9 +14,9 @@ class Settings(BaseSettings):
     CROP_MODEL_PATH: str = os.path.join(os.path.dirname(__file__), "..", "weights", "crop_classifier.keras")
 
     # Configurable Thresholds & Calibration Parameters
-    CROP_CONFIDENCE_THRESHOLD: float = float(os.getenv("CROP_CONFIDENCE_THRESHOLD", "0.50"))        # 50% threshold for crop species
-    DISEASE_CONFIDENCE_THRESHOLD: float = float(os.getenv("DISEASE_CONFIDENCE_THRESHOLD", "0.30"))  # 30% threshold for disease classifier
-    OOD_ENTROPY_THRESHOLD: float = float(os.getenv("OOD_ENTROPY_THRESHOLD", "0.96"))                # 96% max entropy threshold
+    CROP_CONFIDENCE_THRESHOLD: float = float(os.getenv("CROP_CONFIDENCE_THRESHOLD", "0.40"))        # 40% threshold for crop species
+    DISEASE_CONFIDENCE_THRESHOLD: float = float(os.getenv("DISEASE_CONFIDENCE_THRESHOLD", "0.20"))  # 20% threshold for disease classifier
+    OOD_ENTROPY_THRESHOLD: float = float(os.getenv("OOD_ENTROPY_THRESHOLD", "0.98"))                # 98% max entropy threshold
     TEMPERATURE_SCALING: float = float(os.getenv("TEMPERATURE_SCALING", "1.2"))                     # T = 1.2 Softmax scaling
 
     class Config:

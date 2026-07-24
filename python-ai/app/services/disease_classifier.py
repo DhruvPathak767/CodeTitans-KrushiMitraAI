@@ -35,13 +35,12 @@ class CropSpecificDiseaseEngine:
         necrotic_density = feature_vector.get("necrotic_density", 0.0) if feature_vector else 0.0
 
         if "cotton" in crop_clean:
-            # Cotton Disease Model (4 Classes)
-            logits = np.array([
-                necrotic_density * 2.5 + r_mean * 1.2,           # Cotton Bacterial Blight
-                yellow_halo_ratio * 3.0 + g_mean * 0.8,          # Cotton Leaf Curl Virus
-                dark_spot_ratio * 3.2 + yellow_halo_ratio * 1.5,  # Cotton Target Spot
-                g_mean * 2.5                                      # Cotton Healthy Leaf
-            ])
+            score_blight = necrotic_density * 8.0 + r_mean * 2.0
+            score_curl = yellow_halo_ratio * 9.0 + g_mean * 1.0
+            score_target = dark_spot_ratio * 10.0 + yellow_halo_ratio * 4.0
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_blight, score_curl, score_target, score_healthy]) * 3.5
             classes = [
                 "Cotton Bacterial Blight (Xanthomonas malvacearum)",
                 "Cotton Leaf Curl Virus",
@@ -50,12 +49,11 @@ class CropSpecificDiseaseEngine:
             ]
 
         elif "potato" in crop_clean:
-            # Potato Disease Model (3 Classes)
-            logits = np.array([
-                dark_spot_ratio * 3.5 + yellow_halo_ratio * 1.8, # Potato Early Blight
-                necrotic_density * 3.0 + r_mean * 1.5,           # Potato Late Blight
-                g_mean * 2.4                                      # Potato Healthy Leaf
-            ])
+            score_early = dark_spot_ratio * 10.0 + yellow_halo_ratio * 5.0
+            score_late = necrotic_density * 9.0 + r_mean * 3.0
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_early, score_late, score_healthy]) * 3.5
             classes = [
                 "Potato Early Blight (Alternaria solani)",
                 "Potato Late Blight (Phytophthora infestans)",
@@ -63,16 +61,15 @@ class CropSpecificDiseaseEngine:
             ]
 
         elif "tomato" in crop_clean:
-            # Tomato Disease Model (7 Classes)
-            logits = np.array([
-                dark_spot_ratio * 3.2 + yellow_halo_ratio * 2.0, # Tomato Early Blight
-                necrotic_density * 3.0,                          # Tomato Late Blight
-                g_mean * 1.6 + yellow_halo_ratio * 1.2,          # Tomato Leaf Mold
-                dark_spot_ratio * 2.2,                           # Tomato Septoria Leaf Spot
-                r_mean * 1.5 + b_mean * 1.0,                     # Tomato Bacterial Spot
-                (r_mean + g_mean + b_mean) * 0.9,                # Tomato Mosaic Virus
-                g_mean * 2.5                                      # Tomato Healthy Leaf
-            ])
+            score_early = dark_spot_ratio * 9.0 + yellow_halo_ratio * 5.0
+            score_late = necrotic_density * 9.0
+            score_mold = yellow_halo_ratio * 8.0 + g_mean * 2.0
+            score_septoria = dark_spot_ratio * 10.0
+            score_bacterial = r_mean * 5.0 + b_mean * 2.0
+            score_mosaic = (r_mean + g_mean + b_mean) * 2.5
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_early, score_late, score_mold, score_septoria, score_bacterial, score_mosaic, score_healthy]) * 3.5
             classes = [
                 "Tomato Early Blight (Alternaria solani)",
                 "Tomato Late Blight (Phytophthora infestans)",
@@ -84,14 +81,13 @@ class CropSpecificDiseaseEngine:
             ]
 
         elif "wheat" in crop_clean:
-            # Wheat Disease Model (5 Classes)
-            logits = np.array([
-                yellow_halo_ratio * 3.2,                         # Wheat Yellow Stripe Rust
-                r_mean * 2.0 + b_mean * 1.0,                     # Wheat Brown Leaf Rust
-                (r_mean + g_mean + b_mean) * 1.2,                # Wheat Powdery Mildew
-                necrotic_density * 2.2,                          # Wheat Leaf Blight
-                g_mean * 2.2                                      # Wheat Healthy Leaf
-            ])
+            score_yellow = yellow_halo_ratio * 10.0
+            score_brown = r_mean * 6.0 + b_mean * 2.0
+            score_mildew = (r_mean + g_mean + b_mean) * 3.0
+            score_blight = necrotic_density * 8.0
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_yellow, score_brown, score_mildew, score_blight, score_healthy]) * 3.5
             classes = [
                 "Wheat Yellow Stripe Rust (Puccinia striiformis)",
                 "Wheat Brown Leaf Rust (Puccinia recondita)",
@@ -101,13 +97,12 @@ class CropSpecificDiseaseEngine:
             ]
 
         elif "rice" in crop_clean:
-            # Rice Disease Model (4 Classes)
-            logits = np.array([
-                necrotic_density * 2.8,                          # Rice Bacterial Leaf Blight
-                dark_spot_ratio * 2.5,                           # Rice Brown Spot
-                r_mean * 2.2 + yellow_halo_ratio * 1.5,          # Rice Blast
-                g_mean * 2.2                                      # Rice Healthy Leaf
-            ])
+            score_blight = necrotic_density * 9.0
+            score_brown_spot = dark_spot_ratio * 12.0 + yellow_halo_ratio * 4.0
+            score_blast = r_mean * 5.0 + yellow_halo_ratio * 5.0
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_blight, score_brown_spot, score_blast, score_healthy]) * 3.5
             classes = [
                 "Rice Bacterial Leaf Blight (Xanthomonas oryzae)",
                 "Rice Brown Spot (Helminthosporium)",
@@ -116,16 +111,15 @@ class CropSpecificDiseaseEngine:
             ]
 
         else:
-            # General Crop Disease Model (7 Classes)
-            logits = np.array([
-                necrotic_density * 2.2,                          # Leaf Blight
-                dark_spot_ratio * 3.0 + yellow_halo_ratio * 1.8, # Early Blight
-                necrotic_density * 2.5,                          # Late Blight
-                (r_mean + g_mean + b_mean) * 1.0,                # Powdery Mildew
-                dark_spot_ratio * 2.0,                           # Leaf Spot
-                r_mean * 1.5,                                    # Bacterial Spot
-                g_mean * 2.2                                      # Healthy Leaf
-            ])
+            score_blight = necrotic_density * 8.0
+            score_early = dark_spot_ratio * 9.0 + yellow_halo_ratio * 5.0
+            score_late = necrotic_density * 9.0
+            score_mildew = (r_mean + g_mean + b_mean) * 2.5
+            score_spot = dark_spot_ratio * 10.0
+            score_bacterial = r_mean * 4.5
+            score_healthy = max(0.1, g_mean * 4.0 - (dark_spot_ratio + necrotic_density) * 8.0)
+
+            logits = np.array([score_blight, score_early, score_late, score_mildew, score_spot, score_bacterial, score_healthy]) * 3.5
             classes = [
                 "Leaf Blight (Alternaria / Bipolaris)",
                 "Early Blight (Alternaria solani)",
