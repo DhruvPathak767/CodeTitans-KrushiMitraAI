@@ -4,11 +4,21 @@ import mongoose from 'mongoose';
  * Notification Types Enum
  */
 export const NOTIFICATION_TYPES = {
+  WEATHER: 'WEATHER',
   RAIN: 'RAIN',
   DISEASE: 'DISEASE',
   HARVEST: 'HARVEST',
   MARKET: 'MARKET',
   GENERAL: 'GENERAL',
+};
+
+/**
+ * Notification Priority Enum
+ */
+export const NOTIFICATION_PRIORITY = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
 };
 
 const notificationSchema = new mongoose.Schema(
@@ -17,6 +27,11 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required'],
+      index: true,
+    },
+    farmId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Farm',
     },
     title: {
       type: String,
@@ -33,6 +48,11 @@ const notificationSchema = new mongoose.Schema(
       enum: Object.values(NOTIFICATION_TYPES),
       default: NOTIFICATION_TYPES.GENERAL,
     },
+    priority: {
+      type: String,
+      enum: Object.values(NOTIFICATION_PRIORITY),
+      default: NOTIFICATION_PRIORITY.LOW,
+    },
     isRead: {
       type: Boolean,
       default: false,
@@ -45,7 +65,7 @@ const notificationSchema = new mongoose.Schema(
 );
 
 // Indexes
-notificationSchema.index({ userId: 1, isRead: 1 });
+notificationSchema.index({ userId: 1, isRead: 1, createdAt: -1 });
 
 const Notification = mongoose.model('Notification', notificationSchema);
 export default Notification;

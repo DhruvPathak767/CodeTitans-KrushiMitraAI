@@ -7,6 +7,8 @@ import logger from './config/logger.js';
 import authRoutes from './routes/auth.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import diseaseRoutes from './routes/disease.routes.js';
+import farmRoutes from './routes/farm.routes.js';
+import weatherRoutes from './routes/weather.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -46,7 +48,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Mount Authentication Routes (support both /auth and /api/auth)
+// Mount Authentication Routes
 app.use('/auth', authRoutes);
 app.use('/api/auth', authRoutes);
 
@@ -57,6 +59,14 @@ app.use('/api/v1/upload', uploadRoutes);
 // Mount Disease Detection Routes
 app.use('/api/disease', diseaseRoutes);
 app.use('/api/v1/disease', diseaseRoutes);
+
+// Mount Farm Management Routes
+app.use('/farms', farmRoutes);
+app.use('/api/farms', farmRoutes);
+
+// Mount Weather Routes
+app.use('/weather', weatherRoutes);
+app.use('/api/weather', weatherRoutes);
 
 // 404 Route Handler
 app.use(notFoundMiddleware);

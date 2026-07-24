@@ -1,5 +1,5 @@
 import { motion, type HTMLMotionProps } from 'framer-motion';
-import { type ReactNode, useState, useRef } from 'react';
+import { type ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...args: Parameters<typeof twMerge>) {
@@ -14,41 +14,14 @@ interface CardProps extends HTMLMotionProps<'div'> {
 }
 
 export function Card({ children, className, hover = true, tilt = false, ...rest }: CardProps) {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const cardRef = useRef<HTMLDivElement | null>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!tilt || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setRotateX(-y / 15);
-    setRotateY(x / 15);
-  };
-
-  const handleMouseLeave = () => {
-    if (!tilt) return;
-    setRotateX(0);
-    setRotateY(0);
-  };
-
   return (
     <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={tilt ? { rotateX, rotateY, transformStyle: 'preserve-3d' } : undefined}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={cn(
-        'card p-6 relative overflow-hidden transition-all duration-300 border border-white/50 dark:border-white/10 hover:border-brand-500/40 dark:hover:border-brand-400/40',
-        hover && 'hover:-translate-y-1 hover:shadow-glass-hover',
+        'card p-6 relative overflow-hidden transition-all duration-300 border border-slate-200/80 dark:border-white/10 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.35)]',
         className
       )}
       {...rest}
     >
-      {/* Subtle glass reflection sweep */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-500 hover:opacity-100 pointer-events-none" />
       {children}
     </motion.div>
   );
@@ -98,7 +71,7 @@ export function StatCard({ label, value, icon, trend, trendUp, accent = 'brand',
     rose: 'from-rose-500/25 to-rose-500/5 text-rose-600 dark:text-rose-400',
   };
   return (
-    <Card hover tilt initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4 }}>
+    <Card initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4 }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase">{label}</p>
@@ -229,7 +202,7 @@ export function AIResponsePanel({ confidence, reason, actions, priority, impact,
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-3xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-slate-900/5 to-sky-500/10 p-6 glass-strong shadow-card"
+      className="rounded-3xl border border-emerald-500/30 hover:border-emerald-500 bg-gradient-to-br from-emerald-500/10 via-slate-900/5 to-sky-500/10 p-6 glass-strong shadow-card transition-all duration-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.35)]"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
