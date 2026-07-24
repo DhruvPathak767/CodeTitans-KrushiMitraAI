@@ -17,9 +17,22 @@ import { FarmRegistration } from '@/pages/FarmRegistration';
 import { Planner } from '@/pages/Planner';
 import { Reports } from '@/pages/Reports';
 import { FloatingAssistant } from '@/components/FloatingAssistant';
+import { Loader2 } from 'lucide-react';
 
 function ProtectedRoutes() {
-  const { user } = useApp();
+  const { user, loadingUser } = useApp();
+
+  if (loadingUser) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+          <p className="text-xs font-semibold text-slate-400">Authenticating session...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/login" replace />;
   return (
     <>

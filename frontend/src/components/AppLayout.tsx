@@ -17,9 +17,9 @@ export function AppLayout() {
   const location = useLocation();
   const unread = notifData.filter((n) => !n.read).length;
 
-  function handleLogout() {
-    logout();
-    navigate('/');
+  async function handleLogout() {
+    await logout();
+    navigate('/login');
   }
 
   return (
@@ -111,7 +111,7 @@ export function AppLayout() {
                           <span>Active AI Session</span>
                         </div>
                         <p className="text-sm font-extrabold">{user?.name ?? 'Farmer'}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email ?? 'demo@krishimitra.ai'}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email ?? ''}</p>
                       </div>
                       <button
                         onClick={handleLogout}

@@ -7,6 +7,14 @@ import {
   type ReactNode,
 } from 'react';
 import { dictionaries, type Lang } from './dictionaries';
+import {
+  type UserProfile,
+  getProfileApi,
+  refreshTokenApi,
+  logoutApi,
+  getAccessToken,
+  clearTokens,
+} from '@/api/auth';
 
 type Theme = 'light' | 'dark';
 
@@ -18,11 +26,23 @@ interface AppContextValue {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (t: Theme) => void;
-  user: { name: string; email: string; role: string } | null;
-  login: (name: string, email: string, role: string) => void;
-  logout: () => void;
-  farm: { name: string; village: string; district: string; state: string; area: number; crop: string; soil: string; irrigation: string; registered: boolean } | null;
+  user: UserProfile | null;
+  setUser: (u: UserProfile | null) => void;
+  login: (userData: UserProfile) => void;
+  logout: () => Promise<void>;
+  farm: {
+    name: string;
+    village: string;
+    district: string;
+    state: string;
+    area: number;
+    crop: string;
+    soil: string;
+    irrigation: string;
+    registered: boolean;
+  } | null;
   registerFarm: (f: Omit<NonNullable<AppContextValue['farm']>, 'registered'>) => void;
+  loadingUser: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -41,8 +61,41 @@ function load<T>(key: string, fallback: T): T {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => load<Lang>(STORAGE.lang, 'en'));
   const [theme, setThemeState] = useState<Theme>(() => load<Theme>(STORAGE.theme, 'light'));
-  const [user, setUser] = useState<AppContextValue['user']>(() => load(STORAGE.user, null));
+  const [user, setUserState] = useState<UserProfile | null>(() => load(STORAGE.user, null));
   const [farm, setFarm] = useState<AppContextValue['farm']>(() => load(STORAGE.farm, null));
+  const [loadingUser, setLoadingUser] = useState<boolean>(true);
+
+  // Sync user with backend profile on initial mount
+  useEffect(() => {
+    async function initAuth() {
+      const token = getAccessToken();
+      if (!token) {
+        setLoadingUser(false);
+        return;
+      }
+      try {
+        const res = await getProfileApi();
+        if (res.data?.user) {
+          setUserState(res.data.user);
+        }
+      } catch (err: any) {
+        // Try refreshing token if expired
+        try {
+          await refreshTokenApi();
+          const res = await getProfileApi();
+          if (res.data?.user) {
+            setUserState(res.data.user);
+          }
+        } catch {
+          clearTokens();
+          setUserState(null);
+        }
+      } finally {
+        setLoadingUser(false);
+      }
+    }
+    initAuth();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE.lang, JSON.stringify(lang));
@@ -57,7 +110,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE.user, JSON.stringify(user));
+    if (user) {
+      localStorage.setItem(STORAGE.user, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(STORAGE.user);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -67,24 +124,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setLang = useCallback((l: Lang) => setLangState(l), []);
   const toggleTheme = useCallback(
     () => setThemeState((p) => (p === 'light' ? 'dark' : 'light')),
-    [],
+    []
   );
   const setTheme = useCallback((t: Theme) => setThemeState(t), []);
   const t = useCallback(
     (key: string) => dictionaries[lang][key] ?? dictionaries.en[key] ?? key,
-    [lang],
+    [lang]
   );
-  const login = useCallback((name: string, email: string, role: string) => {
-    setUser({ name, email, role });
+
+  const setUser = useCallback((u: UserProfile | null) => {
+    setUserState(u);
   }, []);
-  const logout = useCallback(() => {
-    setUser(null);
+
+  const login = useCallback((userData: UserProfile) => {
+    setUserState(userData);
   }, []);
+
+  const logout = useCallback(async () => {
+    await logoutApi();
+    setUserState(null);
+  }, []);
+
   const registerFarm = useCallback(
     (f: Omit<NonNullable<AppContextValue['farm']>, 'registered'>) => {
       setFarm({ ...f, registered: true });
     },
-    [],
+    []
   );
 
   return (
@@ -98,10 +163,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTheme,
         setTheme,
         user,
+        setUser,
         login,
         logout,
         farm,
         registerFarm,
+        loadingUser,
       }}
     >
       {children}
