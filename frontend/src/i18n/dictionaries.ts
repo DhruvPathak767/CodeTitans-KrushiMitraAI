@@ -74,6 +74,7 @@ const en: Dict = {
 
   'land.hero.title': 'Smarter Farming Starts Here',
   'land.hero.subtitle': 'AI-powered crop intelligence, disease detection, weather insights and market advisory — built for every Indian farmer, in every language.',
+  'land.hero.desc': 'AI-powered crop intelligence, disease detection, weather insights and market advisory — built for every Indian farmer, in every language.',
   'land.hero.cta': 'Start Free Demo',
   'land.hero.demo': 'Watch Demo',
   'land.hero.stat1': 'Farms Empowered',

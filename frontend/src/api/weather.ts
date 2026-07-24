@@ -147,3 +147,4 @@ export async function getForecastApi(lang?: string): Promise<ApiResponse<{ locat
 export async function getDebugWeatherApi(lang?: string): Promise<ApiResponse<any>> {
   return request<any>('/api/weather/debug', {}, lang);
 }
+
