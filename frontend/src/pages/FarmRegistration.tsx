@@ -54,25 +54,31 @@ export function FarmRegistration() {
         {!done ? (
           <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
             <Card hover tilt className="p-8 glass-strong border border-white/40 dark:border-white/10 shadow-card">
-              {/* Map Preview Component */}
-              <div className="relative mb-6 h-44 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500/20 via-sky-500/15 to-soil-500/20 border border-brand-500/30">
+              {/* Interactive Smart Farm Telemetry & Map Card */}
+              <div className="relative mb-6 h-48 overflow-hidden rounded-3xl border border-brand-500/30 shadow-card group">
+                <img
+                  src="/images/farm_registration_hero.png"
+                  alt="KrushiMitra Smart Farm Registration Telemetry"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
                 <div className="absolute inset-0 grid place-items-center">
                   <motion.div
                     animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute h-20 w-20 rounded-full border-2 border-brand-500"
+                    className="absolute h-20 w-20 rounded-full border-2 border-brand-500 shadow-glow"
                   />
-                  <div className="grid place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-3.5 text-white shadow-glow">
+                  <div className="grid place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-3.5 text-white shadow-glow animate-pulse">
                     <MapPin className="h-7 w-7" />
                   </div>
                 </div>
-                <div className="absolute bottom-3 left-3 rounded-2xl glass px-3.5 py-1.5 text-xs font-bold border border-white/20">
+                <div className="absolute bottom-3 left-3 rounded-2xl glass px-3.5 py-1.5 text-xs font-bold border border-white/20 text-white backdrop-blur-md">
                   <span className="flex items-center gap-1.5">
-                    <Navigation className="h-3.5 w-3.5 text-brand-500" />
+                    <Navigation className="h-3.5 w-3.5 text-brand-400 animate-spin-slow" />
                     22.5645°N, 72.9625°E GPS Acquired
                   </span>
                 </div>
-                <button className="absolute right-3 top-3 rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-bold text-white shadow-glow hover:scale-105 transition-transform">
+                <button className="absolute right-3 top-3 rounded-xl bg-brand-600/90 hover:bg-brand-600 px-3 py-1.5 text-xs font-bold text-white shadow-glow hover:scale-105 transition-transform backdrop-blur-md border border-brand-400/30">
                   {t('farm.gps')}
                 </button>
               </div>

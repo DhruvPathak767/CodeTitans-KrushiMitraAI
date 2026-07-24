@@ -269,6 +269,52 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Interactive Agricultural Feature Showcase Gallery */}
+      <section className="relative z-10 max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="badge variant-success mb-3 animate-float">Visual Smart Agriculture</span>
+          <h2 className="font-display text-3xl font-extrabold sm:text-4xl gradient-text">
+            Experience KrishiMitra's AI Platform in Action
+          </h2>
+          <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+            Real-time telemetry, automated drip irrigation, AI crop diagnosis, and intelligent mandi price forecasting.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: 'AI Farm Schedule Planner', img: '/images/smart_farm_planner.png', tag: 'Smart Calendar' },
+            { title: 'Agronomic Field Advisory', img: '/images/crop_advisory_field.png', tag: 'Crop Health' },
+            { title: 'Precision Drip Sensors', img: '/images/smart_irrigation_sensor.png', tag: 'IoT Irrigation' },
+            { title: 'APMC Market Mandi Intelligence', img: '/images/market_fresh_produce.png', tag: 'Mandi Prices' },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              className="group relative overflow-hidden rounded-3xl border border-brand-500/30 shadow-card h-64 cursor-pointer"
+              onClick={() => navigate(user ? '/app/dashboard' : '/login')}
+            >
+              <img
+                src={item.img}
+                alt={item.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent p-5 flex flex-col justify-end text-left">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand-400 glass px-2.5 py-0.5 rounded-full w-fit mb-1 border border-brand-500/30 backdrop-blur-md">
+                  <Sparkles className="h-3 w-3 text-brand-400 animate-pulse" /> {item.tag}
+                </span>
+                <h3 className="font-display text-base font-bold text-white group-hover:text-brand-300 transition-colors">
+                  {item.title}
+                </h3>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* Impact Stats */}
       <section className="relative z-10 bg-gradient-to-r from-brand-900/30 via-slate-900/40 to-sky-900/30 py-16 backdrop-blur-2xl border-y border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

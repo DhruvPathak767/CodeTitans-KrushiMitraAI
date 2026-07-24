@@ -29,33 +29,39 @@ export function Market() {
         </div>
       </div>
 
-      {/* Best Market Highlight Banner */}
+      {/* Best Market Highlight Banner with Permanent Animated Produce Image */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 via-gold-500 to-brand-600 p-7 text-white shadow-card border border-white/30"
+        className="relative overflow-hidden rounded-3xl p-7 text-white shadow-card border border-white/30 group min-h-[220px]"
       >
+        <img
+          src="/images/market_fresh_produce.png"
+          alt="Fresh APMC Mandi Harvest Produce"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-amber-950/40" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white mb-2 backdrop-blur-md">
-              Highest Price Momentum
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/30 border border-amber-400/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 mb-2 backdrop-blur-md animate-float">
+              <Sparkles className="h-3 w-3 text-amber-400 animate-pulse" /> Highest Price Momentum
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight">{cropIcon[bestMarket.crop]} {bestMarket.crop}</h2>
-            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-white/90">
-              <MapPin className="h-4 w-4" /> {bestMarket.mandi} • ₹{fmt(bestMarket.price)} / Quintal
+            <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-white">{cropIcon[bestMarket.crop]} {bestMarket.crop}</h2>
+            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+              <MapPin className="h-4 w-4 text-amber-400" /> {bestMarket.mandi} • ₹{fmt(bestMarket.price)} / Quintal
             </p>
           </div>
           <div className="text-left sm:text-right">
-            <p className="font-display text-4xl sm:text-5xl font-black tracking-tight">+{bestMarket.change}%</p>
+            <p className="font-display text-4xl sm:text-5xl font-black tracking-tight text-brand-400 drop-shadow">+{bestMarket.change}%</p>
             <button
               onClick={() => navigate('/app/sellstore')}
-              className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-white/25 px-5 py-2.5 text-xs font-extrabold backdrop-blur-md hover:bg-white/35 transition-all shadow-glow"
+              className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-white/20 hover:bg-white/30 px-5 py-2.5 text-xs font-extrabold backdrop-blur-md transition-all shadow-glow border border-white/30"
             >
               {t('sellstore.title')} Decision Engine <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
-        <div className="pointer-events-none absolute -right-6 -bottom-6 opacity-20">
+        <div className="pointer-events-none absolute -right-6 -bottom-6 opacity-20 text-amber-400">
           <TrendingUp className="h-44 w-44" />
         </div>
       </motion.div>

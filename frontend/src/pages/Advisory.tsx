@@ -46,7 +46,31 @@ export function Advisory() {
         </button>
       </div>
 
-      {/* Growth Stage Roadmap Timeline */}
+      {/* AI Crop Advisory Permanent Photography Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl border border-brand-500/30 shadow-card group h-48 sm:h-56"
+      >
+        <img
+          src="/images/crop_advisory_field.png"
+          alt="AI Crop Agronomy & Advisory"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-400 to-transparent opacity-60 animate-laserScan pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent p-6 sm:p-8 flex flex-col justify-between text-left">
+          <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-400 border border-brand-500/30 w-fit backdrop-blur-md animate-float">
+            <Sprout className="h-3.5 w-3.5 text-brand-400" />
+            <span>Agronomic Decision Intelligence</span>
+          </div>
+          <div>
+            <h2 className="font-display text-xl sm:text-2xl font-black text-white">Stage-Aware Crop & Soil Nutrition</h2>
+            <p className="text-xs text-slate-200 mt-1 max-w-lg leading-relaxed">
+              Custom N-P-K fertilizer schedules, micro-nutrient dosing, and growth regulator insights tailored to local soil pH and temperature.
+            </p>
+          </div>
+        </div>
+      </motion.div>
       <Card hover tilt>
         <SectionHeader title={t('advisory.growth')} subtitle="Interactive Stage-by-Stage Field Recommendations" />
         <div className="mt-6 flex items-center justify-between px-2">

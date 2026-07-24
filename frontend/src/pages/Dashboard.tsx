@@ -33,29 +33,34 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* AI Command Center Greeting Banner */}
+      {/* AI Command Center Greeting Banner with Permanent Photography Background */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-3xl glass-strong p-6 border border-white/50 dark:border-white/10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden"
+        className="rounded-3xl p-6 sm:p-8 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden group border border-white/40 dark:border-white/10"
       >
-        <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-brand-500/10 filter blur-3xl pointer-events-none" />
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-600 dark:text-brand-400 mb-2 border border-brand-500/20">
-            <Cpu className="h-3.5 w-3.5 text-brand-500 animate-pulse" />
+        <img
+          src="/images/hero_agriculture_ai.png"
+          alt="KrushiMitra AI Agriculture Command Center"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/75 to-slate-950/40" />
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 rounded-full glass px-3.5 py-1 text-xs font-bold text-brand-400 mb-2 border border-brand-500/30 backdrop-blur-md animate-float">
+            <Cpu className="h-3.5 w-3.5 text-brand-400 animate-pulse" />
             <span>AI Command Center Active</span>
           </div>
-          <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-4xl gradient-text">
+          <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-4xl text-white">
             {t(greeting)}, {user?.name?.split(' ')[0] ?? 'Farmer'} 👋
           </h1>
-          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm font-medium text-slate-200">
             {farm?.registered
               ? `${farm.name} · ${farm.village}, ${farm.state} · ${farm.crop}`
               : t('farm.subtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="relative z-10 flex items-center gap-2">
           <button
             onClick={() => navigate('/app/disease')}
             className="btn-primary text-xs px-4 py-2.5 shadow-glow"
@@ -64,9 +69,9 @@ export function Dashboard() {
           </button>
           <button
             onClick={() => navigate('/app/chatbot')}
-            className="btn-glass text-xs px-4 py-2.5 border-brand-500/30"
+            className="btn-glass text-xs px-4 py-2.5 border-brand-500/30 text-white backdrop-blur-md"
           >
-            <Sparkles className="h-4 w-4 text-brand-500" /> AI Assistant
+            <Sparkles className="h-4 w-4 text-brand-400" /> AI Assistant
           </button>
         </div>
       </motion.div>

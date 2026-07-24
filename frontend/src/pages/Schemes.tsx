@@ -29,24 +29,30 @@ export function Schemes() {
         </div>
       </div>
 
-      {/* Eligible Schemes Banner */}
+      {/* Eligible Schemes Banner with Permanent Animated Imagery */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-500 to-sky-600 p-7 text-white shadow-glow border border-white/30"
+        className="relative overflow-hidden rounded-3xl p-7 text-white shadow-glow border border-white/30 group min-h-[160px]"
       >
+        <img
+          src="/images/hero_agriculture_ai.png"
+          alt="PM-Kisan Government Agriculture Welfare Schemes"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-brand-950/80 to-transparent" />
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <div className="grid place-items-center rounded-2xl bg-white/20 p-4 backdrop-blur-md shadow-glow">
-              <BadgeCheck className="h-9 w-9" />
+            <div className="grid place-items-center rounded-2xl bg-white/20 p-4 backdrop-blur-md shadow-glow border border-white/30 animate-float">
+              <BadgeCheck className="h-9 w-9 text-brand-400" />
             </div>
             <div>
-              <p className="font-display text-4xl font-black">{schemes.length} Schemes</p>
-              <p className="text-xs sm:text-sm font-bold text-white/90">{t('schemes.eligible')} Matched for Your Farm Profile</p>
+              <p className="font-display text-3xl sm:text-4xl font-black text-white">{schemes.length} Active Schemes</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-200">{t('schemes.eligible')} Matched for Your Farm Profile & Location</p>
             </div>
           </div>
         </div>
-        <Sparkles className="pointer-events-none absolute right-4 top-4 h-32 w-32 text-white/10" />
+        <Sparkles className="pointer-events-none absolute right-4 top-4 h-32 w-32 text-brand-400/20 animate-spin-slow" />
       </motion.div>
 
       {/* Schemes Grid */}

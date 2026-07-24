@@ -45,6 +45,33 @@ export function Planner() {
         </button>
       </div>
 
+      {/* AI Smart Farm Planner Permanent Animated Photo Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl border border-brand-500/30 shadow-card group h-52 sm:h-64"
+      >
+        <img
+          src="/images/smart_farm_planner.png"
+          alt="AI Smart Agriculture Farm Planner"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+        {/* Animated laser scanner line overlay */}
+        <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-400 to-transparent opacity-70 animate-laserScan pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent p-6 sm:p-8 flex flex-col justify-between text-left">
+          <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-xs font-bold text-brand-400 border border-brand-500/30 w-fit backdrop-blur-md animate-float">
+            <Sparkles className="h-3.5 w-3.5 text-brand-400 animate-spin-slow" />
+            <span>AI Automated Field Calendar & Tasks</span>
+          </div>
+          <div>
+            <h2 className="font-display text-xl sm:text-2xl font-black text-white">Dynamic Precision Crop Operations</h2>
+            <p className="text-xs text-slate-200 mt-1 max-w-lg leading-relaxed">
+              Synchronized with real-time soil moisture sensors, satellite weather patterns, and local crop growth stages for maximum yield optimization.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {generating && (
         <Card hover tilt className="p-10 text-center glass-strong border border-brand-500/40">
           <Sparkles className="mx-auto h-8 w-8 animate-spin-slow text-brand-500 mb-3" />

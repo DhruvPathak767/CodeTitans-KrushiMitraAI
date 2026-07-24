@@ -28,29 +28,35 @@ export function Weather() {
         </div>
       </div>
 
-      {/* Current Weather Hero */}
-      <Card hover tilt className="overflow-hidden border-sky-500/30 bg-gradient-to-br from-sky-500/10 via-slate-900/5 to-amber-500/10">
-        <div className="flex flex-col items-center gap-6 py-6 sm:flex-row sm:justify-between">
+      {/* Current Weather Hero with Permanent Satellite Monitoring Imagery */}
+      <Card hover tilt className="relative overflow-hidden border-sky-500/30 group">
+        <img
+          src="/images/satellite_field_monitoring.png"
+          alt="Satellite Field Weather Radar & Telemetry"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-25 dark:opacity-30 pointer-events-none"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-sky-950/70" />
+        <div className="relative z-10 flex flex-col items-center gap-6 py-6 sm:flex-row sm:justify-between text-white">
           <div className="flex items-center gap-6">
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="p-3 rounded-3xl bg-sky-500/10 border border-sky-500/20 shadow-glow-sky"
+              className="p-3 rounded-3xl bg-sky-500/20 border border-sky-400/30 shadow-glow-sky backdrop-blur-md"
             >
-              <WeatherIcon type={wType} className="h-20 w-20 text-sky-500" />
+              <WeatherIcon type={wType} className="h-20 w-20 text-sky-400" />
             </motion.div>
             <div>
-              <p className="font-display text-5xl font-extrabold tracking-tight">{weatherNow.temp}°C</p>
-              <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">{weatherNow.condition}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('weather.feels')}: {weatherNow.feels}°C • Micro-station Rajkot North</p>
+              <p className="font-display text-5xl font-extrabold tracking-tight text-white">{weatherNow.temp}°C</p>
+              <p className="text-base font-bold text-sky-300 mt-1">{weatherNow.condition}</p>
+              <p className="text-xs text-slate-300 mt-0.5">{t('weather.feels')}: {weatherNow.feels}°C • ISRO INSAT-3DR Telemetry</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 w-full sm:w-auto">
-            <WeatherStat icon={<Droplets className="h-5 w-5 text-sky-500" />} value={`${weatherNow.humidity}%`} label={t('land.weather.humidity')} />
-            <WeatherStat icon={<Wind className="h-5 w-5 text-slate-400" />} value={`${weatherNow.wind} km/h`} label={t('land.weather.wind')} />
-            <WeatherStat icon={<Sun className="h-5 w-5 text-amber-500" />} value={`${weatherNow.uv}`} label={t('weather.uv')} />
-            <WeatherStat icon={<Eye className="h-5 w-5 text-slate-400" />} value={`${weatherNow.visibility} km`} label={t('weather.visibility')} />
+            <WeatherStat icon={<Droplets className="h-5 w-5 text-sky-400" />} value={`${weatherNow.humidity}%`} label={t('land.weather.humidity')} />
+            <WeatherStat icon={<Wind className="h-5 w-5 text-slate-300" />} value={`${weatherNow.wind} km/h`} label={t('land.weather.wind')} />
+            <WeatherStat icon={<Sun className="h-5 w-5 text-amber-400" />} value={`${weatherNow.uv}`} label={t('weather.uv')} />
+            <WeatherStat icon={<Eye className="h-5 w-5 text-slate-300" />} value={`${weatherNow.visibility} km`} label={t('weather.visibility')} />
           </div>
         </div>
       </Card>
