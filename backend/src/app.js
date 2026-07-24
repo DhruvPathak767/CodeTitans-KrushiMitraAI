@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import logger from './config/logger.js';
 import authRoutes from './routes/auth.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
+import diseaseRoutes from './routes/disease.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -47,6 +49,14 @@ app.get('/', (req, res) => {
 // Mount Authentication Routes (support both /auth and /api/auth)
 app.use('/auth', authRoutes);
 app.use('/api/auth', authRoutes);
+
+// Mount Upload Routes
+app.use('/api/upload', uploadRoutes);
+app.use('/api/v1/upload', uploadRoutes);
+
+// Mount Disease Detection Routes
+app.use('/api/disease', diseaseRoutes);
+app.use('/api/v1/disease', diseaseRoutes);
 
 // 404 Route Handler
 app.use(notFoundMiddleware);

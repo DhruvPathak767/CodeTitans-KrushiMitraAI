@@ -1,5 +1,14 @@
+import dns from 'dns';
 import mongoose from 'mongoose';
 import logger from './logger.js';
+
+// Set reliable DNS servers to resolve MongoDB Atlas SRV records (_mongodb._tcp)
+// when host/ISP DNS fails or blocks SRV resolution.
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+} catch (err) {
+  // Ignore if custom DNS cannot be set
+}
 
 /**
  * Connect to MongoDB Atlas / Local MongoDB instance using Mongoose.
@@ -18,9 +27,7 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     logger.error(`MongoDB Connection Error: ${error.message}`);
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
+    throw error;
   }
 };
 

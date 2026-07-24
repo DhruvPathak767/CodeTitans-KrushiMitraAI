@@ -1,88 +1,90 @@
 import mongoose from 'mongoose';
 
-/**
- * Severity Enum
- */
-export const SEVERITY_LEVELS = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-};
-
 const diseaseReportSchema = new mongoose.Schema(
   {
-    userId: {
+    farmerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'User ID is required'],
+      required: false,
     },
     farmId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Farm',
-      required: [true, 'Farm ID is required'],
+      type: String,
+      default: 'default_farm',
+      trim: true,
+    },
+    crop: {
+      type: String,
+      default: 'general',
+      trim: true,
     },
     imageUrl: {
       type: String,
       required: [true, 'Image URL is required'],
       trim: true,
     },
-    cloudinaryPublicId: {
+    publicId: {
       type: String,
+      default: '',
       trim: true,
     },
-    cropName: {
+    disease: {
       type: String,
-      required: [true, 'Crop name is required'],
-      trim: true,
-    },
-    diseaseName: {
-      type: String,
-      required: [true, 'Disease name is required'],
+      required: [true, 'Disease classification result is required'],
       trim: true,
     },
     confidence: {
       type: Number,
+      required: [true, 'Confidence score is required'],
       min: 0,
-      max: 1,
+      max: 100,
     },
     severity: {
       type: String,
-      enum: Object.values(SEVERITY_LEVELS),
-      required: [true, 'Severity is required'],
-    },
-    symptoms: {
-      type: String,
-      trim: true,
+      enum: ['low', 'moderate', 'high'],
+      default: 'moderate',
     },
     treatment: {
       type: String,
-      trim: true,
+      required: [true, 'Treatment recommendation is required'],
     },
-    recommendation: {
+    treatmentOrganic: {
       type: String,
-      trim: true,
+      default: '',
     },
-    modelVersion: {
+    treatmentChemical: {
       type: String,
-      trim: true,
+      default: '',
+    },
+    organicAlternative: {
+      type: String,
+      default: '',
+    },
+    fungicide: {
+      type: String,
+      default: '',
+    },
+    prevention: {
+      type: String,
+      default: '',
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'completed', 'failed'],
+      default: 'completed',
     },
     predictionTime: {
-      type: Date,
-      default: Date.now,
-    },
-    processingTimeMs: {
       type: Number,
+      default: 0, // prediction latency in milliseconds
     },
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-// Indexes
-diseaseReportSchema.index({ userId: 1, farmId: 1 });
-diseaseReportSchema.index({ predictionTime: -1 });
+// Add index on farmerId and createdAt for fast history queries
+diseaseReportSchema.index({ farmerId: 1, createdAt: -1 });
 
 const DiseaseReport = mongoose.model('DiseaseReport', diseaseReportSchema);
+
 export default DiseaseReport;
