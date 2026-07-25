@@ -1,0 +1,70 @@
+{
+  "info": {
+    "_postman_id": "krishimitra-recommendation-engine-collection",
+    "name": "KrishiMitra AI - Sell / Store Decision Engine API Collection",
+    "description": "Postman API Collection for testing KrishiMitra AI Decision Engine endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Generate AI Recommendation (Store Favored)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"storageAvailable\": true,\n  \"storageCost\": 150\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/recommendation/generate",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "recommendation", "generate"]
+        }
+      }
+    },
+    {
+      "name": "2. Generate AI Recommendation (No Storage)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"storageAvailable\": false,\n  \"storageCost\": 0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/recommendation/generate",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "recommendation", "generate"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Recommendation History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/recommendation/history",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "recommendation", "history"]
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import marketService from '../services/market.service.js';
-import ApiResponse from '../utils/ApiResponse.js';
+import ApiResponse from '../utils/apiResponse.js';
 import ApiError from '../utils/ApiError.js';
 
 class MarketController {

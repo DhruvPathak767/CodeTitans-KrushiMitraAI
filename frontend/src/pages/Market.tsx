@@ -23,6 +23,8 @@ interface MarketItem {
   demand?: 'high' | 'medium' | 'low' | string;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export function Market() {
   const { t, lang } = useApp();
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ export function Market() {
     setLoading(true);
     setError(null);
     try {
-      let url = '/api/market/prices?limit=50';
+      let url = `${API_BASE_URL}/api/market/prices?limit=50`;
       if (selectedCrop && selectedCrop !== 'All') {
         url += `&crop=${encodeURIComponent(selectedCrop)}`;
       }
@@ -94,7 +96,7 @@ export function Market() {
 
   const fetchCrops = useCallback(async () => {
     try {
-      const res = await fetch('/api/market/crops');
+      const res = await fetch(`${API_BASE_URL}/api/market/crops`);
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
