@@ -15,6 +15,7 @@ import notificationRoutes from './routes/notification.routes.js';
 import userRoutes from './routes/user.routes.js';
 import marketRoutes from './routes/market.routes.js';
 import recommendationRoutes from './routes/recommendation.routes.js';
+import pricePredictionRoutes from './routes/pricePrediction.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -97,6 +98,10 @@ app.use('/api/market', marketRoutes);
 // Mount AI Sell/Store Recommendation Routes
 app.use('/recommendation', recommendationRoutes);
 app.use('/api/recommendation', recommendationRoutes);
+
+// Mount Crop Price Prediction Routes
+app.use('/price-prediction', pricePredictionRoutes);
+app.use('/api/price-prediction', pricePredictionRoutes);
 
 // 404 Route Handler
 app.use(notFoundMiddleware);

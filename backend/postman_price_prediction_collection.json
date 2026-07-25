@@ -1,0 +1,76 @@
+{
+  "info": {
+    "_postman_id": "krishimitra-price-prediction-collection",
+    "name": "KrishiMitra AI - Crop Price Prediction Engine API Collection",
+    "description": "Postman API Collection for testing KrishiMitra Machine Learning Price Prediction endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Python FastAPI Price Prediction (POST /predict-price)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"crop\": \"Cotton\",\n  \"market\": \"Rajkot APMC\",\n  \"district\": \"Rajkot\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict-price",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["predict-price"]
+        }
+      }
+    },
+    {
+      "name": "2. Node.js API Gateway Price Prediction (POST /api/price-prediction)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"crop\": \"Potato\",\n  \"market\": \"Agra APMC\",\n  \"district\": \"Agra\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/price-prediction",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "price-prediction"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Price Prediction History (GET /api/price-prediction/history)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/price-prediction/history?crop=Cotton",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "price-prediction", "history"],
+          "query": [
+            {
+              "key": "crop",
+              "value": "Cotton"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

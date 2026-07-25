@@ -1,0 +1,48 @@
+date,crop,market,district,state,price,unit
+2026-06-25,Cotton,Rajkot APMC,Rajkot,Gujarat,6800,Quintal
+2026-06-28,Cotton,Rajkot APMC,Rajkot,Gujarat,6850,Quintal
+2026-07-01,Cotton,Rajkot APMC,Rajkot,Gujarat,6920,Quintal
+2026-07-05,Cotton,Rajkot APMC,Rajkot,Gujarat,7000,Quintal
+2026-07-10,Cotton,Rajkot APMC,Rajkot,Gujarat,7080,Quintal
+2026-07-15,Cotton,Rajkot APMC,Rajkot,Gujarat,7150,Quintal
+2026-07-20,Cotton,Rajkot APMC,Rajkot,Gujarat,7200,Quintal
+2026-07-25,Cotton,Rajkot APMC,Rajkot,Gujarat,7250,Quintal
+2026-06-25,Cotton,Surat APMC,Surat,Gujarat,6750,Quintal
+2026-07-01,Cotton,Surat APMC,Surat,Gujarat,6880,Quintal
+2026-07-10,Cotton,Surat APMC,Surat,Gujarat,7010,Quintal
+2026-07-25,Cotton,Surat APMC,Surat,Gujarat,7120,Quintal
+2026-06-25,Wheat,Ludhiana APMC,Ludhiana,Punjab,2300,Quintal
+2026-07-01,Wheat,Ludhiana APMC,Ludhiana,Punjab,2340,Quintal
+2026-07-10,Wheat,Ludhiana APMC,Ludhiana,Punjab,2390,Quintal
+2026-07-20,Wheat,Ludhiana APMC,Ludhiana,Punjab,2420,Quintal
+2026-07-25,Wheat,Ludhiana APMC,Ludhiana,Punjab,2450,Quintal
+2026-06-25,Potato,Agra APMC,Agra,Uttar Pradesh,1600,Quintal
+2026-07-01,Potato,Agra APMC,Agra,Uttar Pradesh,1680,Quintal
+2026-07-10,Potato,Agra APMC,Agra,Uttar Pradesh,1750,Quintal
+2026-07-20,Potato,Agra APMC,Agra,Uttar Pradesh,1810,Quintal
+2026-07-25,Potato,Agra APMC,Agra,Uttar Pradesh,1850,Quintal
+2026-06-25,Tomato,Nashik APMC,Nashik,Maharashtra,2600,Quintal
+2026-07-01,Tomato,Nashik APMC,Nashik,Maharashtra,2800,Quintal
+2026-07-10,Tomato,Nashik APMC,Nashik,Maharashtra,3000,Quintal
+2026-07-20,Tomato,Nashik APMC,Nashik,Maharashtra,3150,Quintal
+2026-07-25,Tomato,Nashik APMC,Nashik,Maharashtra,3200,Quintal
+2026-06-25,Rice,Karnal Grain Market,Karnal,Haryana,3650,Quintal
+2026-07-01,Rice,Karnal Grain Market,Karnal,Haryana,3720,Quintal
+2026-07-10,Rice,Karnal Grain Market,Karnal,Haryana,3780,Quintal
+2026-07-25,Rice,Karnal Grain Market,Karnal,Haryana,3850,Quintal
+2026-06-25,Soybean,Indore Mandi,Indore,Madhya Pradesh,4400,Quintal
+2026-07-01,Soybean,Indore Mandi,Indore,Madhya Pradesh,4480,Quintal
+2026-07-15,Soybean,Indore Mandi,Indore,Madhya Pradesh,4550,Quintal
+2026-07-25,Soybean,Indore Mandi,Indore,Madhya Pradesh,4600,Quintal
+2026-06-25,Groundnut,Junagadh APMC,Junagadh,Gujarat,6100,Quintal
+2026-07-05,Groundnut,Junagadh APMC,Junagadh,Gujarat,6220,Quintal
+2026-07-15,Groundnut,Junagadh APMC,Junagadh,Gujarat,6310,Quintal
+2026-07-25,Groundnut,Junagadh APMC,Junagadh,Gujarat,6400,Quintal
+2026-06-25,Onion,Lasalgaon APMC,Nashik,Maharashtra,1850,Quintal
+2026-07-05,Onion,Lasalgaon APMC,Nashik,Maharashtra,1950,Quintal
+2026-07-15,Onion,Lasalgaon APMC,Nashik,Maharashtra,2020,Quintal
+2026-07-25,Onion,Lasalgaon APMC,Nashik,Maharashtra,2100,Quintal
+2026-06-25,Maize,Davangere APMC,Davangere,Karnataka,2000,Quintal
+2026-07-05,Maize,Davangere APMC,Davangere,Karnataka,2080,Quintal
+2026-07-15,Maize,Davangere APMC,Davangere,Karnataka,2140,Quintal
+2026-07-25,Maize,Davangere APMC,Davangere,Karnataka,2200,Quintal

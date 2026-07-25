@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 from app.config.settings import settings
 from app.routers.predict import router as predict_router
+from app.routers.price_prediction import router as price_prediction_router
 from app.services.model_loader import model_loader_singleton
 
 logging.basicConfig(level=logging.INFO)
@@ -11,8 +12,8 @@ logger = logging.getLogger("main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load TensorFlow CNN Model Singleton ONCE during FastAPI startup
-    logger.info("Initializing KrishiMitra AI Python Service & Loading TensorFlow Model...")
+    # Load TensorFlow CNN & Random Forest Models Singleton ONCE during FastAPI startup
+    logger.info("Initializing KrishiMitra AI Python Service & Loading Machine Learning Models...")
     model_loader_singleton.load_model()
     yield
     logger.info("Shutting down Python AI Inference Engine.")
@@ -36,6 +37,7 @@ app.add_middleware(
 
 # Mount Routers
 app.include_router(predict_router)
+app.include_router(price_prediction_router)
 
 @app.get("/")
 async def root():

@@ -2,44 +2,59 @@ import mongoose from 'mongoose';
 
 const pricePredictionSchema = new mongoose.Schema(
   {
-    userId: {
+    farmerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'User ID is required'],
+      index: true,
     },
     farmId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Farm',
-      required: [true, 'Farm ID is required'],
+      index: true,
     },
-    cropName: {
+    crop: {
       type: String,
       required: [true, 'Crop name is required'],
       trim: true,
     },
-    currentPrice: {
-      type: Number,
-      required: [true, 'Current price is required'],
-    },
-    predictedPrice3Days: {
-      type: Number,
-    },
-    predictedPrice7Days: {
-      type: Number,
-    },
-    predictedPrice15Days: {
-      type: Number,
-    },
-    confidenceScore: {
-      type: Number,
-      min: 0,
-      max: 1,
-    },
-    modelVersion: {
+    market: {
       type: String,
+      required: [true, 'Market name is required'],
       trim: true,
     },
-    generatedAt: {
+    district: {
+      type: String,
+      default: 'Rajkot',
+      trim: true,
+    },
+    todayPrice: {
+      type: Number,
+      required: [true, 'Today price is required'],
+    },
+    priceAfter3Days: {
+      type: Number,
+      required: [true, '3-day predicted price is required'],
+    },
+    priceAfter7Days: {
+      type: Number,
+      required: [true, '7-day predicted price is required'],
+    },
+    priceAfter15Days: {
+      type: Number,
+      required: [true, '15-day predicted price is required'],
+    },
+    trend: {
+      type: String,
+      enum: ['Increasing', 'Stable', 'Decreasing'],
+      default: 'Increasing',
+    },
+    confidence: {
+      type: Number,
+      default: 91,
+      min: 0,
+      max: 100,
+    },
+    predictionDate: {
       type: Date,
       default: Date.now,
     },
@@ -50,8 +65,10 @@ const pricePredictionSchema = new mongoose.Schema(
   }
 );
 
-// Indexes
-pricePredictionSchema.index({ farmId: 1, generatedAt: -1 });
+pricePredictionSchema.index({ crop: 1, market: 1, createdAt: -1 });
+pricePredictionSchema.index({ farmerId: 1, createdAt: -1 });
 
-const PricePrediction = mongoose.model('PricePrediction', pricePredictionSchema);
+const PricePrediction =
+  mongoose.models.PricePrediction || mongoose.model('PricePrediction', pricePredictionSchema);
+
 export default PricePrediction;

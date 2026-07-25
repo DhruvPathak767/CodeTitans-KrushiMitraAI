@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine,
 } from 'recharts';
-import { Scale, TrendingUp, Warehouse, Truck, AlertTriangle, CheckCircle2, Sparkles, Activity, RefreshCw, Loader2 } from 'lucide-react';
+import { Scale, TrendingUp, Warehouse, Truck, AlertTriangle, CheckCircle2, Sparkles, Activity, RefreshCw, Loader2, Calendar } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, AIResponsePanel, cn } from '@/components/ui';
 import { sellStoreData as mockData } from '@/data/mock';
@@ -24,40 +24,64 @@ interface RecommendationResponse {
   storageCost?: number;
 }
 
+interface PricePredictionData {
+  today: number;
+  after3days: number;
+  after7days: number;
+  after15days: number;
+  trend: string;
+  confidence: number;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function SellStore() {
   const { t, lang } = useApp();
-  const langSuffix = lang === 'hi' ? '_hi' : lang === 'gu' ? '_gu' : '';
 
   const [loading, setLoading] = useState<boolean>(false);
   const [storageAvailable, setStorageAvailable] = useState<boolean>(true);
   const [storageCost, setStorageCost] = useState<number>(150);
   const [recData, setRecData] = useState<RecommendationResponse | null>(null);
+  const [predData, setPredData] = useState<PricePredictionData | null>(null);
 
   const fetchRecommendation = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/recommendation/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          storageAvailable,
-          storageCost,
+      const [recRes, predRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/recommendation/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            storageAvailable,
+            storageCost,
+          }),
         }),
-      });
+        fetch(`${API_BASE_URL}/api/price-prediction`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            crop: 'Cotton',
+            market: 'Rajkot APMC',
+            district: 'Rajkot',
+          }),
+        }),
+      ]);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (recRes.ok) {
+        const recJson = await recRes.json();
+        if (recJson.success && recJson.data) {
+          setRecData(recJson.data);
+        }
       }
 
-      const json = await response.json();
-      if (json.success && json.data) {
-        console.log('✅ Received Live Groq AI Sell/Store Recommendation:', json.data);
-        setRecData(json.data);
+      if (predRes.ok) {
+        const predJson = await predRes.json();
+        if (predJson.success && predJson.data) {
+          setPredData(predJson.data);
+        }
       }
     } catch (err: any) {
-      console.warn('Backend Recommendation API offline or error, utilizing fallback snapshot:', err.message);
+      console.warn('Backend API offline or error, utilizing fallback snapshot:', err.message);
     } finally {
       setLoading(false);
     }
@@ -68,8 +92,8 @@ export function SellStore() {
   }, [fetchRecommendation]);
 
   const currentCrop = recData?.crop || mockData.crop;
-  const currentRate = recData?.marketPrice || mockData.currentPrice;
-  const predictedRate = recData?.predictedPrice || Math.round(currentRate * 1.12);
+  const currentRate = predData?.today || recData?.marketPrice || mockData.currentPrice;
+  const predictedRate = predData?.after15days || recData?.predictedPrice || Math.round(currentRate * 1.12);
   const decision = recData?.decision || mockData.recommendation.toUpperCase();
   const isStore = decision.includes('STORE');
   const confidence = recData?.confidence || mockData.confidence;
@@ -80,11 +104,10 @@ export function SellStore() {
   const storeProfit = predictedRate * (recData?.quantity || 100) - (storageCost * 4);
 
   const chartData = [
-    { week: 'Now', price: currentRate },
-    { week: 'W1', price: Math.round(currentRate * 1.03) },
-    { week: 'W2', price: Math.round(currentRate * 1.07) },
-    { week: 'W3', price: predictedRate },
-    { week: 'W4', price: Math.round(predictedRate * 0.98) },
+    { week: 'Today', price: predData?.today || currentRate },
+    { week: '3 Days', price: predData?.after3days || Math.round(currentRate * 1.03) },
+    { week: '7 Days', price: predData?.after7days || Math.round(currentRate * 1.07) },
+    { week: '15 Days', price: predData?.after15days || predictedRate },
   ];
 
   return (
@@ -102,11 +125,11 @@ export function SellStore() {
             className="inline-flex items-center gap-1.5 rounded-2xl glass px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-white/20 transition-all shadow-glow"
           >
             <RefreshCw className={cn('h-3.5 w-3.5 text-brand-500', loading && 'animate-spin')} />
-            {loading ? 'Analyzing...' : 'Re-Run Decision Engine'}
+            {loading ? 'Predicting...' : 'Predict Price & Re-Run Engine'}
           </button>
           <div className="inline-flex items-center gap-2 rounded-2xl glass px-4 py-2 border border-sky-500/30">
             <Activity className="h-4 w-4 text-sky-500 animate-pulse" />
-            <span className="text-xs font-bold">Groq AI Engine: <span className="text-brand-500">ACTIVE</span></span>
+            <span className="text-xs font-bold">Random Forest Model: <span className="text-brand-500">ACTIVE</span></span>
           </div>
         </div>
       </div>
@@ -135,16 +158,63 @@ export function SellStore() {
                   : decision.replace(/_/g, ' ')}
               </p>
               <p className="mt-1 text-xs sm:text-sm font-bold text-white/90">
-                🌾 {currentCrop} • Current Rate ₹{currentRate.toLocaleString()} / qtl
+                🌾 {currentCrop} • Today Rate ₹{currentRate.toLocaleString()} / qtl
               </p>
             </div>
           </div>
           <div className="text-center bg-white/20 px-6 py-3 rounded-2xl backdrop-blur-md border border-white/20">
-            <p className="text-[10px] uppercase tracking-widest font-black text-white/80">{t('common.confidence')}</p>
+            <p className="text-[10px] uppercase tracking-widest font-black text-white/80">AI Confidence</p>
             <p className="font-display text-4xl font-black">{confidence}%</p>
           </div>
         </div>
       </motion.div>
+
+      {/* 4 Horizon Price Prediction Cards */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Card hover tilt className="p-4 border-slate-500/20">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <span>Today Rate</span>
+            <Calendar className="h-3.5 w-3.5 text-brand-500" />
+          </div>
+          <p className="mt-2 font-display text-2xl font-black text-slate-800 dark:text-slate-100">
+            ₹{(predData?.today || currentRate).toLocaleString()}
+          </p>
+          <span className="text-[10px] font-bold text-slate-400">Current Mandi Price</span>
+        </Card>
+
+        <Card hover tilt className="p-4 border-slate-500/20">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <span>3-Day Forecast</span>
+            <TrendingUp className="h-3.5 w-3.5 text-sky-500" />
+          </div>
+          <p className="mt-2 font-display text-2xl font-black text-sky-500">
+            ₹{(predData?.after3days || Math.round(currentRate * 1.03)).toLocaleString()}
+          </p>
+          <span className="text-[10px] font-bold text-sky-400">+3 Days Projection</span>
+        </Card>
+
+        <Card hover tilt className="p-4 border-slate-500/20">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <span>7-Day Forecast</span>
+            <TrendingUp className="h-3.5 w-3.5 text-brand-500" />
+          </div>
+          <p className="mt-2 font-display text-2xl font-black text-brand-500">
+            ₹{(predData?.after7days || Math.round(currentRate * 1.07)).toLocaleString()}
+          </p>
+          <span className="text-[10px] font-bold text-brand-400">+7 Days Projection</span>
+        </Card>
+
+        <Card hover tilt className="p-4 border-slate-500/20">
+          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+            <span>15-Day Forecast</span>
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+          </div>
+          <p className="mt-2 font-display text-2xl font-black text-amber-500">
+            ₹{(predData?.after15days || predictedRate).toLocaleString()}
+          </p>
+          <span className="text-[10px] font-bold text-amber-400">Trend: {predData?.trend || 'Increasing'}</span>
+        </Card>
+      </div>
 
       {/* Side by Side Comparative Financial Profit Cards */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -168,7 +238,7 @@ export function SellStore() {
               <span className="p-2.5 rounded-2xl bg-sky-500/20 text-sky-500 shadow-glow-sky">
                 <Warehouse className="h-5 w-5" />
               </span>
-              <h3 className="font-display text-lg font-bold">{t('sellstore.store')} (30 Days)</h3>
+              <h3 className="font-display text-lg font-bold">{t('sellstore.store')} (15 Days)</h3>
             </div>
             {isStore && <Badge variant="info" pulse><CheckCircle2 className="h-3.5 w-3.5" /> Recommended</Badge>}
           </div>
@@ -179,7 +249,7 @@ export function SellStore() {
 
       {/* Commodity Price Forecast Curve */}
       <Card hover tilt>
-        <SectionHeader title={t('market.forecast')} subtitle={`₹ / Quintal Price Trajectory • ${currentCrop}`} />
+        <SectionHeader title={t('market.forecast')} subtitle={`₹ / Quintal ML Price Trajectory • ${currentCrop}`} />
         <div className="mt-4 h-48">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>

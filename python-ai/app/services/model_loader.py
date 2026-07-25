@@ -109,8 +109,16 @@ class ModelLoader:
         except Exception as e:
             logger.warning(f"TensorFlow Disease Model note: ({e}). Using crop-specific disease engine.")
 
+        # 4. Load Random Forest Price Prediction Model
+        try:
+            from app.services.price_prediction_service import price_prediction_service_singleton
+            price_prediction_service_singleton.load_model()
+            logger.info("Random Forest Crop Price Prediction Model initialized.")
+        except Exception as e:
+            logger.warning(f"Price Prediction Model loading note: ({e}).")
+
         self.is_loaded = True
-        logger.info("All Multi-Stage Vision Models successfully loaded into RAM Singleton.")
+        logger.info("All Multi-Stage Vision & Price Prediction Models successfully loaded into RAM Singleton.")
 
     def predict(self, input_tensor: np.ndarray) -> np.ndarray:
         """Runs inference on disease model tensor shape (1, 224, 224, 3)."""
