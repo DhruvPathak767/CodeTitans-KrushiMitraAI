@@ -52,6 +52,7 @@ export function dedupeAddressParts(parts: string[]): string[] {
 
 /**
  * Reverse Geocode coordinates using OpenStreetMap Nominatim API
+ * Dynamically parses location details for ANY point in India / world.
  */
 export async function reverseGeocode(lat: number, lng: number): Promise<ReverseGeocodeResult> {
   try {
@@ -69,63 +70,47 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
 
     const country = addr.country || 'India';
     const state = addr.state || addr.region || addr.province || addr['ISO3166-2-lvl4'] || '';
-
-    // District parsing: state_district or district or city or municipality
     const district =
       addr.state_district ||
       addr.district ||
       addr.city ||
+      addr.county ||
       addr.municipality ||
-      (addr.county && !addr.county.toLowerCase().includes('taluka') && !addr.county.toLowerCase().includes('tehsil')
-        ? addr.county
-        : '') ||
       '';
 
-    // Taluka parsing: subdistrict or tehsil or taluka or city_district or county
     const rawTaluka =
       addr.subdistrict ||
       addr.tehsil ||
       addr.taluka ||
       addr.city_district ||
-      addr.county ||
+      (addr.county && addr.county !== district ? addr.county : '') ||
       '';
     const taluka = cleanAdminName(rawTaluka, district);
 
-    // Village/locality parsing: village or town or suburb or neighbourhood or locality or hamlet or quarter or residential or commercial or industrial or road
-    let village =
-      addr.village ||
-      addr.town ||
-      addr.suburb ||
-      addr.neighbourhood ||
-      addr.locality ||
-      addr.hamlet ||
-      addr.quarter ||
-      addr.residential ||
-      addr.commercial ||
-      addr.industrial ||
-      addr.road ||
-      '';
+    // Dynamically construct local place details (junction, suburb, neighbourhood, village, town, locality)
+    const localTokens = [
+      addr.junction || addr.suburb || addr.neighbourhood || addr.village || addr.town || addr.locality || addr.hamlet || addr.quarter || addr.residential || addr.road || addr.amenity || addr.building
+    ].filter(Boolean);
 
-    // Fallback if village is empty: check if city is distinct from district or extract clean first part from display_name
-    if (!village) {
-      if (addr.city && addr.city.toLowerCase() !== district.toLowerCase()) {
-        village = addr.city;
-      } else if (data.display_name) {
-        const firstPart = cleanAdminName(data.display_name.split(',')[0]?.trim() || '', district);
-        if (
-          firstPart &&
-          firstPart.toLowerCase() !== district.toLowerCase() &&
-          firstPart.toLowerCase() !== taluka.toLowerCase() &&
-          firstPart.toLowerCase() !== state.toLowerCase() &&
-          firstPart.toLowerCase() !== country.toLowerCase()
-        ) {
-          village = firstPart;
-        }
+    let village = localTokens.length > 0
+      ? Array.from(new Set(localTokens)).join(', ')
+      : (addr.city || (data.display_name ? data.display_name.split(',')[0]?.trim() : ''));
+
+    if (village.toLowerCase() === district.toLowerCase() && data.display_name) {
+      const firstSegment = cleanAdminName(data.display_name.split(',')[0]?.trim() || '', district);
+      if (
+        firstSegment &&
+        firstSegment.toLowerCase() !== district.toLowerCase() &&
+        firstSegment.toLowerCase() !== state.toLowerCase()
+      ) {
+        village = firstSegment;
       }
     }
 
     const pincode = addr.postcode || addr.postal_code || '';
-    const formattedAddress = dedupeAddressParts([village, taluka, district, state, pincode, country]).join(', ');
+
+    // Dynamic formatted address from OpenStreetMap display_name or deduplicated parts
+    const formattedAddress = data.display_name || dedupeAddressParts([village, taluka, district, state, pincode, country]).join(', ');
 
     return {
       formattedAddress,
@@ -156,25 +141,72 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
 
 /**
  * Search Location query using OpenStreetMap Nominatim Search API
+ * Focused on India (countrycodes=in) with coordinate detection & query relaxation
  */
 export async function searchLocation(query: string): Promise<SearchLocationResult[]> {
   if (!query || query.trim().length < 2) return [];
+
+  const rawQuery = query.trim();
+
+  // 1. Direct coordinate detection (e.g. "22.224563, 73.186925" or "(22.224563, 73.186925)")
+  const coordRegex = /^\s*\(?\s*(-?\d+(?:\.\d+)?)\s*[, \s]+\s*(-?\d+(?:\.\d+)?)\s*\)?\s*$/;
+  const match = rawQuery.match(coordRegex);
+  if (match) {
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[2]);
+    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      return [
+        {
+          displayName: `📍 Pin Coordinates (${lat.toFixed(6)}, ${lng.toFixed(6)})`,
+          latitude: lat,
+          longitude: lng,
+        },
+      ];
+    }
+  }
+
+  // 2. Search focused on India with query fallbacks
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'KrishiMitra-AI-Platform/1.0',
-      },
-    });
+    const attempts = [
+      rawQuery,
+      rawQuery
+        .replace(/\b\d+[\/\-a-z0-9]*\b/gi, '')
+        .replace(/\b(near|opp|opposite|behind|beside|flat|society|apartment|heights|house|block|building)\b/gi, '')
+        .replace(/[,;]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    ];
 
-    if (!res.ok) return [];
-    const data = await res.json();
+    const parts = rawQuery.split(/[,;\s]+/).filter(Boolean);
+    if (parts.length > 2) {
+      attempts.push(parts.slice(-3).join(' '));
+      attempts.push(parts.slice(-2).join(' '));
+    }
 
-    return data.map((item: any) => ({
-      displayName: item.display_name,
-      latitude: parseFloat(item.lat),
-      longitude: parseFloat(item.lon),
-    }));
+    const uniqueAttempts = Array.from(new Set(attempts.filter((q) => q && q.length >= 2)));
+
+    for (const q of uniqueAttempts) {
+      // Focused on India (countrycodes=in)
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&countrycodes=in`;
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'KrishiMitra-AI-Platform/1.0',
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          return data.map((item: any) => ({
+            displayName: item.display_name,
+            latitude: parseFloat(item.lat),
+            longitude: parseFloat(item.lon),
+          }));
+        }
+      }
+    }
+
+    return [];
   } catch (error) {
     console.warn('Search location error:', error);
     return [];

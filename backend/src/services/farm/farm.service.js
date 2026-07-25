@@ -41,27 +41,14 @@ class FarmService {
       coordinates: [Number(longitude), Number(latitude)],
     };
 
-    const district = address.district || '';
-    const taluka = cleanAdminName(address.taluka || '', district);
-    const village = address.village || '';
-    const state = address.state || '';
-    const pincode = address.pincode || '';
-    const country = address.country || 'India';
-
-    const cleanParts = dedupeAddressParts([village, taluka, district, state, pincode, country]);
-    const computedFormattedAddress = cleanParts.join(', ');
-
     const formattedAddress = {
-      formattedAddress:
-        address.formattedAddress && !address.formattedAddress.includes('Taluka')
-          ? address.formattedAddress
-          : computedFormattedAddress,
-      country,
-      state,
-      district,
-      taluka,
-      village,
-      pincode,
+      formattedAddress: address.formattedAddress || `${address.village || ''}, ${address.district || ''}, ${address.state || ''}`.replace(/^, |, $/g, ''),
+      country: address.country || '',
+      state: address.state || '',
+      district: address.district || '',
+      taluka: address.taluka || '',
+      village: address.village || '',
+      pincode: address.pincode || '',
       latitude: Number(latitude),
       longitude: Number(longitude),
     };
@@ -153,28 +140,14 @@ class FarmService {
       const newLat = latitude !== undefined ? Number(latitude) : currentAddress.latitude;
       const newLng = longitude !== undefined ? Number(longitude) : currentAddress.longitude;
 
-      const district = address?.district !== undefined ? address.district : currentAddress.district || '';
-      const rawTaluka = address?.taluka !== undefined ? address.taluka : currentAddress.taluka || '';
-      const taluka = cleanAdminName(rawTaluka, district);
-      const village = address?.village !== undefined ? address.village : currentAddress.village || '';
-      const state = address?.state !== undefined ? address.state : currentAddress.state || '';
-      const pincode = address?.pincode !== undefined ? address.pincode : currentAddress.pincode || '';
-      const country = address?.country || currentAddress.country || 'India';
-
-      const cleanParts = dedupeAddressParts([village, taluka, district, state, pincode, country]);
-      const computedFormattedAddress = cleanParts.join(', ');
-
       updatePayload.address = {
-        formattedAddress:
-          address?.formattedAddress && !address.formattedAddress.includes('Taluka')
-            ? address.formattedAddress
-            : computedFormattedAddress,
-        country,
-        state,
-        district,
-        taluka,
-        village,
-        pincode,
+        formattedAddress: address?.formattedAddress || currentAddress.formattedAddress || '',
+        country: address?.country !== undefined ? address.country : currentAddress.country || '',
+        state: address?.state !== undefined ? address.state : currentAddress.state || '',
+        district: address?.district !== undefined ? address.district : currentAddress.district || '',
+        taluka: address?.taluka !== undefined ? address.taluka : currentAddress.taluka || '',
+        village: address?.village !== undefined ? address.village : currentAddress.village || '',
+        pincode: address?.pincode !== undefined ? address.pincode : currentAddress.pincode || '',
         latitude: newLat,
         longitude: newLng,
       };
