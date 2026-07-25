@@ -12,6 +12,7 @@ export interface FarmAddress {
   pincode?: string;
   latitude?: number;
   longitude?: number;
+  accuracy?: number;
 }
 
 export interface FarmLocation {

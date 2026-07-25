@@ -151,9 +151,12 @@ export function Weather() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
               {/* Left: Location & Current Temperature */}
               <div className="space-y-3 lg:col-span-1 border-b lg:border-b-0 lg:border-r border-slate-200/60 dark:border-white/10 pb-6 lg:pb-0 lg:pr-6">
-                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                  <MapPin className="h-4 w-4 shrink-0" />
+                <div className="flex items-center flex-wrap gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <MapPin className="h-4 w-4 shrink-0 text-emerald-500" />
                   <span className="truncate">{location.weatherLocationName}</span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                    <CheckCircle2 className="h-3 w-3" /> Location Verified
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-4">

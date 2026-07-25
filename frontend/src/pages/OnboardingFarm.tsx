@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { useFarm } from '@/context/FarmContext';
-import { LeafletMapPicker } from '@/components/map/LeafletMapPicker';
+import { LeafletMapPicker, type GpsTelemetry } from '@/components/map/LeafletMapPicker';
 import { FutureBackground } from '@/components/FutureBackground';
 import { CursorSpotlight } from '@/components/CursorSpotlight';
 import { LanguageSwitcher, ThemeToggle } from '@/components/Controls';
@@ -41,6 +41,7 @@ export function OnboardingFarm() {
     status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
     latitude: 22.3039,
     longitude: 70.8022,
+    accuracy: 0,
     address: {
       formattedAddress: '',
       country: 'India',
@@ -69,6 +70,15 @@ export function OnboardingFarm() {
         village: geo.village || '',
         pincode: geo.pincode || '',
       },
+    }));
+  };
+
+  const handleGpsTelemetry = (telemetry: GpsTelemetry) => {
+    setFormState((prev) => ({
+      ...prev,
+      latitude: telemetry.latitude,
+      longitude: telemetry.longitude,
+      accuracy: telemetry.accuracy,
     }));
   };
 
@@ -449,6 +459,7 @@ export function OnboardingFarm() {
                   initialLat={formState.latitude}
                   initialLng={formState.longitude}
                   onLocationSelect={handleLocationSelect}
+                  onGpsTelemetry={handleGpsTelemetry}
                 />
               </div>
 

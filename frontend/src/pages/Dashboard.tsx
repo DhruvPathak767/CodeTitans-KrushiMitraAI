@@ -145,6 +145,67 @@ export function Dashboard() {
         />
       </div>
 
+      {/* STEP 11: Active Farm Location & GPS Telemetry Panel */}
+      {activeFarm && (
+        <Card className="bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-slate-950/90 border border-emerald-500/20 text-white p-5 rounded-3xl shadow-xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+                <MapPin className="h-6 w-6 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display text-base font-bold text-white">
+                    📍 {activeFarm.farmName} ({activeFarm.cropName})
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" /> Active GPS
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 font-medium mt-0.5">
+                  {[
+                    activeFarm.address?.village,
+                    activeFarm.address?.taluka,
+                    activeFarm.address?.district,
+                    activeFarm.address?.state,
+                  ]
+                    .filter(Boolean)
+                    .join(', ') || activeFarm.address?.formattedAddress || 'Farm Location'}
+                </p>
+              </div>
+            </div>
+
+            {/* GPS Metrics Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full md:w-auto">
+              <div className="bg-white/5 dark:bg-slate-950/50 p-2.5 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Coordinates</span>
+                <span className="font-mono text-xs font-bold text-emerald-400 mt-0.5 block">
+                  {activeFarm.location?.coordinates?.[1]?.toFixed(4)}, {activeFarm.location?.coordinates?.[0]?.toFixed(4)}
+                </span>
+              </div>
+              <div className="bg-white/5 dark:bg-slate-950/50 p-2.5 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">GPS Accuracy</span>
+                <span className="font-mono text-xs font-bold text-emerald-300 mt-0.5 block">
+                  ±{activeFarm.address?.accuracy || 12} meters
+                </span>
+              </div>
+              <div className="bg-white/5 dark:bg-slate-950/50 p-2.5 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Last Updated</span>
+                <span className="font-mono text-xs font-semibold text-slate-200 mt-0.5 block">
+                  {activeFarm.updatedAt ? new Date(activeFarm.updatedAt).toLocaleDateString() : 'Live'}
+                </span>
+              </div>
+              <div className="bg-white/5 dark:bg-slate-950/50 p-2.5 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Weather Station</span>
+                <span className="text-xs font-bold text-sky-400 mt-0.5 block truncate max-w-[100px] mx-auto">
+                  {location?.weatherLocationName || 'WeatherAPI GPS'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Groq AI Live Crop Advisory Card & Health Score */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 space-y-4 relative overflow-hidden">

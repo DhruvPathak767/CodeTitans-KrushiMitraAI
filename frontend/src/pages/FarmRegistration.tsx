@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { useFarm } from '@/context/FarmContext';
-import { LeafletMapPicker } from '@/components/map/LeafletMapPicker';
+import { LeafletMapPicker, type GpsTelemetry } from '@/components/map/LeafletMapPicker';
 import { type FarmData } from '@/api/farm';
 import { type ReverseGeocodeResult } from '@/services/geocoding';
 
@@ -57,6 +57,7 @@ export function FarmRegistration() {
     status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
     latitude: 22.3039,
     longitude: 70.8022,
+    accuracy: 0,
     address: {
       formattedAddress: '',
       country: 'India',
@@ -89,6 +90,7 @@ export function FarmRegistration() {
       status: 'ACTIVE',
       latitude: 22.3039,
       longitude: 70.8022,
+      accuracy: 0,
       address: {
         formattedAddress: '',
         country: 'India',
@@ -118,6 +120,7 @@ export function FarmRegistration() {
       status: farm.status || 'ACTIVE',
       latitude: coords[1],
       longitude: coords[0],
+      accuracy: farm.address?.accuracy || 0,
       address: {
         formattedAddress: farm.address?.formattedAddress || '',
         country: farm.address?.country || 'India',
@@ -146,6 +149,15 @@ export function FarmRegistration() {
         village: geo.village || '',
         pincode: geo.pincode || '',
       },
+    }));
+  };
+
+  const handleGpsTelemetry = (telemetry: GpsTelemetry) => {
+    setFormState((prev) => ({
+      ...prev,
+      latitude: telemetry.latitude,
+      longitude: telemetry.longitude,
+      accuracy: telemetry.accuracy,
     }));
   };
 
@@ -573,6 +585,7 @@ export function FarmRegistration() {
                     initialLat={formState.latitude}
                     initialLng={formState.longitude}
                     onLocationSelect={handleLocationSelect}
+                    onGpsTelemetry={handleGpsTelemetry}
                   />
                 </div>
 
