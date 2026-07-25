@@ -1,0 +1,134 @@
+{
+  "info": {
+    "_postman_id": "krishimitra-market-intelligence-collection",
+    "name": "KrishiMitra AI - Market Intelligence Module API Collection",
+    "description": "Postman API Collection for testing KrishiMitra Market Intelligence endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get Latest Market Prices (Filtered by Crop)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/prices?crop=Cotton",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "prices"],
+          "query": [
+            {
+              "key": "crop",
+              "value": "Cotton"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Get Latest Prices (Search & Pagination)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/prices?search=Rajkot&limit=10&page=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "prices"],
+          "query": [
+            {
+              "key": "search",
+              "value": "Rajkot"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Get Historical Prices (30 Days)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/history?crop=Potato&days=30",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "history"],
+          "query": [
+            {
+              "key": "crop",
+              "value": "Potato"
+            },
+            {
+              "key": "days",
+              "value": "30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Get Nearby Market Prices",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/nearby?district=Rajkot&crop=Cotton",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "nearby"],
+          "query": [
+            {
+              "key": "district",
+              "value": "Rajkot"
+            },
+            {
+              "key": "crop",
+              "value": "Cotton"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Get All Supported Crops",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/crops",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "crops"]
+        }
+      }
+    },
+    {
+      "name": "6. Get All Supported Markets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/market/markets",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "market", "markets"]
+        }
+      }
+    }
+  ]
+}

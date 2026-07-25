@@ -1,0 +1,302 @@
+[
+  {
+    "crop": "Cotton",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 7250,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 7200,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 7180,
+    "unit": "Quintal",
+    "date": "2026-07-23",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 7150,
+    "unit": "Quintal",
+    "date": "2026-07-22",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 7100,
+    "unit": "Quintal",
+    "date": "2026-07-20",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Surat APMC",
+    "district": "Surat",
+    "state": "Gujarat",
+    "price": 7120,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Cotton",
+    "market": "Ahmedabad APMC",
+    "district": "Ahmedabad",
+    "state": "Gujarat",
+    "price": 7180,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Wheat",
+    "market": "Ludhiana APMC",
+    "district": "Ludhiana",
+    "state": "Punjab",
+    "price": 2450,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Wheat",
+    "market": "Ludhiana APMC",
+    "district": "Ludhiana",
+    "state": "Punjab",
+    "price": 2430,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Wheat",
+    "market": "Ludhiana APMC",
+    "district": "Ludhiana",
+    "state": "Punjab",
+    "price": 2410,
+    "unit": "Quintal",
+    "date": "2026-07-23",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Wheat",
+    "market": "Amritsar APMC",
+    "district": "Amritsar",
+    "state": "Punjab",
+    "price": 2420,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Wheat",
+    "market": "Indore Mandi",
+    "district": "Indore",
+    "state": "Madhya Pradesh",
+    "price": 2380,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Rice",
+    "market": "Karnal Grain Market",
+    "district": "Karnal",
+    "state": "Haryana",
+    "price": 3850,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Rice",
+    "market": "Karnal Grain Market",
+    "district": "Karnal",
+    "state": "Haryana",
+    "price": 3820,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Rice",
+    "market": "Surat APMC",
+    "district": "Surat",
+    "state": "Gujarat",
+    "price": 3600,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Potato",
+    "market": "Agra APMC",
+    "district": "Agra",
+    "state": "Uttar Pradesh",
+    "price": 1850,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Potato",
+    "market": "Agra APMC",
+    "district": "Agra",
+    "state": "Uttar Pradesh",
+    "price": 1820,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Potato",
+    "market": "Agra APMC",
+    "district": "Agra",
+    "state": "Uttar Pradesh",
+    "price": 1800,
+    "unit": "Quintal",
+    "date": "2026-07-23",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Potato",
+    "market": "Pune APMC",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "price": 1920,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Tomato",
+    "market": "Nashik APMC",
+    "district": "Nashik",
+    "state": "Maharashtra",
+    "price": 3200,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Tomato",
+    "market": "Nashik APMC",
+    "district": "Nashik",
+    "state": "Maharashtra",
+    "price": 3400,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Tomato",
+    "market": "Nashik APMC",
+    "district": "Nashik",
+    "state": "Maharashtra",
+    "price": 3600,
+    "unit": "Quintal",
+    "date": "2026-07-23",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Tomato",
+    "market": "Kolar APMC",
+    "district": "Kolar",
+    "state": "Karnataka",
+    "price": 2900,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Soybean",
+    "market": "Indore Mandi",
+    "district": "Indore",
+    "state": "Madhya Pradesh",
+    "price": 4600,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Soybean",
+    "market": "Latur APMC",
+    "district": "Latur",
+    "state": "Maharashtra",
+    "price": 4650,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Groundnut",
+    "market": "Junagadh APMC",
+    "district": "Junagadh",
+    "state": "Gujarat",
+    "price": 6400,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Groundnut",
+    "market": "Rajkot APMC",
+    "district": "Rajkot",
+    "state": "Gujarat",
+    "price": 6450,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Onion",
+    "market": "Lasalgaon APMC",
+    "district": "Nashik",
+    "state": "Maharashtra",
+    "price": 2100,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Onion",
+    "market": "Lasalgaon APMC",
+    "district": "Nashik",
+    "state": "Maharashtra",
+    "price": 2150,
+    "unit": "Quintal",
+    "date": "2026-07-24",
+    "source": "AGMARKNET Local"
+  },
+  {
+    "crop": "Maize",
+    "market": "Davangere APMC",
+    "district": "Davangere",
+    "state": "Karnataka",
+    "price": 2200,
+    "unit": "Quintal",
+    "date": "2026-07-25",
+    "source": "AGMARKNET Local"
+  }
+]

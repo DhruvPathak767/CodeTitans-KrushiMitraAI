@@ -2,57 +2,49 @@ import mongoose from 'mongoose';
 
 const marketPriceSchema = new mongoose.Schema(
   {
-    cropName: {
+    crop: {
       type: String,
       required: [true, 'Crop name is required'],
       trim: true,
+      index: true,
     },
-    marketName: {
+    market: {
       type: String,
       required: [true, 'Market name is required'],
       trim: true,
+      index: true,
     },
     district: {
       type: String,
       required: [true, 'District is required'],
       trim: true,
+      index: true,
     },
     state: {
       type: String,
       required: [true, 'State is required'],
       trim: true,
+      index: true,
     },
-    minPrice: {
+    price: {
       type: Number,
-      required: [true, 'Minimum price is required'],
+      required: [true, 'Price is required'],
       min: [0, 'Price cannot be negative'],
-    },
-    maxPrice: {
-      type: Number,
-      required: [true, 'Maximum price is required'],
-      min: [0, 'Price cannot be negative'],
-    },
-    modalPrice: {
-      type: Number,
-      required: [true, 'Modal price is required'],
-      min: [0, 'Price cannot be negative'],
-    },
-    arrivalQuantity: {
-      type: Number,
-      default: 0,
     },
     unit: {
       type: String,
       default: 'Quintal',
       trim: true,
     },
-    source: {
-      type: String,
-      trim: true,
-    },
-    priceDate: {
+    date: {
       type: Date,
       required: [true, 'Price date is required'],
+      index: true,
+    },
+    source: {
+      type: String,
+      default: 'AGMARKNET Local',
+      trim: true,
     },
   },
   {
@@ -61,8 +53,9 @@ const marketPriceSchema = new mongoose.Schema(
   }
 );
 
-// Indexes
-marketPriceSchema.index({ cropName: 1, marketName: 1, priceDate: -1 });
+// Prevent duplicate entries for the same crop, market, and date
+marketPriceSchema.index({ crop: 1, market: 1, date: 1 }, { unique: true });
 
-const MarketPrice = mongoose.model('MarketPrice', marketPriceSchema);
+const MarketPrice = mongoose.models.MarketPrice || mongoose.model('MarketPrice', marketPriceSchema);
+
 export default MarketPrice;
