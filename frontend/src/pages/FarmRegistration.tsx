@@ -63,8 +63,8 @@ export function FarmRegistration() {
       state: 'Gujarat',
       district: 'Rajkot',
       taluka: '',
-      village: 'Kankot',
-      pincode: '360005',
+      village: '',
+      pincode: '',
     },
   });
 
@@ -140,11 +140,11 @@ export function FarmRegistration() {
       address: {
         formattedAddress: geo.formattedAddress,
         country: geo.country || 'India',
-        state: geo.state || prev.address.state,
-        district: geo.district || prev.address.district,
-        taluka: geo.taluka || prev.address.taluka,
-        village: geo.village || prev.address.village,
-        pincode: geo.pincode || prev.address.pincode,
+        state: geo.state || '',
+        district: geo.district || '',
+        taluka: geo.taluka || '',
+        village: geo.village || '',
+        pincode: geo.pincode || '',
       },
     }));
   };
@@ -736,12 +736,21 @@ export function FarmRegistration() {
                   <p className="font-semibold text-slate-400 text-[11px] uppercase">
                     Auto-Populated Address Details (via Reverse Geocoding)
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                     <input
                       type="text"
                       value={formState.address.village}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, village: e.target.value } }))}
                       placeholder={t('farm.village')}
+                      title={t('farm.village')}
+                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                    />
+                    <input
+                      type="text"
+                      value={formState.address.taluka}
+                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, taluka: e.target.value } }))}
+                      placeholder="Taluka / Tehsil"
+                      title="Taluka / Tehsil"
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
@@ -749,6 +758,7 @@ export function FarmRegistration() {
                       value={formState.address.district}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, district: e.target.value } }))}
                       placeholder={t('farm.district')}
+                      title={t('farm.district')}
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
@@ -756,6 +766,7 @@ export function FarmRegistration() {
                       value={formState.address.state}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, state: e.target.value } }))}
                       placeholder={t('farm.state')}
+                      title={t('farm.state')}
                       className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                     <input
@@ -763,7 +774,8 @@ export function FarmRegistration() {
                       value={formState.address.pincode}
                       onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, pincode: e.target.value } }))}
                       placeholder="Pincode"
-                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                      title="Pincode"
+                      className="input text-xs py-1.5 col-span-2 sm:col-span-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
                     />
                   </div>
                 </div>

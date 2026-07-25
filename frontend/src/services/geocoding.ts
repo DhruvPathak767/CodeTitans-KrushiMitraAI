@@ -17,6 +17,40 @@ export interface SearchLocationResult {
 }
 
 /**
+ * Clean administrative suffixes (e.g. "Taluka", "Tehsil", "Rural Taluka", "City Taluka")
+ */
+export function cleanAdminName(name: string, districtName?: string): string {
+  if (!name) return '';
+  let cleaned = name.replace(/\s*(taluka|tehsil|subdistrict|block)\b/gi, '').trim();
+  if (districtName) {
+    const stripped = cleaned.replace(/\s*(rural|city)\b/gi, '').trim();
+    if (stripped.toLowerCase() === districtName.toLowerCase()) {
+      return districtName;
+    }
+  }
+  return cleaned;
+}
+
+/**
+ * Helper to deduplicate array of address parts case-insensitively
+ */
+export function dedupeAddressParts(parts: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const p of parts) {
+    if (!p || typeof p !== 'string') continue;
+    const trimmed = p.trim();
+    if (!trimmed) continue;
+    const lower = trimmed.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      result.push(trimmed);
+    }
+  }
+  return result;
+}
+
+/**
  * Reverse Geocode coordinates using OpenStreetMap Nominatim API
  */
 export async function reverseGeocode(lat: number, lng: number): Promise<ReverseGeocodeResult> {
@@ -34,14 +68,67 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
     const addr = data.address || {};
 
     const country = addr.country || 'India';
-    const state = addr.state || addr.region || '';
-    const district = addr.state_district || addr.district || addr.county || '';
-    const taluka = addr.subdistrict || addr.county || addr.city_district || '';
-    const village = addr.village || addr.town || addr.suburb || addr.city || addr.hamlet || '';
-    const pincode = addr.postcode || '';
+    const state = addr.state || addr.region || addr.province || addr['ISO3166-2-lvl4'] || '';
+
+    // District parsing: state_district or district or city or municipality
+    const district =
+      addr.state_district ||
+      addr.district ||
+      addr.city ||
+      addr.municipality ||
+      (addr.county && !addr.county.toLowerCase().includes('taluka') && !addr.county.toLowerCase().includes('tehsil')
+        ? addr.county
+        : '') ||
+      '';
+
+    // Taluka parsing: subdistrict or tehsil or taluka or city_district or county
+    const rawTaluka =
+      addr.subdistrict ||
+      addr.tehsil ||
+      addr.taluka ||
+      addr.city_district ||
+      addr.county ||
+      '';
+    const taluka = cleanAdminName(rawTaluka, district);
+
+    // Village/locality parsing: village or town or suburb or neighbourhood or locality or hamlet or quarter or residential or commercial or industrial or road
+    let village =
+      addr.village ||
+      addr.town ||
+      addr.suburb ||
+      addr.neighbourhood ||
+      addr.locality ||
+      addr.hamlet ||
+      addr.quarter ||
+      addr.residential ||
+      addr.commercial ||
+      addr.industrial ||
+      addr.road ||
+      '';
+
+    // Fallback if village is empty: check if city is distinct from district or extract clean first part from display_name
+    if (!village) {
+      if (addr.city && addr.city.toLowerCase() !== district.toLowerCase()) {
+        village = addr.city;
+      } else if (data.display_name) {
+        const firstPart = cleanAdminName(data.display_name.split(',')[0]?.trim() || '', district);
+        if (
+          firstPart &&
+          firstPart.toLowerCase() !== district.toLowerCase() &&
+          firstPart.toLowerCase() !== taluka.toLowerCase() &&
+          firstPart.toLowerCase() !== state.toLowerCase() &&
+          firstPart.toLowerCase() !== country.toLowerCase()
+        ) {
+          village = firstPart;
+        }
+      }
+    }
+
+    const pincode = addr.postcode || addr.postal_code || '';
+    const formattedAddress = dedupeAddressParts([village, taluka, district, state, pincode, country]).join(', ');
 
     return {
-      formattedAddress: data.display_name || `${village}, ${district}, ${state}`,
+      formattedAddress,
       country,
       state,
       district,
@@ -56,8 +143,8 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
     return {
       formattedAddress: `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`,
       country: 'India',
-      state: 'Gujarat',
-      district: 'Rajkot',
+      state: '',
+      district: '',
       taluka: '',
       village: '',
       pincode: '',
