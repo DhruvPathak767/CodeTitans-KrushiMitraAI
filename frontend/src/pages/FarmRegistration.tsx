@@ -536,284 +536,303 @@ export function FarmRegistration() {
       {/* ADD / EDIT FARM MODAL */}
       <AnimatePresence>
         {(isAddModalOpen || editingFarm) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-slate-950/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/90 backdrop-blur-2xl">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-2xl rounded-3xl glass-strong p-6 border border-white/40 dark:border-white/10 shadow-card my-8"
+              initial={{ opacity: 0, scale: 0.94, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full max-w-2xl max-h-[92vh] flex flex-col rounded-3xl bg-slate-900/95 backdrop-blur-2xl border border-emerald-500/30 shadow-[0_0_60px_rgba(16,185,129,0.25)] relative overflow-hidden"
             >
-              <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-4 mb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-500/20 text-emerald-500">
+              {/* Top Animated Glow Bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 animate-pulse z-20" />
+
+              {/* 1. FIXED MODAL HEADER */}
+              <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between shrink-0 bg-slate-900/95 z-10">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500/30 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-glow shrink-0">
                     <Sprout className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="font-display text-lg font-bold">
+                    <h2 className="font-display text-base sm:text-lg font-extrabold text-white tracking-tight">
                       {editingFarm ? 'Edit Farm Record' : t('farm.title')}
                     </h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-400 font-medium">
                       {editingFarm ? 'Update farm attributes & coordinates' : t('farm.subtitle')}
                     </p>
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     setEditingFarm(null);
                   }}
-                  className="rounded-xl p-2 text-slate-400 hover:bg-slate-500/20 transition-colors"
+                  className="rounded-2xl p-2 text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {formError && (
-                <div className="mb-4 flex items-center gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-semibold text-red-600 dark:text-red-400">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>{formError}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmitForm} className="space-y-4">
-                {/* INTERACTIVE LEAFLET MAP LOCATION PICKER */}
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    {t('farm.location')} (Map Picker)
-                  </label>
-                  <LeafletMapPicker
-                    initialLat={formState.latitude}
-                    initialLng={formState.longitude}
-                    onLocationSelect={handleLocationSelect}
-                    onGpsTelemetry={handleGpsTelemetry}
-                  />
-                </div>
-
-                {/* Farm Name & Crop Name */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t('farm.name')} *
-                    </label>
-                    <input
-                      type="text"
-                      value={formState.farmName}
-                      onChange={(e) => setFormState((p) => ({ ...p, farmName: e.target.value }))}
-                      placeholder="e.g. Green Valley Farm"
-                      className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                      required
-                    />
+              {/* 2. SCROLLABLE FORM BODY */}
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+                {formError && (
+                  <div className="flex items-center gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs font-semibold text-red-400">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+                    <span>{formError}</span>
                   </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t('farm.crop')} *
-                    </label>
-                    <input
-                      type="text"
-                      value={formState.cropName}
-                      onChange={(e) => setFormState((p) => ({ ...p, cropName: e.target.value }))}
-                      placeholder="e.g. Wheat, Cotton, Groundnut"
-                      className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                      required
-                    />
-                  </div>
-                </div>
+                )}
 
-                {/* Area, Area Unit, Soil Type */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <form id="farm-registration-form" onSubmit={handleSubmitForm} className="space-y-4">
+                  {/* STEP 1 BADGE & LEAFLET MAP */}
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t('farm.area')} *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0.1"
-                      value={formState.area}
-                      onChange={(e) => setFormState((p) => ({ ...p, area: parseFloat(e.target.value) || 0 }))}
-                      className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                      required
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                        📍 Step 1: Pin Location & GPS Telemetry
+                      </span>
+                    </div>
+                    <LeafletMapPicker
+                      initialLat={formState.latitude}
+                      initialLng={formState.longitude}
+                      onLocationSelect={handleLocationSelect}
+                      onGpsTelemetry={handleGpsTelemetry}
                     />
                   </div>
 
-                  {/* AREA UNIT DROPDOWN */}
-                  <div className="relative">
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Unit
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={formState.areaUnit}
-                        onChange={(e) => setFormState((p) => ({ ...p, areaUnit: e.target.value as any }))}
-                        className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 appearance-none pr-8 cursor-pointer font-semibold"
-                      >
-                        <option value="ACRE" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          ACRE
-                        </option>
-                        <option value="HECTARE" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          HECTARE
-                        </option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  {/* STEP 2 BADGE */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                      🌱 Step 2: Farm Attributes & Soil Parameters
+                    </span>
+                  </div>
+
+                  {/* Farm Name & Crop Name */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        {t('farm.name')} *
+                      </label>
+                      <input
+                        type="text"
+                        value={formState.farmName}
+                        onChange={(e) => setFormState((p) => ({ ...p, farmName: e.target.value }))}
+                        placeholder="e.g. Green Valley Farm"
+                        className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        {t('farm.crop')} *
+                      </label>
+                      <input
+                        type="text"
+                        value={formState.cropName}
+                        onChange={(e) => setFormState((p) => ({ ...p, cropName: e.target.value }))}
+                        placeholder="e.g. Wheat, Cotton, Groundnut"
+                        className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        required
+                      />
                     </div>
                   </div>
 
-                  {/* SOIL TYPE DROPDOWN */}
-                  <div className="relative">
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t('farm.soil')}
-                    </label>
+                  {/* Area, Area Unit, Soil Type */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        {t('farm.area')} *
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        value={formState.area}
+                        onChange={(e) => setFormState((p) => ({ ...p, area: parseFloat(e.target.value) || 0 }))}
+                        className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        required
+                      />
+                    </div>
+
+                    {/* AREA UNIT DROPDOWN */}
                     <div className="relative">
-                      <select
-                        value={formState.soilType}
-                        onChange={(e) => setFormState((p) => ({ ...p, soilType: e.target.value }))}
-                        className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 appearance-none pr-8 cursor-pointer font-semibold"
-                      >
-                        <option value="Black Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Black Soil
-                        </option>
-                        <option value="Red Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Red Soil
-                        </option>
-                        <option value="Alluvial Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Alluvial Soil
-                        </option>
-                        <option value="Loamy Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Loamy Soil
-                        </option>
-                        <option value="Sandy Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Sandy Soil
-                        </option>
-                        <option value="Clay Soil" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          Clay Soil
-                        </option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        Unit
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formState.areaUnit}
+                          onChange={(e) => setFormState((p) => ({ ...p, areaUnit: e.target.value as any }))}
+                          className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 appearance-none pr-8 cursor-pointer font-semibold focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        >
+                          <option value="ACRE" className="bg-slate-900 text-white py-2 font-medium">
+                            ACRE
+                          </option>
+                          <option value="HECTARE" className="bg-slate-900 text-white py-2 font-medium">
+                            HECTARE
+                          </option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* SOIL TYPE DROPDOWN */}
+                    <div className="relative">
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        {t('farm.soil')}
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formState.soilType}
+                          onChange={(e) => setFormState((p) => ({ ...p, soilType: e.target.value }))}
+                          className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 appearance-none pr-8 cursor-pointer font-semibold focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        >
+                          <option value="Black Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Black Soil
+                          </option>
+                          <option value="Red Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Red Soil
+                          </option>
+                          <option value="Alluvial Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Alluvial Soil
+                          </option>
+                          <option value="Loamy Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Loamy Soil
+                          </option>
+                          <option value="Sandy Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Sandy Soil
+                          </option>
+                          <option value="Clay Soil" className="bg-slate-900 text-white py-2 font-medium">
+                            Clay Soil
+                          </option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Sowing Date, Irrigation Type, Status */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Sowing Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={formState.sowingDate}
-                      max={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setFormState((p) => ({ ...p, sowingDate: e.target.value }))}
-                      className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t('farm.irrigation')}
-                    </label>
-                    <input
-                      type="text"
-                      value={formState.irrigationType}
-                      onChange={(e) => setFormState((p) => ({ ...p, irrigationType: e.target.value }))}
-                      placeholder="Drip, Canal, Well"
-                      className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
-                  </div>
+                  {/* Sowing Date, Irrigation Type, Status */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        Sowing Date *
+                      </label>
+                      <input
+                        type="date"
+                        value={formState.sowingDate}
+                        onChange={(e) => setFormState((p) => ({ ...p, sowingDate: e.target.value }))}
+                        className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        required
+                      />
+                    </div>
 
-                  {/* STATUS DROPDOWN */}
-                  <div className="relative">
-                    <label className="mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      Status
-                    </label>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        {t('farm.irrigation')}
+                      </label>
+                      <input
+                        type="text"
+                        value={formState.irrigationType}
+                        onChange={(e) => setFormState((p) => ({ ...p, irrigationType: e.target.value }))}
+                        placeholder="e.g. Drip, Canal, Well"
+                        className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                      />
+                    </div>
+
+                    {/* STATUS DROPDOWN */}
                     <div className="relative">
-                      <select
-                        value={formState.status}
-                        onChange={(e) => setFormState((p) => ({ ...p, status: e.target.value as any }))}
-                        className="input text-xs w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 appearance-none pr-8 cursor-pointer font-semibold"
-                      >
-                        <option value="ACTIVE" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          ACTIVE
-                        </option>
-                        <option value="INACTIVE" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-2 font-medium">
-                          INACTIVE
-                        </option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      <label className="mb-1 block text-xs font-semibold text-slate-400">
+                        Status
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formState.status}
+                          onChange={(e) => setFormState((p) => ({ ...p, status: e.target.value as any }))}
+                          className="input text-xs w-full bg-slate-950/60 text-white border border-white/10 appearance-none pr-8 cursor-pointer font-semibold focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        >
+                          <option value="ACTIVE" className="bg-slate-900 text-white py-2 font-medium">
+                            ACTIVE
+                          </option>
+                          <option value="INACTIVE" className="bg-slate-900 text-white py-2 font-medium">
+                            INACTIVE
+                          </option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Auto-populated Address Details */}
-                <div className="rounded-2xl bg-slate-500/5 p-3 border border-white/5 space-y-2 text-xs">
-                  <p className="font-semibold text-slate-400 text-[11px] uppercase">
-                    Auto-Populated Address Details (via Reverse Geocoding)
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                    <input
-                      type="text"
-                      value={formState.address.village}
-                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, village: e.target.value } }))}
-                      placeholder={t('farm.village')}
-                      title={t('farm.village')}
-                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={formState.address.taluka}
-                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, taluka: e.target.value } }))}
-                      placeholder="Taluka / Tehsil"
-                      title="Taluka / Tehsil"
-                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={formState.address.district}
-                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, district: e.target.value } }))}
-                      placeholder={t('farm.district')}
-                      title={t('farm.district')}
-                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={formState.address.state}
-                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, state: e.target.value } }))}
-                      placeholder={t('farm.state')}
-                      title={t('farm.state')}
-                      className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={formState.address.pincode}
-                      onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, pincode: e.target.value } }))}
-                      placeholder="Pincode"
-                      title="Pincode"
-                      className="input text-xs py-1.5 col-span-2 sm:col-span-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                    />
+                  {/* Auto-populated Address Details Card */}
+                  <div className="rounded-2xl bg-slate-950/70 p-3.5 border border-emerald-500/20 space-y-2 text-xs">
+                    <p className="font-bold text-emerald-400 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Auto-Populated Address Details (via Reverse Geocoding)
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      <input
+                        type="text"
+                        value={formState.address.village}
+                        onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, village: e.target.value } }))}
+                        placeholder={t('farm.village')}
+                        title={t('farm.village')}
+                        className="input text-xs py-2 bg-slate-900 text-white border border-white/10 focus:border-emerald-500"
+                      />
+                      <input
+                        type="text"
+                        value={formState.address.taluka}
+                        onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, taluka: e.target.value } }))}
+                        placeholder="Taluka / Tehsil"
+                        title="Taluka / Tehsil"
+                        className="input text-xs py-2 bg-slate-900 text-white border border-white/10 focus:border-emerald-500"
+                      />
+                      <input
+                        type="text"
+                        value={formState.address.district}
+                        onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, district: e.target.value } }))}
+                        placeholder={t('farm.district')}
+                        title={t('farm.district')}
+                        className="input text-xs py-2 bg-slate-900 text-white border border-white/10 focus:border-emerald-500"
+                      />
+                      <input
+                        type="text"
+                        value={formState.address.state}
+                        onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, state: e.target.value } }))}
+                        placeholder={t('farm.state')}
+                        title={t('farm.state')}
+                        className="input text-xs py-2 bg-slate-900 text-white border border-white/10 focus:border-emerald-500"
+                      />
+                      <input
+                        type="text"
+                        value={formState.address.pincode}
+                        onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, pincode: e.target.value } }))}
+                        placeholder="Pincode"
+                        title="Pincode"
+                        className="input text-xs py-2 col-span-2 sm:col-span-1 bg-slate-900 text-white border border-white/10 focus:border-emerald-500"
+                      />
+                    </div>
                   </div>
-                </div>
+                </form>
+              </div>
 
-                {/* Modal Footer Buttons */}
-                <div className="flex items-center justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsAddModalOpen(false);
-                      setEditingFarm(null);
-                    }}
-                    className="btn-ghost text-xs py-2.5 px-4 rounded-xl"
-                  >
-                    {t('common.cancel')}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="btn-primary text-xs py-2.5 px-5 shadow-glow flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-bold"
-                  >
-                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : editingFarm ? t('common.save') : t('farm.complete')}
-                  </button>
-                </div>
-              </form>
+              {/* 3. FIXED MODAL FOOTER */}
+              <div className="px-6 py-3.5 border-t border-white/10 flex items-center justify-end gap-3 shrink-0 bg-slate-900/95 z-10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setEditingFarm(null);
+                  }}
+                  className="btn-ghost text-xs py-2.5 px-4 rounded-xl text-slate-300 hover:text-white"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="submit"
+                  form="farm-registration-form"
+                  disabled={isSubmitting}
+                  className="btn-primary text-xs py-2.5 px-6 flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white font-extrabold shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.7)] transition-all duration-300 cursor-pointer"
+                >
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : editingFarm ? t('common.save') : t('farm.complete')}
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

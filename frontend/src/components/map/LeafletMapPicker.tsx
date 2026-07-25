@@ -301,12 +301,12 @@ export function LeafletMapPicker({
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-card bg-white dark:bg-slate-900">
-      {/* STEP 2 & STEP 9: Status Banner & Detect Location Button */}
+      {/* Top Control Bar Header */}
       {!readOnly && (
-        <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-col gap-2">
+        <div className="p-2.5 sm:p-3 bg-slate-950/90 border-b border-white/10 flex flex-col gap-2 relative z-10">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
             {/* Status Progress Indicator */}
-            <div className="flex items-center gap-2 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
+            <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-white/10 px-3 py-1.5 shadow-md">
               {statusStep === 'DETECTING' && (
                 <div className="flex items-center gap-2 text-xs font-semibold text-amber-500">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -326,17 +326,17 @@ export function LeafletMapPicker({
                 </div>
               )}
               {statusStep === 'READY' || gpsDetected ? (
-                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
                   <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                   <span>📍 Location Verified</span>
                   {accuracy !== null && (
-                    <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono">
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-mono border border-emerald-500/30">
                       Accuracy: {accuracy}m
                     </span>
                   )}
                 </div>
               ) : statusStep === 'IDLE' ? (
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
                   <MapPin className="h-4 w-4 text-emerald-500 shrink-0" />
                   <span>GPS location ready</span>
                 </div>
@@ -347,7 +347,7 @@ export function LeafletMapPicker({
             <button
               type="button"
               onClick={detectGpsLocation}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0 cursor-pointer"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-1.5 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0 cursor-pointer"
             >
               <Navigation className="h-3.5 w-3.5 animate-pulse" />
               <span>📍 Detect My Current Location</span>
@@ -356,7 +356,7 @@ export function LeafletMapPicker({
 
           {/* Search Location Input Bar */}
           <div className="relative flex-1">
-            <div className="flex items-center gap-2 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
+            <div className="flex items-center gap-2 rounded-xl bg-slate-900 border border-white/10 px-3 py-1.5 shadow-md">
               <Search className="h-4 w-4 text-emerald-500 shrink-0" />
               <input
                 type="text"
@@ -364,14 +364,14 @@ export function LeafletMapPicker({
                 onChange={handleSearchChange}
                 onFocus={() => setShowSearchResults(true)}
                 placeholder="Search village, city, district, state..."
-                className="w-full bg-transparent text-xs font-semibold outline-none text-slate-800 dark:text-white placeholder:text-slate-400"
+                className="w-full bg-transparent text-xs font-semibold outline-none text-white placeholder:text-slate-400"
               />
               {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />}
             </div>
 
             {/* Search Autocomplete & Quick Jump Dropdown */}
             {showSearchResults && (
-              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-card z-[1001] p-1.5 space-y-1">
+              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl bg-slate-900 border border-white/10 shadow-card z-[1001] p-1.5 space-y-1">
                 {(!searchQuery || searchQuery.trim().length < 2) && (
                   <div>
                     <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -383,7 +383,7 @@ export function LeafletMapPicker({
                           key={c.name}
                           type="button"
                           onClick={() => handleSelectQuickCity(c)}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all flex items-center gap-1"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all flex items-center gap-1"
                         >
                           <MapPin className="h-3 w-3 text-emerald-500" />
                           {c.name}
@@ -398,10 +398,10 @@ export function LeafletMapPicker({
                     key={i}
                     type="button"
                     onClick={() => handleSelectSearchResult(res)}
-                    className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-slate-100 dark:border-white/5"
+                    className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-white/5"
                   >
                     <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                    <span className="truncate text-slate-700 dark:text-slate-200">{res.displayName}</span>
+                    <span className="truncate text-slate-200">{res.displayName}</span>
                   </button>
                 ))}
               </div>
@@ -411,7 +411,7 @@ export function LeafletMapPicker({
       )}
 
       {/* STEP 7 & STEP 9: Leaflet Map Container at Zoom Level 17 with InvalidateSize */}
-      <div className="h-72 sm:h-80 w-full relative z-0">
+      <div className="h-56 sm:h-64 w-full relative z-0">
         <MapContainer
           center={position}
           zoom={17}
