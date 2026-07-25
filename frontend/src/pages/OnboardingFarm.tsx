@@ -47,8 +47,8 @@ export function OnboardingFarm() {
       state: 'Gujarat',
       district: 'Rajkot',
       taluka: '',
-      village: 'Kankot',
-      pincode: '360005',
+      village: '',
+      pincode: '',
     },
   });
 
@@ -63,11 +63,11 @@ export function OnboardingFarm() {
       address: {
         formattedAddress: geo.formattedAddress,
         country: geo.country || 'India',
-        state: geo.state || prev.address.state,
-        district: geo.district || prev.address.district,
-        taluka: geo.taluka || prev.address.taluka,
-        village: geo.village || prev.address.village,
-        pincode: geo.pincode || prev.address.pincode,
+        state: geo.state || '',
+        district: geo.district || '',
+        taluka: geo.taluka || '',
+        village: geo.village || '',
+        pincode: geo.pincode || '',
       },
     }));
   };
@@ -457,12 +457,21 @@ export function OnboardingFarm() {
                 <p className="font-semibold text-emerald-600 dark:text-emerald-400 text-[11px] uppercase flex items-center gap-1.5 tracking-wider">
                   <MapPin className="h-3.5 w-3.5" /> Auto-Populated Address Details (via Reverse Geocoding)
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
                   <input
                     type="text"
                     value={formState.address.village}
                     onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, village: e.target.value } }))}
-                    placeholder="Village"
+                    placeholder="Village / Locality"
+                    title="Village / Locality"
+                    className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
+                  />
+                  <input
+                    type="text"
+                    value={formState.address.taluka}
+                    onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, taluka: e.target.value } }))}
+                    placeholder="Taluka / Tehsil"
+                    title="Taluka / Tehsil"
                     className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
                   />
                   <input
@@ -470,6 +479,7 @@ export function OnboardingFarm() {
                     value={formState.address.district}
                     onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, district: e.target.value } }))}
                     placeholder="District"
+                    title="District"
                     className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
                   />
                   <input
@@ -477,6 +487,7 @@ export function OnboardingFarm() {
                     value={formState.address.state}
                     onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, state: e.target.value } }))}
                     placeholder="State"
+                    title="State"
                     className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
                   />
                   <input
@@ -484,7 +495,8 @@ export function OnboardingFarm() {
                     value={formState.address.pincode}
                     onChange={(e) => setFormState((p) => ({ ...p, address: { ...p.address, pincode: e.target.value } }))}
                     placeholder="Pincode"
-                    className="input text-xs py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
+                    title="Pincode"
+                    className="input text-xs py-1.5 col-span-2 sm:col-span-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10"
                   />
                 </div>
               </div>

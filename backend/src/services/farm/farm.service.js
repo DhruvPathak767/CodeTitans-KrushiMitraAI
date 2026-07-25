@@ -1,6 +1,34 @@
 import farmRepository from '../../repositories/farm/farm.repository.js';
 import { USER_ROLES } from '../../models/User.js';
 
+function cleanAdminName(name, districtName) {
+  if (!name) return '';
+  let cleaned = name.replace(/\s*(taluka|tehsil|subdistrict|block)\b/gi, '').trim();
+  if (districtName) {
+    const stripped = cleaned.replace(/\s*(rural|city)\b/gi, '').trim();
+    if (stripped.toLowerCase() === districtName.toLowerCase()) {
+      return districtName;
+    }
+  }
+  return cleaned;
+}
+
+function dedupeAddressParts(parts) {
+  const seen = new Set();
+  const result = [];
+  for (const p of parts) {
+    if (!p || typeof p !== 'string') continue;
+    const trimmed = p.trim();
+    if (!trimmed) continue;
+    const lower = trimmed.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      result.push(trimmed);
+    }
+  }
+  return result;
+}
+
 class FarmService {
   /**
    * Create Farm Flow
@@ -13,14 +41,27 @@ class FarmService {
       coordinates: [Number(longitude), Number(latitude)],
     };
 
+    const district = address.district || '';
+    const taluka = cleanAdminName(address.taluka || '', district);
+    const village = address.village || '';
+    const state = address.state || '';
+    const pincode = address.pincode || '';
+    const country = address.country || 'India';
+
+    const cleanParts = dedupeAddressParts([village, taluka, district, state, pincode, country]);
+    const computedFormattedAddress = cleanParts.join(', ');
+
     const formattedAddress = {
-      formattedAddress: address.formattedAddress || `${address.village || ''}, ${address.district || ''}, ${address.state || ''}`.replace(/^, |, $/g, ''),
-      country: address.country || 'India',
-      state: address.state || '',
-      district: address.district || '',
-      taluka: address.taluka || '',
-      village: address.village || '',
-      pincode: address.pincode || '',
+      formattedAddress:
+        address.formattedAddress && !address.formattedAddress.includes('Taluka')
+          ? address.formattedAddress
+          : computedFormattedAddress,
+      country,
+      state,
+      district,
+      taluka,
+      village,
+      pincode,
       latitude: Number(latitude),
       longitude: Number(longitude),
     };
@@ -112,14 +153,28 @@ class FarmService {
       const newLat = latitude !== undefined ? Number(latitude) : currentAddress.latitude;
       const newLng = longitude !== undefined ? Number(longitude) : currentAddress.longitude;
 
+      const district = address?.district !== undefined ? address.district : currentAddress.district || '';
+      const rawTaluka = address?.taluka !== undefined ? address.taluka : currentAddress.taluka || '';
+      const taluka = cleanAdminName(rawTaluka, district);
+      const village = address?.village !== undefined ? address.village : currentAddress.village || '';
+      const state = address?.state !== undefined ? address.state : currentAddress.state || '';
+      const pincode = address?.pincode !== undefined ? address.pincode : currentAddress.pincode || '';
+      const country = address?.country || currentAddress.country || 'India';
+
+      const cleanParts = dedupeAddressParts([village, taluka, district, state, pincode, country]);
+      const computedFormattedAddress = cleanParts.join(', ');
+
       updatePayload.address = {
-        formattedAddress: address?.formattedAddress || currentAddress.formattedAddress || '',
-        country: address?.country || currentAddress.country || 'India',
-        state: address?.state || currentAddress.state || '',
-        district: address?.district || currentAddress.district || '',
-        taluka: address?.taluka || currentAddress.taluka || '',
-        village: address?.village || currentAddress.village || '',
-        pincode: address?.pincode || currentAddress.pincode || '',
+        formattedAddress:
+          address?.formattedAddress && !address.formattedAddress.includes('Taluka')
+            ? address.formattedAddress
+            : computedFormattedAddress,
+        country,
+        state,
+        district,
+        taluka,
+        village,
+        pincode,
         latitude: newLat,
         longitude: newLng,
       };
