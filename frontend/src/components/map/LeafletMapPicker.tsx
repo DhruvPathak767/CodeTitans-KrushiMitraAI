@@ -122,42 +122,28 @@ export function LeafletMapPicker({
     handleLocationUpdate(lat, lng);
   };
 
-  // Browser Geolocation API with fallback
+  // Browser Geolocation API
   const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
-      return;
-    }
-
-    setLoadingAddress(true);
-
-    const onSuccess = (pos: GeolocationPosition) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      setPosition([lat, lng]);
-      handleLocationUpdate(lat, lng);
-    };
-
-    const onErrorHigh = (error: GeolocationPositionError) => {
-      console.warn('High accuracy geolocation failed or timed out, trying standard accuracy...', error.message);
-      // Fallback: Retry with standard network accuracy
+    if (navigator.geolocation) {
+      setLoadingAddress(true);
       navigator.geolocation.getCurrentPosition(
-        onSuccess,
-        (errLow) => {
-          setLoadingAddress(false);
-          alert(
-            `Location access failed (${errLow.message}). Please check location permissions or paste/search your location on the map.`
-          );
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          console.log(`Location: ${lat}, ${lon}`);
+          setPosition([lat, lon]);
+          handleLocationUpdate(lat, lon);
         },
-        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        (error) => {
+          console.error(`Error: ${error.message}`);
+          setLoadingAddress(false);
+          alert(`Error: ${error.message}`);
+        }
       );
-    };
-
-    navigator.geolocation.getCurrentPosition(onSuccess, onErrorHigh, {
-      enableHighAccuracy: true,
-      timeout: 8000,
-      maximumAge: 10000,
-    });
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+      alert("Geolocation is not supported by this browser.");
+    }
   };
 
   // Search input change handler with debouncing
