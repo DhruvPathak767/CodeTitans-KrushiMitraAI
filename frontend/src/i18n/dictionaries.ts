@@ -293,6 +293,163 @@ const en: Dict = {
   'onboard.step1': 'Farm Details',
   'onboard.step2': 'Location & Map',
   'onboard.step3': 'Complete',
+
+  // ─── Bottom Navigation ───
+  'bottomNav.home': 'Home',
+  'bottomNav.farm': 'My Farm',
+  'bottomNav.market': 'Market',
+  'bottomNav.profile': 'Profile',
+  'nav.main': 'Main Navigation',
+
+  // ─── Greetings ───
+  'greeting.morning': 'Good Morning',
+  'greeting.afternoon': 'Good Afternoon',
+  'greeting.evening': 'Good Evening',
+  'common.farmer': 'Farmer',
+
+  // ─── Home Page ───
+  'home.farmStatus': 'Farm Status',
+  'home.farmStatusSubtitle': "Today's Farm Status",
+  'home.quickActions': 'Quick Actions',
+
+  // Home Action Cards
+  'home.diseaseScan.title': 'Disease Detection',
+  'home.diseaseScan.desc': 'Scan crop leaf for disease',
+  'home.scanCrop': 'Scan Crop',
+  'home.advisory.title': 'Crop Advisory',
+  'home.advisory.desc': 'Know what to do today',
+  'home.viewAdvisory': 'View Advisory',
+  'home.weather.title': 'Weather',
+  'home.weather.desc': 'Weather forecast',
+  'home.viewWeather': 'View Weather',
+  'home.irrigation.title': 'Irrigation',
+  'home.irrigation.desc': 'Check irrigation need',
+  'home.checkWater': 'Check Water Need',
+
+  // ─── Farm Status Hero ───
+  'farmStatus.rainExpected': 'Rain expected today',
+  'farmStatus.irrigationNeeded': 'Irrigation recommended',
+  'farmStatus.irrigationNotNeeded': 'Irrigation not recommended',
+  'farmStatus.diseaseRisk': 'Disease risk detected',
+  'farm.acres': 'Acres',
+
+  // ─── Today's Tasks ───
+  'tasks.today': "Today's Tasks",
+  'tasks.progress': 'Progress',
+  'tasks.captureImage': 'Capture crop image',
+  'tasks.irrigate': 'Irrigate fields',
+  'tasks.skipIrrigation': 'Skip irrigation today',
+  'tasks.checkMarket': 'Check market prices',
+
+  // ─── Alerts ───
+  'alerts.recent': 'Recent Alerts',
+  'alerts.heavyRain': 'Heavy Rain Expected',
+  'alerts.rainProbability': 'rain probability',
+  'alerts.diseaseRisk': 'Disease Risk Alert',
+  'alerts.advisoryWarning': 'Advisory Warning',
+
+  // ─── Profile ───
+  'profile.language': 'Language',
+  'profile.theme': 'App Theme',
+  'profile.lightMode': 'Light Mode',
+  'profile.darkMode': 'Dark Mode',
+  'profile.manageFarms': 'Manage Farms',
+  'profile.reports': 'Reports & History',
+  'profile.notifications': 'Notification Settings',
+  'profile.aiHelp': 'AI Help',
+  'profile.schemes': 'Government Schemes',
+
+  // ─── Navigation ───
+  'nav.back': 'Back',
+
+  // ─── UI States ───
+  'state.loading': 'Loading...',
+  'state.retry': 'Retry',
+  'state.noData': 'No data available',
+  'state.error': 'Something went wrong',
+  'state.checkingFarm': 'Checking farm status...',
+  'state.authenticating': 'Authenticating...',
+
+  // ─── Extended Home & Dashboard ───
+  'home.hero.tag': 'Farmer Guidance Platform',
+  'home.farmStatusTitle': "TODAY'S FARM STATUS",
+  'home.primaryActions': 'Primary Farming Actions',
+  'home.singleTap': 'Single Tap Access',
+  'home.badge.cameraScanner': 'AI CAMERA SCANNER',
+  'home.badge.actionPlan': '7-DAY ACTION PLAN',
+  'home.badge.satelliteWeather': 'LIVE SATELLITE WEATHER',
+  'home.badge.smartWater': 'SMART WATER SAVING',
+
+  // Status Pills
+  'status.rainExpected': 'Rain Expected at 4 PM (18mm)',
+  'status.noIrrigation': 'Irrigation Not Recommended Today',
+  'status.fertilizerTomorrow': 'Wheat requires fertilizer tomorrow',
+  'status.diseaseDetected': 'Possible leaf disease detected',
+  'status.marketPriceUp': 'Market Price ↑ +₹120 today (₹2,450)',
+
+  // Krishi Guide Workflow
+  'guide.workflow': 'Krishi Guide Daily Workflow',
+  'guide.nextStep': 'Next Step ➔',
+  'guide.actionToday': 'ACTION TODAY',
+  'guide.step1.title': 'Step 1: Capture Crop Photo',
+  'guide.step1.sub': 'Scan wheat crop leaf for pest or fungus detection',
+  'guide.step1.action': 'Camera scanner connects with AI leaf diagnostic engine.',
+  'guide.step1.cta': 'Scan Leaf Now',
+
+  'guide.step2.title': 'Step 2: Disease Risk Evaluation',
+  'guide.step2.sub': 'Check leaf diagnosis for yellow rust or leaf spot symptoms',
+  'guide.step2.action': 'AI vision model performs multi-stage feature analysis.',
+  'guide.step2.cta': 'View Disease Risk',
+
+  'guide.step3.title': 'Step 3: Recommended Action',
+  'guide.step3.sub': 'Apply recommended organic or chemical treatment if needed',
+  'guide.step3.action': 'Groq LLM generates tailored treatment steps for your farm.',
+  'guide.step3.cta': 'View Treatment Plan',
+
+  'guide.step4.title': 'Step 4: Irrigation Schedule',
+  'guide.step4.sub': 'Skip irrigation today due to 75% afternoon rain probability',
+  'guide.step4.action': 'Soil moisture telemetry avoids waterlogging risk.',
+  'guide.step4.cta': 'Check Irrigation Details',
+
+  'guide.step5.title': 'Step 5: Mandi Price Review',
+  'guide.step5.sub': 'Wheat mandi prices ↑ +₹120 today (₹2,450/qtl in Rajkot APMC)',
+  'guide.step5.action': 'AI price engine recommends holding stock for 5 days.',
+  'guide.step5.cta': 'Check Market Strategy',
+
+  // Tasks
+  'tasks.plannerTag': 'DAILY PLANNER INTEGRATION',
+  'tasks.sprayPesticide': 'Spray pesticide at 8 AM',
+  'tasks.applyFertilizer': 'Apply NPK fertilizer to Wheat plot',
+  'tasks.prepareIrrigation': 'Prepare irrigation channels for tomorrow',
+  'tasks.highPriority': 'High Priority',
+  'tasks.mediumPriority': 'Medium Priority',
+  'tasks.lowPriority': 'Low Priority',
+
+  // Market & Schemes
+  'market.trendsTag': 'Mandi Price Trends',
+  'market.bestMandi': 'Best Mandi: Rajkot',
+  'market.todayPrices': "Today's Crop Prices",
+  'market.viewFull': 'View Full Market Prices & Mandi Comparison',
+  'crop.wheat': 'Wheat (Lokwan)',
+  'crop.cotton': 'Cotton (Kapas)',
+
+  'schemes.verifiedTag': 'Verified Govt Subsidies',
+  'schemes.homeTitle': 'Government Schemes For You',
+  'schemes.exploreAll': 'Explore All Eligible Schemes',
+  'schemes.pmKisan.name': 'PM-KISAN Samman Nidhi',
+  'schemes.pmKisan.desc': '₹6,000 / year direct transfer. Next installment due in 12 days.',
+  'schemes.bima.name': 'PM Fasal Bima Yojana',
+  'schemes.bima.desc': 'Comprehensive crop insurance coverage against heavy rainfall & pests.',
+
+  // Sidebar & TopBar
+  'sidebar.primaryActions': 'Primary Actions',
+  'sidebar.activeField': 'Active Field',
+  'sidebar.gpsLive': 'GPS Live',
+  'topbar.myProfile': 'My Profile',
+
+  // ─── Krishi Guide ───
+  'guide.title': "Today's Guidance",
+  'guide.step': 'Step',
 };
 
 const hi: Dict = {
@@ -579,6 +736,161 @@ const hi: Dict = {
   'onboard.step1': 'खेत विवरण',
   'onboard.step2': 'स्थान और नक्शा',
   'onboard.step3': 'पूर्ण',
+
+  // ─── Bottom Navigation ───
+  'bottomNav.home': 'होम',
+  'bottomNav.farm': 'मेरा खेत',
+  'bottomNav.market': 'बाजार',
+  'bottomNav.profile': 'प्रोफ़ाइल',
+  'nav.main': 'मुख्य नेविगेशन',
+
+  // ─── Greetings ───
+  'greeting.morning': 'सुप्रभात',
+  'greeting.afternoon': 'नमस्कार',
+  'greeting.evening': 'शुभ संध्या',
+  'common.farmer': 'किसान',
+
+  // ─── Home Page ───
+  'home.farmStatus': 'खेत की स्थिति',
+  'home.farmStatusSubtitle': 'आज की खेत स्थिति',
+  'home.quickActions': 'त्वरित कार्य',
+  'home.diseaseScan.title': 'रोग पहचान',
+  'home.diseaseScan.desc': 'फसल पत्ती को स्कैन करें',
+  'home.scanCrop': 'फसल स्कैन करें',
+  'home.advisory.title': 'फसल सलाह',
+  'home.advisory.desc': 'आज क्या करना है जानें',
+  'home.viewAdvisory': 'सलाह देखें',
+  'home.weather.title': 'मौसम',
+  'home.weather.desc': 'मौसम पूर्वानुमान',
+  'home.viewWeather': 'मौसम देखें',
+  'home.irrigation.title': 'सिंचाई',
+  'home.irrigation.desc': 'सिंचाई जरूरत जांचें',
+  'home.checkWater': 'पानी जरूरत जांचें',
+
+  // ─── Farm Status ───
+  'farmStatus.rainExpected': 'आज बारिश की संभावना',
+  'farmStatus.irrigationNeeded': 'सिंचाई जरूरी है',
+  'farmStatus.irrigationNotNeeded': 'सिंचाई जरूरी नहीं',
+  'farmStatus.diseaseRisk': 'रोग का खतरा पाया गया',
+  'farm.acres': 'एकड़',
+
+  // ─── Tasks ───
+  'tasks.today': 'आज के कार्य',
+  'tasks.progress': 'प्रगति',
+  'tasks.captureImage': 'फसल की तस्वीर लें',
+  'tasks.irrigate': 'खेत में सिंचाई करें',
+  'tasks.skipIrrigation': 'आज सिंचाई छोड़ें',
+  'tasks.checkMarket': 'बाजार भाव देखें',
+
+  // ─── Alerts ───
+  'alerts.recent': 'हालिया सूचनाएं',
+  'alerts.heavyRain': 'भारी बारिश की संभावना',
+  'alerts.rainProbability': 'बारिश संभावना',
+  'alerts.diseaseRisk': 'रोग खतरा सूचना',
+  'alerts.advisoryWarning': 'सलाह चेतावनी',
+
+  // ─── Profile ───
+  'profile.language': 'भाषा',
+  'profile.theme': 'ऐप थीम',
+  'profile.lightMode': 'लाइट मोड',
+  'profile.darkMode': 'डार्क मोड',
+  'profile.manageFarms': 'खेत प्रबंधन',
+  'profile.reports': 'रिपोर्ट और इतिहास',
+  'profile.notifications': 'सूचना सेटिंग',
+  'profile.aiHelp': 'AI सहायता',
+  'profile.schemes': 'सरकारी योजनाएं',
+
+  // ─── Navigation ───
+  'nav.back': 'वापस जाएं',
+
+  // ─── States ───
+  'state.loading': 'लोड हो रहा है...',
+  'state.retry': 'पुनः प्रयास',
+  'state.noData': 'कोई डेटा उपलब्ध नहीं',
+  'state.error': 'कुछ गलत हो गया',
+  'state.checkingFarm': 'खेत स्थिति जांच रहे हैं...',
+  'state.authenticating': 'प्रमाणीकरण हो रहा है...',
+
+  // ─── Extended Home & Dashboard (Hindi) ───
+  'home.hero.tag': 'किसान मार्गदर्शन प्लेटफॉर्म',
+  'home.farmStatusTitle': 'आज की खेत स्थिति',
+  'home.primaryActions': 'मुख्य कृषि कार्य',
+  'home.singleTap': 'एक टैप में पहुंच',
+  'home.badge.cameraScanner': 'AI कैमरा स्कैनर',
+  'home.badge.actionPlan': '7-दिवसीय कार्य योजना',
+  'home.badge.satelliteWeather': 'लाइव सैटेलाइट मौसम',
+  'home.badge.smartWater': 'स्मार्ट जल बचत',
+
+  // Status Pills
+  'status.rainExpected': 'शाम 4 बजे बारिश की संभावना (18mm)',
+  'status.noIrrigation': 'आज सिंचाई की सलाह नहीं है',
+  'status.fertilizerTomorrow': 'गेहूं की फसल को कल उर्वरक चाहिए',
+  'status.diseaseDetected': 'पत्ती रोग की संभावना पहचानी गई',
+  'status.marketPriceUp': 'मंडी भाव ↑ +₹120 आज (₹2,450)',
+
+  // Krishi Guide Workflow
+  'guide.workflow': 'कृषि गाइड दैनिक कार्यप्रवाह',
+  'guide.nextStep': 'अगला कदम ➔',
+  'guide.actionToday': 'आज का कार्य',
+  'guide.step1.title': 'चरण 1: फसल फोटो लें',
+  'guide.step1.sub': 'कीट या फफूंद पहचान के लिए गेहूं पत्ती स्कैन करें',
+  'guide.step1.action': 'कैमरा स्कैनर AI लीफ डायग्नोस्टिक इंजन से जुड़ता है।',
+  'guide.step1.cta': 'अभी पत्ती स्कैन करें',
+
+  'guide.step2.title': 'चरण 2: रोग जोखिम मूल्यांकन',
+  'guide.step2.sub': 'पीला रतुआ या धब्बा रोग के लक्षणों की जांच करें',
+  'guide.step2.action': 'AI विज़न मॉडल बहु-स्तरीय सुविधा विश्लेषण करता है।',
+  'guide.step2.cta': 'रोग जोखिम देखें',
+
+  'guide.step3.title': 'चरण 3: अनुशंसित कार्रवाई',
+  'guide.step3.sub': 'आवश्यकतानुसार अनुशंसित जैविक या रासायनिक उपचार लागू करें',
+  'guide.step3.action': 'Groq LLM आपके खेत के लिए विशेष उपचार तैयार करता है।',
+  'guide.step3.cta': 'उपचार योजना देखें',
+
+  'guide.step4.title': 'चरण 4: सिंचाई कार्यक्रम',
+  'guide.step4.sub': 'दोपहर 75% बारिश संभावना के कारण आज सिंचाई टालें',
+  'guide.step4.action': 'मृदा नमी जलभराव जोखिम को रोकती है।',
+  'guide.step4.cta': 'सिंचाई विवरण देखें',
+
+  'guide.step5.title': 'चरण 5: मंडी भाव समीक्षा',
+  'guide.step5.sub': 'गेहूं मंडी भाव ↑ +₹120 आज (राजकोट APMC में ₹2,450/क्विंटल)',
+  'guide.step5.action': 'AI मूल्य इंजन 5 दिनों तक स्टॉक रोकने की सलाह देता है।',
+  'guide.step5.cta': 'बाजार रणनीति देखें',
+
+  // Tasks
+  'tasks.plannerTag': 'दैनिक योजना एकीकरण',
+  'tasks.sprayPesticide': 'सुबह 8 बजे कीटनाशक छिड़कें',
+  'tasks.applyFertilizer': 'गेहूं खेत में NPK उर्वरक डालें',
+  'tasks.prepareIrrigation': 'कल के लिए सिंचाई चैनल तैयार करें',
+  'tasks.highPriority': 'उच्च प्राथमिकता',
+  'tasks.mediumPriority': 'मध्यम प्राथमिकता',
+  'tasks.lowPriority': 'कम प्राथमिकता',
+
+  // Market & Schemes
+  'market.trendsTag': 'मंडी भाव रुझान',
+  'market.bestMandi': 'सर्वश्रेष्ठ मंडी: राजकोट',
+  'market.todayPrices': 'आज के फसल भाव',
+  'market.viewFull': 'सभी मंडी भाव और तुलना देखें',
+  'crop.wheat': 'गेहूं (लोकवन)',
+  'crop.cotton': 'कपास (कॉटन)',
+
+  'schemes.verifiedTag': 'सत्यापित सरकारी सब्सिडी',
+  'schemes.homeTitle': 'आपके लिए सरकारी योजनाएं',
+  'schemes.exploreAll': 'सभी पात्र योजनाएं देखें',
+  'schemes.pmKisan.name': 'पीएम-किसान सम्मान निधि',
+  'schemes.pmKisan.desc': '₹6,000 / वर्ष प्रत्यक्ष हस्तांतरण। अगली किश्त 12 दिनों में देय है।',
+  'schemes.bima.name': 'पीएम फसल बीमा योजना',
+  'schemes.bima.desc': 'भारी बारिश और कीटों के खिलाफ व्यापक फसल बीमा सुरक्षा।',
+
+  // Sidebar & TopBar
+  'sidebar.primaryActions': 'मुख्य कार्य',
+  'sidebar.activeField': 'सक्रिय खेत',
+  'sidebar.gpsLive': 'GPS लाइव',
+  'topbar.myProfile': 'मेरी प्रोफ़ाइल',
+
+  // ─── Guide ───
+  'guide.title': 'आज की मार्गदर्शिका',
+  'guide.step': 'चरण',
 };
 
 const gu: Dict = {
@@ -865,6 +1177,161 @@ const gu: Dict = {
   'onboard.step1': 'ખેતર વિગત',
   'onboard.step2': 'સ્થાન અને નકશો',
   'onboard.step3': 'પૂર્ણ',
+
+  // ─── Bottom Navigation ───
+  'bottomNav.home': 'હોમ',
+  'bottomNav.farm': 'મારું ખેતર',
+  'bottomNav.market': 'બજાર',
+  'bottomNav.profile': 'પ્રોફાઇલ',
+  'nav.main': 'મુખ્ય નેવિગેશન',
+
+  // ─── Greetings ───
+  'greeting.morning': 'સુપ્રભાત',
+  'greeting.afternoon': 'નમસ્કાર',
+  'greeting.evening': 'શુભ સાંજ',
+  'common.farmer': 'ખેડૂત',
+
+  // ─── Home Page ───
+  'home.farmStatus': 'ખેતર સ્થિતિ',
+  'home.farmStatusSubtitle': 'આજની ખેતર સ્થિતિ',
+  'home.quickActions': 'ઝડપી ક્રિયાઓ',
+  'home.diseaseScan.title': 'રોગ ઓળખ',
+  'home.diseaseScan.desc': 'પાક પાન સ્કેન કરો',
+  'home.scanCrop': 'પાક સ્કેન કરો',
+  'home.advisory.title': 'પાક સલાહ',
+  'home.advisory.desc': 'આજે શું કરવું જાણો',
+  'home.viewAdvisory': 'સલાહ જુઓ',
+  'home.weather.title': 'હવામાન',
+  'home.weather.desc': 'હવામાન આગાહી',
+  'home.viewWeather': 'હવામાન જુઓ',
+  'home.irrigation.title': 'સિંચાઈ',
+  'home.irrigation.desc': 'સિંચાઈ જરૂરિયાત ચકાસો',
+  'home.checkWater': 'પાણી જરૂરિયાત ચકાસો',
+
+  // ─── Farm Status ───
+  'farmStatus.rainExpected': 'આજે વરસાદની શક્યતા',
+  'farmStatus.irrigationNeeded': 'સિંચાઈ જરૂરી છે',
+  'farmStatus.irrigationNotNeeded': 'સિંચાઈ જરૂરી નથી',
+  'farmStatus.diseaseRisk': 'રોગનું જોખમ મળ્યું',
+  'farm.acres': 'એકર',
+
+  // ─── Tasks ───
+  'tasks.today': 'આજના કાર્યો',
+  'tasks.progress': 'પ્રગતિ',
+  'tasks.captureImage': 'પાકનો ફોટો લો',
+  'tasks.irrigate': 'ખેતરમાં સિંચાઈ કરો',
+  'tasks.skipIrrigation': 'આજે સિંચાઈ છોડો',
+  'tasks.checkMarket': 'બજાર ભાવ જુઓ',
+
+  // ─── Alerts ───
+  'alerts.recent': 'તાજેતરની સૂચનાઓ',
+  'alerts.heavyRain': 'ભારે વરસાદની શક્યતા',
+  'alerts.rainProbability': 'વરસાદ સંભાવના',
+  'alerts.diseaseRisk': 'રોગ જોખમ સૂચના',
+  'alerts.advisoryWarning': 'સલાહ ચેતવણી',
+
+  // ─── Profile ───
+  'profile.language': 'ભાષા',
+  'profile.theme': 'એપ થીમ',
+  'profile.lightMode': 'લાઈટ મોડ',
+  'profile.darkMode': 'ડાર્ક મોડ',
+  'profile.manageFarms': 'ખેતર વ્યવસ્થાપન',
+  'profile.reports': 'અહેવાલ અને ઇતિહાસ',
+  'profile.notifications': 'સૂચના સેટિંગ',
+  'profile.aiHelp': 'AI મદદ',
+  'profile.schemes': 'સરકારી યોજનાઓ',
+
+  // ─── Navigation ───
+  'nav.back': 'પાછા જાઓ',
+
+  // ─── States ───
+  'state.loading': 'લોડ થઈ રહ્યું છે...',
+  'state.retry': 'ફરી પ્રયાસ',
+  'state.noData': 'કોઈ ડેટા ઉપલબ્ધ નથી',
+  'state.error': 'કંઈક ખોટું થયું',
+  'state.checkingFarm': 'ખેતર સ્થિતિ ચકાસી રહ્યાં છે...',
+  'state.authenticating': 'પ્રમાણીકરણ થઈ રહ્યું છે...',
+
+  // ─── Extended Home & Dashboard (Gujarati) ───
+  'home.hero.tag': 'ખેડૂત માર્ગદર્શન પ્લેટફોર્મ',
+  'home.farmStatusTitle': 'આજની ખેતર સ્થિતિ',
+  'home.primaryActions': 'મુખ્ય કૃષિ કાર્યો',
+  'home.singleTap': 'એક ટેપમાં ઍક્સેસ',
+  'home.badge.cameraScanner': 'AI કેમેરા સ્કેનર',
+  'home.badge.actionPlan': '7-દિવસીય કાર્ય યોજના',
+  'home.badge.satelliteWeather': 'લાઇવ સેટેલાઇટ હવામાન',
+  'home.badge.smartWater': 'સ્માર્ટ પાણી બચત',
+
+  // Status Pills
+  'status.rainExpected': 'સાંજે 4 વાગ્યે વરસાદની શક્યતા (18mm)',
+  'status.noIrrigation': 'આજે પિયત આપવાની ભલામણ નથી',
+  'status.fertilizerTomorrow': 'ઘઉંના પાકને કાલે ખાતર આપવું',
+  'status.diseaseDetected': 'પાનના રોગની શક્યતા જણાઈ છે',
+  'status.marketPriceUp': 'માર્કેટ ભાવ ↑ +₹120 આજે (₹2,450)',
+
+  // Krishi Guide Workflow
+  'guide.workflow': 'કૃષિ ગાઇડ દૈનિક કાર્યપ્રવાહ',
+  'guide.nextStep': 'આગળનું પગલું ➔',
+  'guide.actionToday': 'આજનું કાર્ય',
+  'guide.step1.title': 'પગલું 1: પાકનો ફોટો લો',
+  'guide.step1.sub': 'જીવાત અથવા ફૂગની ઓળખ માટે ઘઉંના પાન સ્કેન કરો',
+  'guide.step1.action': 'કેમેરા સ્કેનર AI લીફ ડાયગ્નોસ્ટિક એન્જિન સાથે જોડાય છે.',
+  'guide.step1.cta': 'અત્યારે પાન સ્કેન કરો',
+
+  'guide.step2.title': 'પગલું 2: રોગ જોખમ મૂલ્યાંકન',
+  'guide.step2.sub': 'પીળો ગેરુ અથવા ટપકા રોગના લક્ષણો તપાસો',
+  'guide.step2.action': 'AI વિઝન મોડેલ મલ્ટી-સ્ટેજ વિશ્લેષણ કરે છે.',
+  'guide.step2.cta': 'રોગ જોખમ જુઓ',
+
+  'guide.step3.title': 'પગલું 3: ભલામણ કરેલ પગલાં',
+  'guide.step3.sub': 'જરૂરિયાત મુજબ જૈવિક અથવા રાસાયણિક ઉપચાર કરો',
+  'guide.step3.action': 'Groq LLM તમારા ખેતર માટે વિશેષ સારવાર બનાવે છે.',
+  'guide.step3.cta': 'સારવાર યોજના જુઓ',
+
+  'guide.step4.title': 'પગલું 4: પિયત સમયપત્રક',
+  'guide.step4.sub': 'બપોરે 75% વરસાદની શક્યતા હોવાથી આજે પિયત ટાળો',
+  'guide.step4.action': 'જમીનની ભેજ ભરાઈ જવાનું જોખમ અટકાવે છે.',
+  'guide.step4.cta': 'પિયત વિગતો જુઓ',
+
+  'guide.step5.title': 'પગલું 5: મંડી ભાવ સમીક્ષા',
+  'guide.step5.sub': 'ઘઉંના મંડી ભાવ ↑ +₹120 આજે (રાજકોટ APMC માં ₹2,450/ક્વિન્ટલ)',
+  'guide.step5.action': 'AI ભાવ એન્જિન 5 દિવસ સ્ટોક જાળવી રાખવાની સલાહ આપે છે.',
+  'guide.step5.cta': 'બજાર વ્યૂહરચના જુઓ',
+
+  // Tasks
+  'tasks.plannerTag': 'દૈનિક યોજના સંકલન',
+  'tasks.sprayPesticide': 'સવારે 8 વાગ્યે જંતુનાશક છાંટો',
+  'tasks.applyFertilizer': 'ઘઉંના ખેતરમાં NPK ખાતર નાખો',
+  'tasks.prepareIrrigation': 'આવતીકાલ માટે પિયત ધોરિયા તૈયાર કરો',
+  'tasks.highPriority': 'ઉચ્ચ પ્રાધાન્ય',
+  'tasks.mediumPriority': 'મધ્યમ પ્રાધાન્ય',
+  'tasks.lowPriority': 'ઓછું પ્રાધાન્ય',
+
+  // Market & Schemes
+  'market.trendsTag': 'મંડી ભાવ વલણો',
+  'market.bestMandi': 'શ્રેષ્ઠ મંડી: રાજકોટ',
+  'market.todayPrices': 'આજના પાક ભાવ',
+  'market.viewFull': 'તમામ મંડી ભાવ અને સરખામણી જુઓ',
+  'crop.wheat': 'ઘઉં (લોકવન)',
+  'crop.cotton': 'કપાસ (કોટન)',
+
+  'schemes.verifiedTag': 'ચકાસાયેલ સરકારી સબસીડી',
+  'schemes.homeTitle': 'તમારા માટે સરકારી યોજનાઓ',
+  'schemes.exploreAll': 'તમામ પાત્ર યોજનાઓ જુઓ',
+  'schemes.pmKisan.name': 'પીએમ-કિશાન સન્માન નિધિ',
+  'schemes.pmKisan.desc': '₹6,000 / વર્ષ સીધી સહાય. આગામી હપ્તો 12 દિવસમાં ચૂકવાશે.',
+  'schemes.bima.name': 'પીએમ ફસલ વીમા યોજના',
+  'schemes.bima.desc': 'ભારે વરસાદ અને કીટકો સામે વ્યાપક પાક વીમા સંરક્ષણ.',
+
+  // Sidebar & TopBar
+  'sidebar.primaryActions': 'મુખ્ય કાર્યો',
+  'sidebar.activeField': 'સક્રિય ખેતર',
+  'sidebar.gpsLive': 'GPS લાઈવ',
+  'topbar.myProfile': 'મારી પ્રોફાઇલ',
+
+  // ─── Guide ───
+  'guide.title': 'આજની માર્ગદર્શિકા',
+  'guide.step': 'પગલું',
 };
 
 

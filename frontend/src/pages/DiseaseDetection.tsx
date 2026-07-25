@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Upload, ScanLine, Sparkles, RotateCcw,
+  Upload, ScanLine, Sparkles, RotateCcw, Camera,
   AlertCircle, Shield, Cpu, Zap, Trash2, RefreshCw, CheckCircle, Loader2,
   Eye, History, X, FileImage, ExternalLink, Clock, Pill, Sprout,
 } from 'lucide-react';
@@ -64,6 +64,7 @@ export function DiseaseDetection() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try {
@@ -429,6 +430,7 @@ export function DiseaseDetection() {
                 </div>
 
                 <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} className="hidden" />
+                <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
 
                 {/* Progress / Loading Bar */}
                 {uploading && (
@@ -573,13 +575,24 @@ export function DiseaseDetection() {
                 )}
 
                 {!uploadedData && (
-                  <button
-                    onClick={() => fileRef.current?.click()}
-                    disabled={uploading}
-                    className="btn-primary shadow-glow disabled:opacity-50"
-                  >
-                    <Upload className="h-4 w-4" /> Select Leaf Image
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={() => cameraRef.current?.click()}
+                      disabled={uploading}
+                      className="btn-primary shadow-glow disabled:opacity-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-2xl min-h-[56px] text-base"
+                    >
+                      <Camera className="h-5 w-5" />
+                      <span>Take Photo from Camera</span>
+                    </button>
+                    <button
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading}
+                      className="btn-secondary disabled:opacity-50 flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3.5 px-6 rounded-2xl min-h-[56px] text-base border border-slate-700"
+                    >
+                      <Upload className="h-5 w-5 text-emerald-400" />
+                      <span>Choose File from Device</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </Card>

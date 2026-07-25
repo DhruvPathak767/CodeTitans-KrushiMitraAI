@@ -1,9 +1,24 @@
 import os
-import joblib
-import pandas as pd
-import numpy as np
 import logging
 from datetime import datetime, timedelta
+
+try:
+    import joblib
+except Exception:
+    joblib = None
+
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except Exception:
+    pd = None
+    HAS_PANDAS = False
+
+try:
+    import numpy as np
+except Exception:
+    np = None
+
 from app.services.dataset_loader import dataset_loader_singleton
 
 logger = logging.getLogger("price_prediction_service")
@@ -25,7 +40,7 @@ class PricePredictionService:
         """
         Pre-loads random_forest.joblib model bundle into memory ONCE during application startup.
         """
-        if self.model_bundle is not None:
+        if self.model_bundle is not None or joblib is None:
             return
 
         if model_path is None:
@@ -47,16 +62,21 @@ class PricePredictionService:
         Generate price predictions for Today, 3 Days, 7 Days, 15 Days.
         """
         df = dataset_loader_singleton.load_dataset()
+        base_price = 2500.0
 
-        # Lookup recent historical price for crop/market
-        filtered = df[(df['crop'].str.lower() == crop.lower()) & (df['market'].str.lower() == market.lower())]
-        if filtered.empty:
-            filtered = df[df['crop'].str.lower() == crop.lower()]
-
-        if not filtered.empty:
-            base_price = float(filtered.iloc[-1]['price'])
-        else:
-            base_price = 2500.0  # Fallback default
+        try:
+            if HAS_PANDAS and pd is not None and hasattr(df, 'str'):
+                filtered = df[(df['crop'].str.lower() == crop.lower()) & (df['market'].str.lower() == market.lower())]
+                if filtered.empty:
+                    filtered = df[df['crop'].str.lower() == crop.lower()]
+                if not filtered.empty:
+                    base_price = float(filtered.iloc[-1]['price'])
+            elif hasattr(df, 'rows'):
+                sub = [r for r in df.rows if r.get('crop', '').lower() == crop.lower()]
+                if sub:
+                    base_price = float(sub[-1].get('price', 2500.0))
+        except Exception as e:
+            logger.warn(f"Dataset price lookup notice: {e}")
 
         if self.model_bundle is not None:
             rf_model = self.model_bundle['model']

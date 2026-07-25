@@ -1,21 +1,21 @@
 {
-  "name": "KrishiMitra AI",
+  "name": "KrishiMitra AI - Farmer Decision Guide",
   "short_name": "KrishiMitra",
-  "description": "AI-powered farming companion for Indian farmers",
+  "description": "AI-powered decision guide for Indian smallholder farmers",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#090b0f",
-  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#059669",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/pwa-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

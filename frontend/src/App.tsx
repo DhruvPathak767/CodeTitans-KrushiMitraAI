@@ -6,8 +6,9 @@ import { AdvisoryProvider } from '@/context/AdvisoryContext';
 import { Landing } from '@/pages/Landing';
 import { Login, Signup } from '@/pages/Login';
 import { OnboardingFarm } from '@/pages/OnboardingFarm';
-import { AppLayout } from '@/components/AppLayout';
-import { Dashboard } from '@/pages/Dashboard';
+import { AppShell } from '@/components/layout/AppShell';
+import { HomePage } from '@/features/home/HomePage';
+import { ProfilePage } from '@/features/profile/ProfilePage';
 import { Weather } from '@/pages/Weather';
 import { DiseaseDetection } from '@/pages/DiseaseDetection';
 import { Advisory } from '@/pages/Advisory';
@@ -20,47 +21,44 @@ import { Notifications } from '@/pages/Notifications';
 import { FarmRegistration } from '@/pages/FarmRegistration';
 import { Planner } from '@/pages/Planner';
 import { Reports } from '@/pages/Reports';
-import { FloatingAssistant } from '@/components/FloatingAssistant';
 import { Loader2 } from 'lucide-react';
 
 function MandatoryFarmGuard({ children }: { children: React.ReactNode }) {
-  const { user } = useApp();
+  const { t } = useApp();
   const { hasFarm, checkingOnboarding } = useFarm();
   const location = useLocation();
 
   if (checkingOnboarding) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex min-h-screen items-center justify-center bg-surface-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
-          <p className="text-xs font-semibold text-slate-400">Verifying farm registration status...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+          <p className="text-base font-semibold text-slate-500">{t('state.checkingFarm')}</p>
         </div>
       </div>
     );
   }
 
-  // If farmer has NO farms registered yet, force redirect to onboarding page
   if (hasFarm === false && location.pathname !== '/onboarding/farm') {
     return <Navigate to="/onboarding/farm" replace />;
   }
 
-  // If farmer ALREADY has farms registered and tries to visit onboarding, redirect to dashboard
   if (hasFarm === true && location.pathname === '/onboarding/farm') {
-    return <Navigate to="/app/dashboard" replace />;
+    return <Navigate to="/app/home" replace />;
   }
 
   return <>{children}</>;
 }
 
 function ProtectedRoutes() {
-  const { user, loadingUser } = useApp();
+  const { t, user, loadingUser } = useApp();
 
   if (loadingUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex min-h-screen items-center justify-center bg-surface-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
-          <p className="text-xs font-semibold text-slate-400">Authenticating session...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+          <p className="text-base font-semibold text-slate-500">{t('state.authenticating')}</p>
         </div>
       </div>
     );
@@ -70,19 +68,18 @@ function ProtectedRoutes() {
 
   return (
     <MandatoryFarmGuard>
-      <AppLayout />
-      <FloatingAssistant />
+      <AppShell />
     </MandatoryFarmGuard>
   );
 }
 
 function OnboardingRouteGuard() {
-  const { user, loadingUser } = useApp();
+  const { t, user, loadingUser } = useApp();
 
   if (loadingUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+      <div className="flex min-h-screen items-center justify-center bg-surface-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
       </div>
     );
   }
@@ -104,26 +101,42 @@ export default function App() {
           <AdvisoryProvider>
             <BrowserRouter>
               <Routes>
+                {/* Public routes */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/onboarding/farm" element={<OnboardingRouteGuard />} />
+
+                {/* Protected app routes — AppShell provides TopBar + BottomNav */}
                 <Route path="/app" element={<ProtectedRoutes />}>
-                  <Route index element={<Navigate to="/app/dashboard" replace />} />
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="weather" element={<Weather />} />
+                  {/* Default: redirect /app → /app/home */}
+                  <Route index element={<Navigate to="/app/home" replace />} />
+
+                  {/* Bottom nav primary tabs */}
+                  <Route path="home" element={<HomePage />} />
+                  <Route path="farm" element={<FarmRegistration />} />
+                  <Route path="market" element={<Market />} />
+                  <Route path="profile" element={<ProfilePage />} />
+
+                  {/* Feature pages (accessible from Home action cards) */}
                   <Route path="disease" element={<DiseaseDetection />} />
                   <Route path="advisory" element={<Advisory />} />
+                  <Route path="weather" element={<Weather />} />
                   <Route path="irrigation" element={<Irrigation />} />
-                  <Route path="market" element={<Market />} />
                   <Route path="sellstore" element={<SellStore />} />
                   <Route path="schemes" element={<Schemes />} />
+
+                  {/* Secondary pages (accessible from Profile or deep links) */}
                   <Route path="chatbot" element={<Chatbot />} />
                   <Route path="notifications" element={<Notifications />} />
-                  <Route path="farm" element={<FarmRegistration />} />
                   <Route path="planner" element={<Planner />} />
                   <Route path="reports" element={<Reports />} />
+
+                  {/* Backward compat: /app/dashboard → /app/home */}
+                  <Route path="dashboard" element={<Navigate to="/app/home" replace />} />
                 </Route>
+
+                {/* Catch-all */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>

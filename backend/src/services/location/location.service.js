@@ -140,6 +140,18 @@ class LocationService {
         provider: 'Nominatim',
       };
 
+      // Enrich & refine precise location details using Gemini API if key is configured
+      const geminiRefinement = await this.refineWithGemini(lat, lng, resultPayload);
+      if (geminiRefinement) {
+        if (geminiRefinement.formattedAddress) resultPayload.formattedAddress = geminiRefinement.formattedAddress;
+        if (geminiRefinement.village) resultPayload.village = geminiRefinement.village;
+        if (geminiRefinement.taluka) resultPayload.taluka = geminiRefinement.taluka;
+        if (geminiRefinement.district) resultPayload.district = geminiRefinement.district;
+        if (geminiRefinement.state) resultPayload.state = geminiRefinement.state;
+        if (geminiRefinement.pincode) resultPayload.pincode = geminiRefinement.pincode;
+        resultPayload.provider = 'Gemini AI + Nominatim';
+      }
+
       REVERSE_GEOCODE_CACHE.set(cacheKey, {
         timestamp: Date.now(),
         data: resultPayload,
@@ -189,6 +201,17 @@ class LocationService {
         provider: 'BigDataCloud',
       };
 
+      const geminiRefinement = await this.refineWithGemini(lat, lng, resultPayload);
+      if (geminiRefinement) {
+        if (geminiRefinement.formattedAddress) resultPayload.formattedAddress = geminiRefinement.formattedAddress;
+        if (geminiRefinement.village) resultPayload.village = geminiRefinement.village;
+        if (geminiRefinement.taluka) resultPayload.taluka = geminiRefinement.taluka;
+        if (geminiRefinement.district) resultPayload.district = geminiRefinement.district;
+        if (geminiRefinement.state) resultPayload.state = geminiRefinement.state;
+        if (geminiRefinement.pincode) resultPayload.pincode = geminiRefinement.pincode;
+        resultPayload.provider = 'Gemini AI + BigDataCloud';
+      }
+
       REVERSE_GEOCODE_CACHE.set(cacheKey, {
         timestamp: Date.now(),
         data: resultPayload,
@@ -217,6 +240,60 @@ class LocationService {
         provider: 'None',
       };
     }
+  }
+
+  /**
+   * Refines raw reverse geocoded coordinates & details using Gemini API for pinpoint Indian address precision.
+   */
+  async refineWithGemini(lat, lng, rawAddressDetails = {}) {
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      return null;
+    }
+
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const promptText = `You are a professional Indian GIS & Agronomy Location Specialist.
+
+Given the GPS coordinates (${lat}, ${lng}) in India and raw geocoder telemetry:
+${JSON.stringify(rawAddressDetails, null, 2)}
+
+Refine and return an extremely accurate, clean Indian address JSON matching the following contract:
+{
+  "formattedAddress": "Exact Street / Village Name, Taluka, District, State Pincode, India",
+  "village": "Exact Village or Locality Name",
+  "taluka": "Exact Taluka / Tehsil",
+  "district": "Exact District Name",
+  "state": "State Name",
+  "pincode": "6-digit Pincode"
+}
+
+Important Rules:
+1. Ensure village, taluka, district, state, and pincode are properly categorized for Indian rural/semi-urban geography.
+2. Return ONLY valid JSON with no backticks, markdown, or extra explanations.`;
+
+      const res = await axios.post(
+        url,
+        {
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: {
+            response_mime_type: 'application/json',
+            temperature: 0.1,
+          },
+        },
+        { timeout: 4000 }
+      );
+
+      const rawText = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (rawText) {
+        const parsed = JSON.parse(rawText);
+        logger.info(`Gemini Location Refinement Success for [${lat}, ${lng}]: ${parsed.village}, ${parsed.district}`);
+        return parsed;
+      }
+    } catch (err) {
+      logger.warn(`Gemini Location Refinement failed/skipped: ${err.message}`);
+    }
+    return null;
   }
 
   /**

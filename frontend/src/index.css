@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --bg: 255 255 255;
+    --bg: 255 253 247;
     --fg: 15 23 42;
   }
   .dark {
@@ -16,12 +16,61 @@
   * { -webkit-font-smoothing: antialiased; }
   html { scroll-behavior: smooth; }
   body {
-    @apply bg-slate-50 text-slate-900 dark:bg-[#07090e] dark:text-slate-100 font-sans relative overflow-x-hidden selection:bg-brand-500/30;
+    @apply bg-surface-50 text-slate-900 dark:bg-[#07090e] dark:text-slate-100 font-sans relative overflow-x-hidden selection:bg-primary-500/30;
+    font-size: 18px;
+    line-height: 1.6;
   }
 }
 
 @layer components {
-  /* Future Farming Glassmorphism Primitives */
+  /* ═══════════════════════════════════════════
+     EARTHY DESIGN SYSTEM (New — Farmer-First)
+     ═══════════════════════════════════════════ */
+
+  /* Earthy Card — solid white, warm shadow, no glassmorphism */
+  .earthy-card {
+    @apply rounded-2xl bg-white border border-slate-100 p-5;
+    box-shadow: 0 2px 12px -2px rgba(139, 94, 60, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .earthy-card:hover {
+    box-shadow: 0 4px 20px -4px rgba(139, 94, 60, 0.12), 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* Earthy Button — 56px min height, large touch target */
+  .earthy-btn-primary {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-2xl
+           bg-primary-600 text-white px-6 text-lg font-semibold
+           transition-colors duration-200
+           hover:bg-primary-700 active:bg-primary-800
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+    min-height: 56px;
+    box-shadow: 0 2px 8px -1px rgba(45, 106, 79, 0.25);
+  }
+
+  .earthy-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-2xl
+           bg-secondary-100 text-secondary-800 border border-secondary-200 px-6 text-lg font-semibold
+           transition-colors duration-200
+           hover:bg-secondary-200 active:bg-secondary-300
+           disabled:opacity-50;
+    min-height: 56px;
+  }
+
+  /* Earthy Input — 18px+ font, clear focus ring */
+  .earthy-input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-lg
+           outline-none transition-all
+           placeholder:text-slate-400
+           focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20;
+    min-height: 56px;
+  }
+
+  /* ═══════════════════════════════════════════
+     LEGACY CLASSES (Kept for existing pages)
+     ═══════════════════════════════════════════ */
+
+  /* Glassmorphism Primitives — used by existing pages */
   .glass {
     @apply bg-white/75 dark:bg-slate-900/65 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-card dark:shadow-card-dark;
   }
@@ -38,7 +87,7 @@
     @apply glass rounded-3xl shadow-card dark:shadow-card-dark;
   }
   
-  /* Buttons */
+  /* Legacy Buttons — used by existing pages */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-600 to-brand-500 px-6 py-3.5 text-sm font-semibold text-white shadow-glow transition-all duration-300 hover:from-brand-500 hover:to-brand-400 hover:shadow-glow-strong hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 relative overflow-hidden;
   }
@@ -52,7 +101,7 @@
     @apply glass inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100 transition-all duration-300 hover:border-brand-500/50 hover:bg-white/80 dark:hover:bg-slate-800/80 hover:scale-[1.02];
   }
   
-  /* Form Inputs */
+  /* Legacy Form Inputs */
   .input {
     @apply w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-3 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:focus:border-brand-400;
   }
@@ -84,6 +133,12 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-500 via-gold-400 to-brand-500 font-display;
   }
   .no-tap { -webkit-tap-highlight-color: transparent; }
+
+  /* Accessibility — minimum touch target */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
   
   /* Subtle Noise Overlay */
   .bg-noise {
@@ -91,30 +146,39 @@
   }
 }
 
-/* Custom Animated Futuristic Dark Scrollbar (Replaces Plain White Browser Scrollbars) */
+/* Earthy Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(12px);
+  background: #FEFCF3;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #10b981 0%, #059669 50%, #047857 100%);
+  background: linear-gradient(180deg, #2D6A4F 0%, #245A42 50%, #1B4332 100%);
   border-radius: 9999px;
-  border: 2px solid rgba(15, 23, 42, 0.9);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  border: 2px solid #FEFCF3;
   transition: all 0.3s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.8), 0 0 25px rgba(16, 185, 129, 0.6);
+  background: linear-gradient(180deg, #40A864 0%, #2D6A4F 50%, #245A42 100%);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981 0%, #059669 50%, #047857 100%);
+  border: 2px solid rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
 
 /* Firefox Scrollbar */
 * {
   scrollbar-width: thin;
+  scrollbar-color: #2D6A4F #FEFCF3;
+}
+.dark * {
   scrollbar-color: #10b981 rgba(15, 23, 42, 0.8);
 }
 

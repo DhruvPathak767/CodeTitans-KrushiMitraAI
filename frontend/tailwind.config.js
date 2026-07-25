@@ -8,7 +8,35 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Sora', 'Inter', 'sans-serif'],
       },
+      fontSize: {
+        /** Override base sizes for accessibility */
+        'body': ['18px', { lineHeight: '1.6' }],
+        'body-lg': ['20px', { lineHeight: '1.5' }],
+      },
       colors: {
+        /** Primary — deep forest green (trust + growth) */
+        primary: {
+          50: '#F0F7F4', 100: '#D6EDE1', 200: '#A8D8B9', 300: '#6BBF8A',
+          400: '#40A864', 500: '#2D6A4F', 600: '#245A42', 700: '#1B4332',
+          800: '#133024', 900: '#0B1F17',
+        },
+        /** Secondary — warm earthy brown */
+        secondary: {
+          50: '#FAF6F0', 100: '#F3E9D8', 200: '#E6D2B0', 300: '#D4B27E',
+          400: '#C08F4D', 500: '#8B5E3C', 600: '#714B30', 700: '#573925',
+          800: '#3D271A', 900: '#241710',
+        },
+        /** Surface — warm cream backgrounds */
+        surface: {
+          50: '#FFFDF7', 100: '#FEFCF3', 200: '#FDF8E8',
+          300: '#FAF0D4', 400: '#F5E6BC', 500: '#EDD9A3',
+        },
+        /** Weather blue — only for weather features */
+        weather: {
+          50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE',
+          300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB',
+        },
+        /** Kept for backward compat with existing pages */
         brand: {
           50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
           400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
@@ -24,12 +52,18 @@ export default {
           400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
           800: '#1e40af', 900: '#1e3a8a',
         },
-        gold: {
-          400: '#fbbf24', 500: '#f59e0b', 600: '#d97706',
-        },
+        gold: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
         emeraldDeep: '#064e3b',
       },
       boxShadow: {
+        /** Earthy card shadow */
+        'card-earthy': '0 2px 12px -2px rgba(139, 94, 60, 0.08), 0 1px 3px rgba(0,0,0,0.04)',
+        'card-earthy-hover': '0 4px 20px -4px rgba(139, 94, 60, 0.12), 0 2px 6px rgba(0,0,0,0.06)',
+        /** Bottom nav */
+        'nav': '0 -2px 12px rgba(0,0,0,0.06)',
+        /** Button */
+        'button': '0 2px 8px -1px rgba(45, 106, 79, 0.25)',
+        /** Kept for existing pages */
         soft: '0 2px 20px -4px rgba(0,0,0,0.08)',
         glow: '0 0 40px -10px rgba(34,197,94,0.4)',
         'glow-sky': '0 0 40px -10px rgba(59,130,246,0.4)',
@@ -73,3 +107,4 @@ export default {
   },
   plugins: [],
 };
+
