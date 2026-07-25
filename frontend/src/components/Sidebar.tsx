@@ -45,9 +45,9 @@ export function Sidebar({
   const location = useLocation();
 
   const content = (
-    <div className="flex h-full flex-col justify-between">
-      <div>
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/40 dark:border-white/10">
+    <div className="flex h-full flex-col justify-between overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/40 dark:border-white/10 shrink-0">
           <NavLink to="/" className="flex items-center gap-3">
             <div className="grid place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-2.5 shadow-glow">
               <Leaf className="h-5 w-5 text-white" />
@@ -66,7 +66,7 @@ export function Sidebar({
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide space-y-1">
+        <nav className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide space-y-1 min-h-0">
           <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             Core Modules
           </p>
@@ -82,7 +82,7 @@ export function Sidebar({
         </nav>
       </div>
 
-      <div className="p-4 space-y-3 border-t border-white/40 dark:border-white/10">
+      <div className="p-4 space-y-3 border-t border-white/40 dark:border-white/10 shrink-0">
         {/* Active Farm Mini Widget */}
         <div className="rounded-2xl glass-future p-3 border border-brand-500/20 bg-brand-500/5">
           <div className="flex items-center justify-between text-xs mb-1">
@@ -109,7 +109,7 @@ export function Sidebar({
   return (
     <>
       {/* Desktop */}
-      <aside className="hidden lg:block w-64 shrink-0 border-r border-white/40 dark:border-white/10 glass-strong shadow-card z-20">
+      <aside className="hidden lg:block w-64 h-full shrink-0 border-r border-white/40 dark:border-white/10 glass-strong shadow-card z-20">
         {content}
       </aside>
 
