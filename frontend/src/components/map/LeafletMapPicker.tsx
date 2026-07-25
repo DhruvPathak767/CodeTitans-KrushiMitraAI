@@ -154,62 +154,41 @@ export function LeafletMapPicker({
     detectGpsLocation();
   }, [readOnly]);
 
-  // STEP 1 & STEP 2: Request Geolocation & Log Details
+  // Fast, instant GPS location acquisition
   const detectGpsLocation = async () => {
     if (!navigator.geolocation) {
       setPermissionDeniedModal(true);
       return;
     }
 
-    setStatusStep('DETECTING');
+    setStatusStep('ACQUIRING_GPS');
     setLoadingAddress(true);
 
-    const getPositionPromise = (): Promise<GeolocationPosition> =>
+    const getFastPosition = (highAccuracy: boolean): Promise<GeolocationPosition> =>
       new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 0,
+          enableHighAccuracy: highAccuracy,
+          timeout: 6000,
+          maximumAge: 10000,
         });
       });
 
-    let bestPos: GeolocationPosition | null = null;
-    let attempts = 0;
-    const maxAttempts = 3;
-
-    setStatusStep('ACQUIRING_GPS');
-
-    while (attempts < maxAttempts) {
-      attempts++;
+    try {
+      // 1. Try fast high accuracy position first
+      let pos: GeolocationPosition;
       try {
-        const pos = await getPositionPromise();
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const acc = Math.round(pos.coords.accuracy || 15);
-        const time = pos.timestamp || Date.now();
-
-        // STEP 2 & 16: Immediate GPS console logging
-        console.log(`[GPS Telemetry] Attempt ${attempts}: Lat=${lat}, Lng=${lng}, Accuracy=${acc}m, Timestamp=${time}`);
-
-        if (!bestPos || pos.coords.accuracy < bestPos.coords.accuracy) {
-          bestPos = pos;
-        }
-
-        if (pos.coords.accuracy <= 30) {
-          break;
-        }
-      } catch (err: any) {
-        console.warn(`GPS Attempt ${attempts} error: ${err.message}`);
+        pos = await getFastPosition(true);
+      } catch (e) {
+        // Fallback to low accuracy / IP position if high accuracy times out
+        pos = await getFastPosition(false);
       }
-    }
 
-    if (bestPos) {
-      const lat = bestPos.coords.latitude;
-      const lng = bestPos.coords.longitude;
-      const acc = Math.round(bestPos.coords.accuracy || 15);
-      const time = bestPos.timestamp || Date.now();
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const acc = Math.round(pos.coords.accuracy || 15);
+      const time = pos.timestamp || Date.now();
 
-      console.log(`[GPS Verified] Final Coordinates: (${lat}, ${lng}), Accuracy: ${acc}m`);
+      console.log(`[GPS Fast Acquisition] Lat=${lat}, Lng=${lng}, Accuracy=${acc}m, Timestamp=${time}`);
 
       setPosition([lat, lng]);
       setAccuracy(acc);
@@ -235,7 +214,8 @@ export function LeafletMapPicker({
       setStatusStep('FINDING_ADDRESS');
       await handleLocationUpdate(lat, lng);
       setStatusStep('READY');
-    } else {
+    } catch (err: any) {
+      console.warn('GPS Location acquisition failed or denied:', err.message);
       setLoadingAddress(false);
       setGpsDetected(false);
       setStatusStep('IDLE');
