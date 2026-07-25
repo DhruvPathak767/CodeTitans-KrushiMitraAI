@@ -122,7 +122,7 @@ export function LeafletMapPicker({
     handleLocationUpdate(lat, lng);
   };
 
-  // Browser Geolocation API
+  // Browser Geolocation API with fallback
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser');
@@ -130,19 +130,34 @@ export function LeafletMapPicker({
     }
 
     setLoadingAddress(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setPosition([lat, lng]);
-        handleLocationUpdate(lat, lng);
-      },
-      (error) => {
-        alert(`Location access denied or unavailable: ${error.message}`);
-        setLoadingAddress(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+
+    const onSuccess = (pos: GeolocationPosition) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      setPosition([lat, lng]);
+      handleLocationUpdate(lat, lng);
+    };
+
+    const onErrorHigh = (error: GeolocationPositionError) => {
+      console.warn('High accuracy geolocation failed or timed out, trying standard accuracy...', error.message);
+      // Fallback: Retry with standard network accuracy
+      navigator.geolocation.getCurrentPosition(
+        onSuccess,
+        (errLow) => {
+          setLoadingAddress(false);
+          alert(
+            `Location access failed (${errLow.message}). Please check location permissions or paste/search your location on the map.`
+          );
+        },
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+      );
+    };
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onErrorHigh, {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 10000,
+    });
   };
 
   // Search input change handler with debouncing
@@ -175,53 +190,111 @@ export function LeafletMapPicker({
     setShowSearchResults(false);
   };
 
+  const QUICK_CITIES = [
+    { name: 'Vadodara', lat: 22.3072, lng: 73.1811 },
+    { name: 'Ahmedabad', lat: 23.0225, lng: 72.5714 },
+    { name: 'Surat', lat: 21.1702, lng: 72.8311 },
+    { name: 'Rajkot', lat: 22.3039, lng: 70.8022 },
+    { name: 'Anand', lat: 22.5645, lng: 72.9289 },
+  ];
+
+  const handleSelectQuickCity = (city: { name: string; lat: number; lng: number }) => {
+    setPosition([city.lat, city.lng]);
+    handleLocationUpdate(city.lat, city.lng);
+    setSearchQuery(city.name);
+    setShowSearchResults(false);
+  };
+
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-card">
       {/* Top Overlay Bar: Search Location & Current Location Button */}
       {!readOnly && (
-        <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-col sm:flex-row gap-2">
-          {/* Location Search Bar */}
-          <div className="relative flex-1">
-            <div className="flex items-center gap-2 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
-              <Search className="h-4 w-4 text-emerald-500 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => searchQuery && setShowSearchResults(true)}
-                placeholder="Search village, city, district, state..."
-                className="w-full bg-transparent text-xs font-semibold outline-none text-slate-800 dark:text-white placeholder:text-slate-400"
-              />
-              {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />}
+        <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
+            {/* Location Search Bar */}
+            <div className="relative flex-1">
+              <div className="flex items-center gap-2 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
+                <Search className="h-4 w-4 text-emerald-500 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onFocus={() => setShowSearchResults(true)}
+                  placeholder="Search Vadodara, village, district, coordinates..."
+                  className="w-full bg-transparent text-xs font-semibold outline-none text-slate-800 dark:text-white placeholder:text-slate-400"
+                />
+                {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />}
+              </div>
+
+              {/* Search Autocomplete & Quick Jump Dropdown */}
+              {showSearchResults && (
+                <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-card z-[1001] p-1.5 space-y-1">
+                  {/* Quick Select City Chips if query is short */}
+                  {(!searchQuery || searchQuery.trim().length < 2) && (
+                    <div>
+                      <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        ⚡ Quick Jump Major Cities
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 p-1">
+                        {QUICK_CITIES.map((c) => (
+                          <button
+                            key={c.name}
+                            type="button"
+                            onClick={() => handleSelectQuickCity(c)}
+                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all flex items-center gap-1"
+                          >
+                            <MapPin className="h-3 w-3 text-emerald-500" />
+                            {c.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Autocomplete Search Results */}
+                  {searchResults.map((res, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleSelectSearchResult(res)}
+                      className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-slate-100 dark:border-white/5"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                      <span className="truncate text-slate-700 dark:text-slate-200">{res.displayName}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Search Autocomplete Results Dropdown */}
-            {showSearchResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-card z-[1001] p-1">
-                {searchResults.map((res, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleSelectSearchResult(res)}
-                    className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-slate-100 dark:border-white/5"
-                  >
-                    <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                    <span className="truncate text-slate-700 dark:text-slate-200">{res.displayName}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Use My Current Location Button */}
+            <button
+              type="button"
+              onClick={handleUseCurrentLocation}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0"
+            >
+              <Navigation className="h-3.5 w-3.5" />
+              <span>Use Current Location</span>
+            </button>
           </div>
 
-          {/* Use My Current Location Button */}
-          <button
-            type="button"
-            onClick={handleUseCurrentLocation}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0"
-          >
-            <Navigation className="h-3.5 w-3.5" />
-            <span>Use Current Location</span>
-          </button>
+          {/* Quick Jump Bar Pill Badges */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-slate-900/90 px-2 py-0.5 rounded-md border border-slate-200 dark:border-white/10 shrink-0">
+              Quick Jump:
+            </span>
+            {QUICK_CITIES.map((c) => (
+              <button
+                key={c.name}
+                type="button"
+                onClick={() => handleSelectQuickCity(c)}
+                className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-slate-900/90 hover:bg-emerald-500/20 text-slate-800 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 text-[11px] font-bold border border-slate-200 dark:border-white/10 shrink-0 transition-all shadow-sm flex items-center gap-1"
+              >
+                <MapPin className="h-2.5 w-2.5 text-emerald-500" />
+                {c.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
