@@ -16,6 +16,7 @@ import userRoutes from './routes/user.routes.js';
 import marketRoutes from './routes/market.routes.js';
 import recommendationRoutes from './routes/recommendation.routes.js';
 import pricePredictionRoutes from './routes/pricePrediction.routes.js';
+import locationRoutes from './routes/location.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -58,6 +59,11 @@ app.get('/', (req, res) => {
 // Mount Authentication Routes
 app.use('/auth', authRoutes);
 app.use('/api/auth', authRoutes);
+
+// Mount Location Routes
+app.use('/location', locationRoutes);
+app.use('/api/location', locationRoutes);
+app.use('/api/v1/location', locationRoutes);
 
 // Mount Upload Routes
 app.use('/api/upload', uploadRoutes);

@@ -9,7 +9,7 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Search, Navigation, MapPin, Loader2 } from 'lucide-react';
+import { Search, Navigation, MapPin, Loader2, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   reverseGeocode,
   searchLocation,
@@ -36,23 +36,38 @@ const customGreenMarker = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
+  className: 'animate-bounce-short', // Marker bounce animation
 });
+
+export interface GpsTelemetry {
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  timestamp: number;
+  isDetected: boolean;
+}
 
 interface LeafletMapPickerProps {
   initialLat?: number;
   initialLng?: number;
   onLocationSelect: (result: ReverseGeocodeResult) => void;
+  onGpsTelemetry?: (telemetry: GpsTelemetry) => void;
   readOnly?: boolean;
 }
 
 /**
- * Controller component to imperatively pan/zoom Leaflet map
+ * Controller component to imperatively pan/zoom Leaflet map to Level 17
+ * STEP 9: Calls map.invalidateSize() to fix blank map issues when modal opens!
  */
-function MapController({ center }: { center: [number, number] }) {
+function MapController({ center, zoom = 17 }: { center: [number, number]; zoom?: number }) {
   const map = useMap();
   useEffect(() => {
-    map.flyTo(center, 14, { duration: 1.5 });
-  }, [center, map]);
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+    map.flyTo(center, zoom, { duration: 1.5 });
+    return () => clearTimeout(timer);
+  }, [center, zoom, map]);
   return null;
 }
 
@@ -73,14 +88,25 @@ function MapClickHandler({
 }
 
 export function LeafletMapPicker({
-  initialLat = 22.3039, // Default Rajkot, Gujarat
+  initialLat = 22.3039, // Default Gujarat center
   initialLng = 70.8022,
   onLocationSelect,
+  onGpsTelemetry,
   readOnly = false,
 }: LeafletMapPickerProps) {
   const [position, setPosition] = useState<[number, number]>([initialLat, initialLng]);
   const [addressDetails, setAddressDetails] = useState<ReverseGeocodeResult | null>(null);
   const [loadingAddress, setLoadingAddress] = useState(false);
+
+  // STEP 9: Progress step status: 'IDLE' | 'DETECTING' | 'ACQUIRING_GPS' | 'FINDING_ADDRESS' | 'READY'
+  const [statusStep, setStatusStep] = useState<'IDLE' | 'DETECTING' | 'ACQUIRING_GPS' | 'FINDING_ADDRESS' | 'READY'>('IDLE');
+
+  // GPS Telemetry State
+  const [accuracy, setAccuracy] = useState<number | null>(null);
+  const [timestamp, setTimestamp] = useState<number | null>(null);
+  const [gpsDetected, setGpsDetected] = useState(false);
+  const [permissionDeniedModal, setPermissionDeniedModal] = useState(false);
+  const [showAdvancedCoords, setShowAdvancedCoords] = useState(false);
 
   // Search location state
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,30 +114,156 @@ export function LeafletMapPicker({
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
-  // Update position when props change
+  // STEP 1 & STEP 14: Auto-request location permission on mount with session caching
   useEffect(() => {
-    setPosition([initialLat, initialLng]);
-    handleLocationUpdate(initialLat, initialLng);
-  }, [initialLat, initialLng]);
+    if (readOnly) {
+      setPosition([initialLat, initialLng]);
+      handleLocationUpdate(initialLat, initialLng);
+      return;
+    }
+
+    // Check session storage cache first
+    const cachedGps = sessionStorage.getItem('krishimitra_gps_cache');
+    if (cachedGps) {
+      try {
+        const parsed = JSON.parse(cachedGps);
+        if (parsed.lat && parsed.lng) {
+          setPosition([parsed.lat, parsed.lng]);
+          setAccuracy(parsed.accuracy || 10);
+          setTimestamp(parsed.timestamp || Date.now());
+          setGpsDetected(true);
+          setStatusStep('READY');
+          handleLocationUpdate(parsed.lat, parsed.lng);
+          if (onGpsTelemetry) {
+            onGpsTelemetry({
+              latitude: parsed.lat,
+              longitude: parsed.lng,
+              accuracy: parsed.accuracy || 10,
+              timestamp: parsed.timestamp || Date.now(),
+              isDetected: true,
+            });
+          }
+          return;
+        }
+      } catch (e) {
+        sessionStorage.removeItem('krishimitra_gps_cache');
+      }
+    }
+
+    // Trigger auto GPS detection on load
+    detectGpsLocation();
+  }, [readOnly]);
+
+  // STEP 1 & STEP 2: Request Geolocation & Log Details
+  const detectGpsLocation = async () => {
+    if (!navigator.geolocation) {
+      setPermissionDeniedModal(true);
+      return;
+    }
+
+    setStatusStep('DETECTING');
+    setLoadingAddress(true);
+
+    const getPositionPromise = (): Promise<GeolocationPosition> =>
+      new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0,
+        });
+      });
+
+    let bestPos: GeolocationPosition | null = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    setStatusStep('ACQUIRING_GPS');
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const pos = await getPositionPromise();
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const acc = Math.round(pos.coords.accuracy || 15);
+        const time = pos.timestamp || Date.now();
+
+        // STEP 2 & 16: Immediate GPS console logging
+        console.log(`[GPS Telemetry] Attempt ${attempts}: Lat=${lat}, Lng=${lng}, Accuracy=${acc}m, Timestamp=${time}`);
+
+        if (!bestPos || pos.coords.accuracy < bestPos.coords.accuracy) {
+          bestPos = pos;
+        }
+
+        if (pos.coords.accuracy <= 30) {
+          break;
+        }
+      } catch (err: any) {
+        console.warn(`GPS Attempt ${attempts} error: ${err.message}`);
+      }
+    }
+
+    if (bestPos) {
+      const lat = bestPos.coords.latitude;
+      const lng = bestPos.coords.longitude;
+      const acc = Math.round(bestPos.coords.accuracy || 15);
+      const time = bestPos.timestamp || Date.now();
+
+      console.log(`[GPS Verified] Final Coordinates: (${lat}, ${lng}), Accuracy: ${acc}m`);
+
+      setPosition([lat, lng]);
+      setAccuracy(acc);
+      setTimestamp(time);
+      setGpsDetected(true);
+      setPermissionDeniedModal(false);
+
+      sessionStorage.setItem(
+        'krishimitra_gps_cache',
+        JSON.stringify({ lat, lng, accuracy: acc, timestamp: time })
+      );
+
+      if (onGpsTelemetry) {
+        onGpsTelemetry({
+          latitude: lat,
+          longitude: lng,
+          accuracy: acc,
+          timestamp: time,
+          isDetected: true,
+        });
+      }
+
+      setStatusStep('FINDING_ADDRESS');
+      await handleLocationUpdate(lat, lng);
+      setStatusStep('READY');
+    } else {
+      setLoadingAddress(false);
+      setGpsDetected(false);
+      setStatusStep('IDLE');
+      setPermissionDeniedModal(true);
+    }
+  };
 
   // Reverse geocode when coordinates change
   const handleLocationUpdate = async (lat: number, lng: number) => {
     setLoadingAddress(true);
     try {
       const result = await reverseGeocode(lat, lng);
+      console.log(`[Reverse Geocode Output] Village: "${result.village}", District: "${result.district}", State: "${result.state}"`);
       setAddressDetails(result);
       onLocationSelect(result);
     } catch (err) {
-      console.error(err);
+      console.error('Reverse geocode update error:', err);
     } finally {
       setLoadingAddress(false);
     }
   };
 
+  // STEP 7 & 9: Marker drag handler
   const handleMarkerDragEnd = (event: any) => {
     if (readOnly) return;
     const marker = event.target;
     const newPos = marker.getLatLng();
+    console.log(`[Marker Dragged] New Position: (${newPos.lat}, ${newPos.lng})`);
     setPosition([newPos.lat, newPos.lng]);
     handleLocationUpdate(newPos.lat, newPos.lng);
   };
@@ -120,30 +272,6 @@ export function LeafletMapPicker({
     if (readOnly) return;
     setPosition([lat, lng]);
     handleLocationUpdate(lat, lng);
-  };
-
-  // Browser Geolocation API
-  const handleUseCurrentLocation = () => {
-    if (navigator.geolocation) {
-      setLoadingAddress(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          console.log(`Location: ${lat}, ${lon}`);
-          setPosition([lat, lon]);
-          handleLocationUpdate(lat, lon);
-        },
-        (error) => {
-          console.error(`Error: ${error.message}`);
-          setLoadingAddress(false);
-          alert(`Error: ${error.message}`);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-      alert("Geolocation is not supported by this browser.");
-    }
   };
 
   // Search input change handler with debouncing
@@ -192,107 +320,125 @@ export function LeafletMapPicker({
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-card">
-      {/* Top Overlay Bar: Search Location & Current Location Button */}
+    <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-card bg-white dark:bg-slate-900">
+      {/* STEP 2 & STEP 9: Status Banner & Detect Location Button */}
       {!readOnly && (
         <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-col gap-2">
-          <div className="flex flex-col sm:flex-row gap-2">
-            {/* Location Search Bar */}
-            <div className="relative flex-1">
-              <div className="flex items-center gap-2 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
-                <Search className="h-4 w-4 text-emerald-500 shrink-0" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onFocus={() => setShowSearchResults(true)}
-                  placeholder="Search Vadodara, village, district, coordinates..."
-                  className="w-full bg-transparent text-xs font-semibold outline-none text-slate-800 dark:text-white placeholder:text-slate-400"
-                />
-                {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />}
-              </div>
-
-              {/* Search Autocomplete & Quick Jump Dropdown */}
-              {showSearchResults && (
-                <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-card z-[1001] p-1.5 space-y-1">
-                  {/* Quick Select City Chips if query is short */}
-                  {(!searchQuery || searchQuery.trim().length < 2) && (
-                    <div>
-                      <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        ⚡ Quick Jump Major Cities
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 p-1">
-                        {QUICK_CITIES.map((c) => (
-                          <button
-                            key={c.name}
-                            type="button"
-                            onClick={() => handleSelectQuickCity(c)}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all flex items-center gap-1"
-                          >
-                            <MapPin className="h-3 w-3 text-emerald-500" />
-                            {c.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Autocomplete Search Results */}
-                  {searchResults.map((res, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => handleSelectSearchResult(res)}
-                      className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-slate-100 dark:border-white/5"
-                    >
-                      <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="truncate text-slate-700 dark:text-slate-200">{res.displayName}</span>
-                    </button>
-                  ))}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+            {/* Status Progress Indicator */}
+            <div className="flex items-center gap-2 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
+              {statusStep === 'DETECTING' && (
+                <div className="flex items-center gap-2 text-xs font-semibold text-amber-500">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Detecting location...</span>
                 </div>
               )}
+              {statusStep === 'ACQUIRING_GPS' && (
+                <div className="flex items-center gap-2 text-xs font-semibold text-sky-500">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Acquiring GPS high-accuracy...</span>
+                </div>
+              )}
+              {statusStep === 'FINDING_ADDRESS' && (
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-500">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Finding address...</span>
+                </div>
+              )}
+              {statusStep === 'READY' || gpsDetected ? (
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <span>📍 Location Verified</span>
+                  {accuracy !== null && (
+                    <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono">
+                      Accuracy: {accuracy}m
+                    </span>
+                  )}
+                </div>
+              ) : statusStep === 'IDLE' ? (
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <MapPin className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <span>GPS location ready</span>
+                </div>
+              ) : null}
             </div>
 
-            {/* Use My Current Location Button */}
+            {/* Detect My Current Location Button */}
             <button
               type="button"
-              onClick={handleUseCurrentLocation}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0"
+              onClick={detectGpsLocation}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-md hover:brightness-110 transition-all shrink-0 cursor-pointer"
             >
-              <Navigation className="h-3.5 w-3.5" />
-              <span>Use Current Location</span>
+              <Navigation className="h-3.5 w-3.5 animate-pulse" />
+              <span>📍 Detect My Current Location</span>
             </button>
           </div>
 
-          {/* Quick Jump Bar Pill Badges */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-slate-900/90 px-2 py-0.5 rounded-md border border-slate-200 dark:border-white/10 shrink-0">
-              Quick Jump:
-            </span>
-            {QUICK_CITIES.map((c) => (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => handleSelectQuickCity(c)}
-                className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-slate-900/90 hover:bg-emerald-500/20 text-slate-800 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 text-[11px] font-bold border border-slate-200 dark:border-white/10 shrink-0 transition-all shadow-sm flex items-center gap-1"
-              >
-                <MapPin className="h-2.5 w-2.5 text-emerald-500" />
-                {c.name}
-              </button>
-            ))}
+          {/* Search Location Input Bar */}
+          <div className="relative flex-1">
+            <div className="flex items-center gap-2 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur border border-slate-200 dark:border-white/10 px-3 py-2 shadow-md">
+              <Search className="h-4 w-4 text-emerald-500 shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => setShowSearchResults(true)}
+                placeholder="Search village, city, district, state..."
+                className="w-full bg-transparent text-xs font-semibold outline-none text-slate-800 dark:text-white placeholder:text-slate-400"
+              />
+              {isSearching && <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />}
+            </div>
+
+            {/* Search Autocomplete & Quick Jump Dropdown */}
+            {showSearchResults && (
+              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-card z-[1001] p-1.5 space-y-1">
+                {(!searchQuery || searchQuery.trim().length < 2) && (
+                  <div>
+                    <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      ⚡ Quick Jump Major Cities
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 p-1">
+                      {QUICK_CITIES.map((c) => (
+                        <button
+                          key={c.name}
+                          type="button"
+                          onClick={() => handleSelectQuickCity(c)}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-500/30 transition-all flex items-center gap-1"
+                        >
+                          <MapPin className="h-3 w-3 text-emerald-500" />
+                          {c.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {searchResults.map((res, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSelectSearchResult(res)}
+                    className="flex items-start gap-2 w-full text-left p-2 hover:bg-emerald-500/10 rounded-lg text-xs font-medium transition-colors border-b last:border-0 border-slate-100 dark:border-white/5"
+                  >
+                    <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="truncate text-slate-700 dark:text-slate-200">{res.displayName}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* Leaflet Map Container */}
+      {/* STEP 7 & STEP 9: Leaflet Map Container at Zoom Level 17 with InvalidateSize */}
       <div className="h-72 sm:h-80 w-full relative z-0">
         <MapContainer
           center={position}
-          zoom={13}
+          zoom={17}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}
         >
-          <MapController center={position} />
+          <MapController center={position} zoom={17} />
           {!readOnly && <MapClickHandler onMapClick={handleMapClick} />}
 
           <TileLayer
@@ -306,35 +452,101 @@ export function LeafletMapPicker({
             draggable={!readOnly}
             eventHandlers={{ dragend: handleMarkerDragEnd }}
           >
-            <Popup>
-              <div className="p-1 text-xs">
-                <p className="font-bold text-emerald-700">🌱 Farm Location Marker</p>
-                <p className="text-[11px] text-slate-600 font-semibold">{addressDetails?.formattedAddress || 'Drag or click to position'}</p>
-                <p className="text-[10px] text-slate-400 font-mono mt-1">Lat: {position[0].toFixed(5)}, Lng: {position[1].toFixed(5)}</p>
+            {/* STEP 10: Marker Popup Current Farm Location */}
+            <Popup autoPan={true}>
+              <div className="p-1.5 text-xs space-y-1">
+                <p className="font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  📍 Current Farm Location
+                </p>
+                <p className="text-xs text-slate-700 font-semibold leading-snug">
+                  {addressDetails?.formattedAddress || 'Selected Farm Location'}
+                </p>
+                {accuracy && (
+                  <p className="text-[10px] text-emerald-600 font-mono font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    GPS Accuracy: {accuracy}m
+                  </p>
+                )}
               </div>
             </Popup>
           </Marker>
         </MapContainer>
       </div>
 
-      {/* Bottom Address Info Banner */}
-      <div className="bg-slate-900/90 text-white p-3 text-xs flex items-center justify-between border-t border-white/10">
+      {/* STEP 8 & STEP 11: Human-Readable Address Display Card */}
+      <div className="bg-slate-900 text-white p-3 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-white/10">
         <div className="flex items-center gap-2 truncate">
           <MapPin className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span className="truncate font-medium">
+          <span className="truncate font-semibold text-slate-100">
             {loadingAddress ? (
               <span className="flex items-center gap-1.5 text-slate-400">
-                <Loader2 className="h-3 w-3 animate-spin text-emerald-400" /> Fetching location details...
+                <Loader2 className="h-3 w-3 animate-spin text-emerald-400" /> Resolving address...
               </span>
             ) : (
               addressDetails?.formattedAddress || 'Position farm marker on map'
             )}
           </span>
         </div>
-        <span className="font-mono text-[10px] text-emerald-400 shrink-0 pl-2">
-          {position[0].toFixed(4)}, {position[1].toFixed(4)}
-        </span>
+
+        {/* STEP 11: Collapsible Advanced Coordinates Toggle */}
+        <button
+          type="button"
+          onClick={() => setShowAdvancedCoords(!showAdvancedCoords)}
+          className="flex items-center gap-1 text-[10px] font-mono text-slate-400 hover:text-emerald-400 shrink-0 transition-colors cursor-pointer"
+        >
+          <span>{showAdvancedCoords ? 'Hide Coordinates' : 'Advanced Details'}</span>
+          {showAdvancedCoords ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </button>
       </div>
+
+      {/* Collapsible Advanced Coordinates Box */}
+      {showAdvancedCoords && (
+        <div className="bg-slate-950 p-2.5 text-[11px] font-mono text-emerald-400 border-t border-white/5 flex flex-wrap items-center justify-between gap-2">
+          <span>Lat: {position[0].toFixed(5)}, Lng: {position[1].toFixed(5)}</span>
+          <span>Accuracy: ±{accuracy || 15}m</span>
+          <span>Timestamp: {timestamp ? new Date(timestamp).toLocaleTimeString() : 'Live'}</span>
+        </div>
+      )}
+
+      {/* STEP 12: Permission Denied Dialog */}
+      {permissionDeniedModal && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-white/10 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-500/20 text-amber-500 shrink-0">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
+                  Enable Location Permission
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  We couldn't access your current location. Please allow browser location access or search for your farm village manually.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setPermissionDeniedModal(false)}
+                className="btn-ghost text-xs py-2 px-3.5 rounded-xl text-slate-600 dark:text-slate-300"
+              >
+                Search manually
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPermissionDeniedModal(false);
+                  detectGpsLocation();
+                }}
+                className="btn-primary text-xs py-2 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

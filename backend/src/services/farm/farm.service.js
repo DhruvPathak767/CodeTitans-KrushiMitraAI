@@ -1,5 +1,6 @@
 import farmRepository from '../../repositories/farm/farm.repository.js';
 import { USER_ROLES } from '../../models/User.js';
+import logger from '../../config/logger.js';
 
 function cleanAdminName(name, districtName) {
   if (!name) return '';
@@ -34,7 +35,7 @@ class FarmService {
    * Create Farm Flow
    */
   async createFarm(userId, farmData) {
-    const { latitude = 22.3039, longitude = 70.8022, address = {}, ...rest } = farmData;
+    const { latitude = 22.3039, longitude = 70.8022, accuracy = 0, address = {}, ...rest } = farmData;
 
     const formattedLocation = {
       type: 'Point',
@@ -51,6 +52,8 @@ class FarmService {
       pincode: address.pincode || '',
       latitude: Number(latitude),
       longitude: Number(longitude),
+      accuracy: Number(accuracy) || 0,
+      resolvedLocation: address.resolvedLocation || '',
     };
 
     const newFarm = await farmRepository.createFarm({
@@ -59,6 +62,11 @@ class FarmService {
       location: formattedLocation,
       address: formattedAddress,
     });
+
+    // STEP 13 Log Farm Saved with GPS Telemetry
+    logger.info(
+      `Farm Saved: "${newFarm.farmName}" [id:${newFarm._id}] at GPS lat:${latitude}, lng:${longitude}, accuracy:${accuracy}m`
+    );
 
     // Automatically set this farm as activeFarm in User collection
     await farmRepository.setUserActiveFarm(userId, newFarm._id);

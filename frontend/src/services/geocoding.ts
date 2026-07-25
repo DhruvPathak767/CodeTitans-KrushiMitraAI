@@ -51,104 +51,117 @@ export function dedupeAddressParts(parts: string[]): string[] {
 }
 
 /**
- * Reverse Geocode coordinates using OpenStreetMap Nominatim API
- * Dynamically parses location details for ANY point in India / world.
+ * Reverse Geocode coordinates via Backend API (POST /api/location/reverse)
  */
 export async function reverseGeocode(lat: number, lng: number): Promise<ReverseGeocodeResult> {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
-    const res = await fetch(url, {
+    const res = await fetch('/api/location/reverse', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'KrishiMitra-AI-Platform/1.0',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ latitude: lat, longitude: lng }),
     });
 
-    if (!res.ok) throw new Error('Failed to fetch address details');
-
-    const data = await res.json();
-    const addr = data.address || {};
-
-    const country = addr.country || 'India';
-    const state = addr.state || addr.region || addr.province || addr['ISO3166-2-lvl4'] || '';
-    const district =
-      addr.state_district ||
-      addr.district ||
-      addr.city ||
-      addr.county ||
-      addr.municipality ||
-      '';
-
-    const rawTaluka =
-      addr.subdistrict ||
-      addr.tehsil ||
-      addr.taluka ||
-      addr.city_district ||
-      (addr.county && addr.county !== district ? addr.county : '') ||
-      '';
-    const taluka = cleanAdminName(rawTaluka, district);
-
-    // Dynamically construct local place details (junction, suburb, neighbourhood, village, town, locality)
-    const localTokens = [
-      addr.junction || addr.suburb || addr.neighbourhood || addr.village || addr.town || addr.locality || addr.hamlet || addr.quarter || addr.residential || addr.road || addr.amenity || addr.building
-    ].filter(Boolean);
-
-    let village = localTokens.length > 0
-      ? Array.from(new Set(localTokens)).join(', ')
-      : (addr.city || (data.display_name ? data.display_name.split(',')[0]?.trim() : ''));
-
-    if (village.toLowerCase() === district.toLowerCase() && data.display_name) {
-      const firstSegment = cleanAdminName(data.display_name.split(',')[0]?.trim() || '', district);
-      if (
-        firstSegment &&
-        firstSegment.toLowerCase() !== district.toLowerCase() &&
-        firstSegment.toLowerCase() !== state.toLowerCase()
-      ) {
-        village = firstSegment;
+    if (res.ok) {
+      const payload = await res.json();
+      if (payload.success && payload.data) {
+        return {
+          formattedAddress: payload.data.formattedAddress || `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`,
+          country: payload.data.country || 'India',
+          state: payload.data.state || '',
+          district: payload.data.district || '',
+          taluka: payload.data.taluka || '',
+          village: payload.data.village || '',
+          pincode: payload.data.pincode || '',
+          latitude: lat,
+          longitude: lng,
+        };
       }
     }
-
-    const pincode = addr.postcode || addr.postal_code || '';
-
-    // Dynamic formatted address from OpenStreetMap display_name or deduplicated parts
-    const formattedAddress = data.display_name || dedupeAddressParts([village, taluka, district, state, pincode, country]).join(', ');
-
-    return {
-      formattedAddress,
-      country,
-      state,
-      district,
-      taluka,
-      village,
-      pincode,
-      latitude: lat,
-      longitude: lng,
-    };
+    throw new Error('Backend reverse geocoding failed');
   } catch (error) {
-    console.warn('Reverse geocoding warning:', error);
-    return {
-      formattedAddress: `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`,
-      country: 'India',
-      state: '',
-      district: '',
-      taluka: '',
-      village: '',
-      pincode: '',
-      latitude: lat,
-      longitude: lng,
-    };
+    console.warn('Backend reverse geocoding warning, trying direct OSM fallback:', error);
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'KrishiMitra-AI-Platform/1.0',
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch address details');
+
+      const data = await res.json();
+      const addr = data.address || {};
+
+      const country = addr.country || 'India';
+      const state = addr.state || addr.region || addr.province || addr['ISO3166-2-lvl4'] || '';
+      const district =
+        addr.state_district ||
+        addr.district ||
+        addr.city ||
+        addr.county ||
+        addr.municipality ||
+        '';
+
+      const rawTaluka =
+        addr.subdistrict ||
+        addr.tehsil ||
+        addr.taluka ||
+        addr.city_district ||
+        (addr.county && addr.county !== district ? addr.county : '') ||
+        '';
+      const taluka = cleanAdminName(rawTaluka, district);
+
+      const localTokens = [
+        addr.junction || addr.suburb || addr.neighbourhood || addr.village || addr.town || addr.locality || addr.hamlet || addr.quarter || addr.residential || addr.road || addr.amenity || addr.building
+      ].filter(Boolean);
+
+      let village = localTokens.length > 0
+        ? Array.from(new Set(localTokens)).join(', ')
+        : (addr.city || (data.display_name ? data.display_name.split(',')[0]?.trim() : ''));
+
+      const pincode = addr.postcode || addr.postal_code || '';
+      const formattedAddress = data.display_name || dedupeAddressParts([village, taluka, district, state, pincode, country]).join(', ');
+
+      return {
+        formattedAddress,
+        country,
+        state,
+        district,
+        taluka,
+        village,
+        pincode,
+        latitude: lat,
+        longitude: lng,
+      };
+    } catch (fallbackError) {
+      return {
+        formattedAddress: `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`,
+        country: 'India',
+        state: '',
+        district: '',
+        taluka: '',
+        village: '',
+        pincode: '',
+        latitude: lat,
+        longitude: lng,
+      };
+    }
   }
 }
 
 /**
- * Search Location query using OpenStreetMap Nominatim Search API
- * Focused on India (countrycodes=in) with coordinate detection & query relaxation
+ * Search Location query via Backend API (GET /api/location/search?q=)
+ * Fallback to OpenStreetMap search if backend unavailable
  */
 export async function searchLocation(query: string): Promise<SearchLocationResult[]> {
   if (!query || query.trim().length < 2) return [];
 
   const rawQuery = query.trim();
 
-  // 1. Direct coordinate detection (e.g. "22.224563, 73.186925" or "(22.224563, 73.186925)")
+  // 1. Direct coordinate detection (e.g. "22.224563, 73.186925")
   const coordRegex = /^\s*\(?\s*(-?\d+(?:\.\d+)?)\s*[, \s]+\s*(-?\d+(?:\.\d+)?)\s*\)?\s*$/;
   const match = rawQuery.match(coordRegex);
   if (match) {
@@ -165,7 +178,20 @@ export async function searchLocation(query: string): Promise<SearchLocationResul
     }
   }
 
-  // 2. Search focused on India with query fallbacks
+  // 2. Query Backend location search endpoint
+  try {
+    const res = await fetch(`/api/location/search?q=${encodeURIComponent(rawQuery)}`);
+    if (res.ok) {
+      const payload = await res.json();
+      if (payload.success && Array.isArray(payload.data) && payload.data.length > 0) {
+        return payload.data;
+      }
+    }
+  } catch (err) {
+    console.warn('Backend location search warning, trying direct OSM fallback:', err);
+  }
+
+  // 3. Fallback direct search with query relaxation
   try {
     const attempts = [
       rawQuery,
@@ -186,7 +212,6 @@ export async function searchLocation(query: string): Promise<SearchLocationResul
     const uniqueAttempts = Array.from(new Set(attempts.filter((q) => q && q.length >= 2)));
 
     for (const q of uniqueAttempts) {
-      // Focused on India (countrycodes=in)
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&countrycodes=in`;
       const res = await fetch(url, {
         headers: {

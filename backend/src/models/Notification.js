@@ -23,7 +23,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['rain', 'disease', 'heat', 'harvest', 'irrigation', 'spray', 'ai', 'scheme', 'market', 'system'],
+      enum: ['rain', 'disease', 'heat', 'harvest', 'irrigation', 'spray', 'ai', 'scheme', 'market', 'system', 'weather', 'WEATHER'],
       default: 'ai',
     },
     priority: {
