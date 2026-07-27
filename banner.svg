@@ -1,0 +1,194 @@
+<svg width="900" height="260" viewBox="0 0 900 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="900" y2="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#020c04"/>
+      <stop offset="45%" stop-color="#04160a"/>
+      <stop offset="100%" stop-color="#020c04"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#15803d"/>
+      <stop offset="40%" stop-color="#22c55e"/>
+      <stop offset="60%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="topBar" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#22c55e" stop-opacity="0"/>
+      <stop offset="20%"  stop-color="#22c55e" stop-opacity="0.8"/>
+      <stop offset="50%"  stop-color="#4ade80"/>
+      <stop offset="80%"  stop-color="#22c55e" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glowLeft" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glowRight" x1="1" y1="0" x2="0" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="scanLine" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#4ade80" stop-opacity="0"/>
+      <stop offset="40%"  stop-color="#4ade80" stop-opacity="0.25"/>
+      <stop offset="60%"  stop-color="#4ade80" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#4ade80" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="banner-clip">
+      <rect width="900" height="260"/>
+    </clipPath>
+  </defs>
+
+  <style>
+    .bg-rect { animation: bgPulse 6s ease-in-out infinite; }
+    .center-glow { animation: glowBreath 4s ease-in-out infinite; }
+    .top-bar { animation: barFadeIn 1.2s ease forwards; }
+    .bot-bar { animation: barFadeIn 1.2s ease 0.2s forwards; opacity: 0; }
+    .title-group { animation: titleRise 1s cubic-bezier(.16,1,.3,1) 0.3s both; }
+    .subtitle-text { animation: subtitleFade 1.2s ease 1s both; }
+    .grid-h { animation: gridFade 1.5s ease 0.5s both; }
+    .grid-v { animation: gridFade 1.5s ease 0.7s both; }
+    .scan-rect { animation: scanPass 3.5s linear 1.8s infinite; }
+    .dot-tl { animation: dotPulse 2.5s ease-in-out 0s infinite; }
+    .dot-tr { animation: dotPulse 2.5s ease-in-out 0.6s infinite; }
+    .dot-bl { animation: dotPulse 2.5s ease-in-out 1.2s infinite; }
+    .dot-br { animation: dotPulse 2.5s ease-in-out 1.8s infinite; }
+    .accent-l { animation: accentFade 1s ease 0.8s both; }
+    .accent-r { animation: accentFade 1s ease 1s both; }
+    .deco-dots { animation: decoFade 1.5s ease 1.2s both; }
+    .sep-line { animation: sepGrow 1.2s ease 1.4s both; }
+
+    @keyframes bgPulse {
+      0%,100% { opacity:1; }
+      50% { opacity:0.96; }
+    }
+    @keyframes glowBreath {
+      0%,100% { opacity:1; }
+      50% { opacity:1.8; }
+    }
+    @keyframes barFadeIn {
+      from { opacity:0; transform:scaleX(0.3); }
+      to   { opacity:1; transform:scaleX(1); }
+    }
+    @keyframes titleRise {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes subtitleFade {
+      from { opacity:0; }
+      to   { opacity:0.75; }
+    }
+    @keyframes gridFade {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    @keyframes scanPass {
+      0%   { transform:translateX(-280px); opacity:1; }
+      80%  { opacity:1; }
+      100% { transform:translateX(1100px); opacity:0; }
+    }
+    @keyframes dotPulse {
+      0%,100% { opacity:0.2; r:2.5; }
+      50%     { opacity:0.85; r:3.5; }
+    }
+    @keyframes accentFade {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    @keyframes decoFade {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    @keyframes sepGrow {
+      from { transform:scaleX(0); }
+      to   { transform:scaleX(1); }
+    }
+  </style>
+
+  <!-- Background -->
+  <rect class="bg-rect" width="900" height="260" fill="url(#bg)"/>
+
+  <!-- Center radial glow -->
+  <ellipse class="center-glow" cx="450" cy="130" rx="380" ry="120" fill="url(#centerGlow)"/>
+
+  <!-- Side glows -->
+  <rect x="0"   y="0" width="220" height="260" fill="url(#glowLeft)"/>
+  <rect x="680" y="0" width="220" height="260" fill="url(#glowRight)"/>
+
+  <!-- Grid lines -->
+  <g class="grid-h">
+    <line x1="0" y1="52"  x2="900" y2="52"  stroke="#22c55e" stroke-opacity="0.06" stroke-width="1"/>
+    <line x1="0" y1="104" x2="900" y2="104" stroke="#22c55e" stroke-opacity="0.06" stroke-width="1"/>
+    <line x1="0" y1="156" x2="900" y2="156" stroke="#22c55e" stroke-opacity="0.06" stroke-width="1"/>
+    <line x1="0" y1="208" x2="900" y2="208" stroke="#22c55e" stroke-opacity="0.06" stroke-width="1"/>
+  </g>
+  <g class="grid-v">
+    <line x1="150" y1="0" x2="150" y2="260" stroke="#22c55e" stroke-opacity="0.04" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="260" stroke="#22c55e" stroke-opacity="0.04" stroke-width="1"/>
+    <line x1="450" y1="0" x2="450" y2="260" stroke="#22c55e" stroke-opacity="0.04" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="260" stroke="#22c55e" stroke-opacity="0.04" stroke-width="1"/>
+    <line x1="750" y1="0" x2="750" y2="260" stroke="#22c55e" stroke-opacity="0.04" stroke-width="1"/>
+  </g>
+
+  <!-- Scanning light beam -->
+  <g class="scan-rect" clip-path="url(#banner-clip)">
+    <rect x="0" y="0" width="280" height="260" fill="url(#scanLine)"/>
+  </g>
+
+  <!-- Top + bottom accent bars -->
+  <rect class="top-bar" x="0" y="0"   width="900" height="3" fill="url(#topBar)" transform-origin="450 1.5"/>
+  <rect class="bot-bar" x="0" y="257" width="900" height="3" fill="url(#topBar)" transform-origin="450 258.5"/>
+
+  <!-- Left vertical accent -->
+  <g class="accent-l">
+    <rect x="52" y="90" width="2" height="80" fill="#22c55e" opacity="0.25" rx="1"/>
+    <rect x="60" y="110" width="2" height="40" fill="#22c55e" opacity="0.15" rx="1"/>
+  </g>
+
+  <!-- Right vertical accent -->
+  <g class="accent-r">
+    <rect x="846" y="90" width="2" height="80" fill="#22c55e" opacity="0.25" rx="1"/>
+    <rect x="838" y="110" width="2" height="40" fill="#22c55e" opacity="0.15" rx="1"/>
+  </g>
+
+  <!-- Corner dots (animated pulse) -->
+  <circle class="dot-tl" cx="18"  cy="18"  r="2.5" fill="#22c55e"/>
+  <circle class="dot-tr" cx="882" cy="18"  r="2.5" fill="#22c55e"/>
+  <circle class="dot-bl" cx="18"  cy="242" r="2.5" fill="#22c55e"/>
+  <circle class="dot-br" cx="882" cy="242" r="2.5" fill="#22c55e"/>
+
+  <!-- Decorative dot clusters -->
+  <g class="deco-dots">
+    <circle cx="110" cy="55" r="2"   fill="#4ade80" opacity="0.22"/>
+    <circle cx="124" cy="63" r="1.5" fill="#4ade80" opacity="0.16"/>
+    <circle cx="100" cy="70" r="1.5" fill="#22c55e" opacity="0.20"/>
+    <circle cx="790" cy="55" r="2"   fill="#4ade80" opacity="0.22"/>
+    <circle cx="776" cy="63" r="1.5" fill="#4ade80" opacity="0.16"/>
+    <circle cx="800" cy="70" r="1.5" fill="#22c55e" opacity="0.20"/>
+  </g>
+
+  <!-- Separator line -->
+  <line class="sep-line" x1="200" y1="190" x2="700" y2="190"
+        stroke="#22c55e" stroke-opacity="0.18" stroke-width="1" transform-origin="450 190"/>
+
+  <!-- Title group (emoji + text rise together) -->
+  <g class="title-group">
+    <text x="450" y="98"
+          font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif"
+          font-size="32" text-anchor="middle" dominant-baseline="middle">🌾</text>
+
+    <text x="450" y="150"
+          font-family="'Arial Black','Impact','Franklin Gothic Heavy',sans-serif"
+          font-size="54" font-weight="900" text-anchor="middle" dominant-baseline="middle"
+          fill="url(#titleGrad)" letter-spacing="4">KRISHIMITRA AI</text>
+  </g>
+
+  <!-- Subtitle (delayed fade-in) -->
+  <text class="subtitle-text"
+        x="450" y="207"
+        font-family="'Arial','Helvetica Neue',sans-serif"
+        font-size="13" font-weight="400" text-anchor="middle" dominant-baseline="middle"
+        fill="#86efac" letter-spacing="3.5">AI-POWERED SMART FARMING PLATFORM  ·  INDIA</text>
+</svg>
