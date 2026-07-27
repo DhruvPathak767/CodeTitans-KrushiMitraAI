@@ -430,8 +430,8 @@ const en: Dict = {
   'market.bestMandi': 'Best Mandi: Rajkot',
   'market.todayPrices': "Today's Crop Prices",
   'market.viewFull': 'View Full Market Prices & Mandi Comparison',
-  'crop.wheat': 'Wheat (Lokwan)',
-  'crop.cotton': 'Cotton (Kapas)',
+  'crop.wheat': 'Wheat',
+  'crop.cotton': 'Cotton',
 
   'schemes.verifiedTag': 'Verified Govt Subsidies',
   'schemes.homeTitle': 'Government Schemes For You',
@@ -871,8 +871,8 @@ const hi: Dict = {
   'market.bestMandi': 'सर्वश्रेष्ठ मंडी: राजकोट',
   'market.todayPrices': 'आज के फसल भाव',
   'market.viewFull': 'सभी मंडी भाव और तुलना देखें',
-  'crop.wheat': 'गेहूं (लोकवन)',
-  'crop.cotton': 'कपास (कॉटन)',
+  'crop.wheat': 'गेहूं',
+  'crop.cotton': 'कपास',
 
   'schemes.verifiedTag': 'सत्यापित सरकारी सब्सिडी',
   'schemes.homeTitle': 'आपके लिए सरकारी योजनाएं',
@@ -1312,8 +1312,8 @@ const gu: Dict = {
   'market.bestMandi': 'શ્રેષ્ઠ મંડી: રાજકોટ',
   'market.todayPrices': 'આજના પાક ભાવ',
   'market.viewFull': 'તમામ મંડી ભાવ અને સરખામણી જુઓ',
-  'crop.wheat': 'ઘઉં (લોકવન)',
-  'crop.cotton': 'કપાસ (કોટન)',
+  'crop.wheat': 'ઘઉં',
+  'crop.cotton': 'કપાસ',
 
   'schemes.verifiedTag': 'ચકાસાયેલ સરકારી સબસીડી',
   'schemes.homeTitle': 'તમારા માટે સરકારી યોજનાઓ',
