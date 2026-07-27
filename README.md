@@ -320,12 +320,12 @@ Multi-language   ████████████████████  1
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&animation=twinkling" />
+<img src="./footer.svg" alt="KrishiMitra AI Footer" width="900" />
 
-**Built with ❤️ for India's Farmers · Team CodeTitans · MIT License**
+<br/><br/>
 
-[![Made in India](https://img.shields.io/badge/Made_in-India_🇮🇳-FF9933?style=flat-square)](https://github.com)
-[![For Farmers](https://img.shields.io/badge/Built_for-Farmers_🌾-22C55E?style=flat-square)](https://github.com)
+[![Made in India](https://img.shields.io/badge/Made_in-India_🇮🇳-FF9933?style=flat-square)](https://github.com)&nbsp;
+[![For Farmers](https://img.shields.io/badge/Built_for-Farmers_🌾-22C55E?style=flat-square)](https://github.com)&nbsp;
 [![Open Source](https://img.shields.io/badge/Open-Source_❤️-3b82f6?style=flat-square)](./LICENSE)
 
 </div>
