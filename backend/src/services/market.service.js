@@ -21,13 +21,37 @@ class MarketService {
     const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
     const parsedPage = Math.max(1, parseInt(page, 10) || 1);
 
-    const result = await marketRepository.findLatestPrices({
+    let result = await marketRepository.findLatestPrices({
       filters,
       sort: sortOption,
       limit: parsedLimit,
       page: parsedPage,
       search,
     });
+
+    // Fallback logic: if no data found for specific district, broaden to state.
+    if (result.data.length === 0 && filters.district) {
+      delete filters.district;
+      result = await marketRepository.findLatestPrices({
+        filters,
+        sort: sortOption,
+        limit: parsedLimit,
+        page: parsedPage,
+        search,
+      });
+    }
+
+    // If still no data, broaden to nation-wide (all states).
+    if (result.data.length === 0 && filters.state) {
+      delete filters.state;
+      result = await marketRepository.findLatestPrices({
+        filters,
+        sort: sortOption,
+        limit: parsedLimit,
+        page: parsedPage,
+        search,
+      });
+    }
 
     const formattedData = result.data.map((item) => ({
       id: item._id,

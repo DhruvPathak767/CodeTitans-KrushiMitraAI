@@ -10,6 +10,7 @@ class MarketController {
    */
   async getLatestPrices(req, res, next) {
     try {
+      console.log('Incoming market prices request query:', req.query);
       const data = await marketService.getLatestPrices(req.query);
       return res
         .status(200)

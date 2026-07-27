@@ -123,6 +123,19 @@ export function Market() {
   const bestMarket = prices[0] ?? null;
   const combined = prices.map((item) => ({ label: item.crop, price: item.price }));
 
+  const getTickerState = () => {
+    if (!prices || prices.length === 0) return { label: 'LIVE', color: 'text-brand-500', bg: 'border-brand-500/30' };
+    let up = 0, down = 0;
+    prices.forEach(p => {
+      if (p.change && p.change > 0) up++;
+      else if (p.change && p.change < 0) down++;
+    });
+    if (up > down) return { label: 'BULLISH', color: 'text-amber-500', bg: 'border-amber-500/30' };
+    if (down > up) return { label: 'BEARISH', color: 'text-red-500', bg: 'border-red-500/30' };
+    return { label: 'STABLE', color: 'text-brand-500', bg: 'border-brand-500/30' };
+  };
+  const ticker = getTickerState();
+
   return (
     <div className="space-y-6">
       {/* Top Header & Ticker */}
@@ -141,9 +154,9 @@ export function Market() {
             <RefreshCw className={cn('h-3.5 w-3.5 text-brand-500', loading && 'animate-spin')} />
             Refresh
           </button>
-          <div className="inline-flex items-center gap-2 rounded-2xl glass px-4 py-2 border border-amber-500/30">
-            <Activity className="h-4 w-4 text-amber-500 animate-pulse" />
-            <span className="text-xs font-bold">APMC Mandi Ticker: <span className="text-amber-500">BULLISH</span></span>
+          <div className={cn("inline-flex items-center gap-2 rounded-2xl glass px-4 py-2 border", ticker.bg)}>
+            <Activity className={cn("h-4 w-4 animate-pulse", ticker.color)} />
+            <span className="text-xs font-bold">APMC Mandi Ticker: <span className={ticker.color}>{ticker.label}</span></span>
           </div>
         </div>
       </div>
