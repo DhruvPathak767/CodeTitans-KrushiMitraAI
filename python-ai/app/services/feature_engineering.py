@@ -1,6 +1,8 @@
 try:
     import pandas as pd
-except Exception:
+except Exception as e:
+    import logging
+    logging.error(f"Failed to import pandas in feature_engineering: {e}")
     pd = None
 
 try:

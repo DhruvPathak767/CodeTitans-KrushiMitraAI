@@ -79,7 +79,7 @@ class PricePredictionService:
             except Exception as e:
                 logger.warn(f"Dataset price lookup notice: {e}")
 
-        if self.model_bundle is not None:
+        if self.model_bundle is not None and pd is not None:
             rf_model = self.model_bundle['model']
             pipeline = self.model_bundle['pipeline']
             feature_cols = self.model_bundle['feature_cols']

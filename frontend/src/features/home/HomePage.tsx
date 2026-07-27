@@ -161,7 +161,7 @@ export function HomePage() {
               </div>
               <div className="flex items-center gap-3 rounded-2xl bg-emerald-950/60 p-3.5 border border-emerald-800/50">
                 <span className="text-xl">🌱</span>
-                <span className="text-xs font-bold text-emerald-200">{t('status.fertilizerTomorrow')}</span>
+                <span className="text-xs font-bold text-emerald-200">{cropName} {t('status.fertilizerTomorrow')}</span>
               </div>
               <div className="flex items-center gap-3 rounded-2xl bg-rose-950/60 p-3.5 border border-rose-800/50">
                 <span className="text-xl">⚠️</span>

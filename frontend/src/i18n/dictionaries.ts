@@ -383,7 +383,7 @@ const en: Dict = {
   // Status Pills
   'status.rainExpected': 'Rain Expected at 4 PM (18mm)',
   'status.noIrrigation': 'Irrigation Not Recommended Today',
-  'status.fertilizerTomorrow': 'Wheat requires fertilizer tomorrow',
+  'status.fertilizerTomorrow': 'requires fertilizer tomorrow',
   'status.diseaseDetected': 'Possible leaf disease detected',
   'status.marketPriceUp': 'Market Price ↑ +₹120 today (₹2,450)',
 
@@ -392,7 +392,7 @@ const en: Dict = {
   'guide.nextStep': 'Next Step ➔',
   'guide.actionToday': 'ACTION TODAY',
   'guide.step1.title': 'Step 1: Capture Crop Photo',
-  'guide.step1.sub': 'Scan wheat crop leaf for pest or fungus detection',
+  'guide.step1.sub': 'Scan crop leaf for pest or fungus detection',
   'guide.step1.action': 'Camera scanner connects with AI leaf diagnostic engine.',
   'guide.step1.cta': 'Scan Leaf Now',
 
@@ -824,7 +824,7 @@ const hi: Dict = {
   // Status Pills
   'status.rainExpected': 'शाम 4 बजे बारिश की संभावना (18mm)',
   'status.noIrrigation': 'आज सिंचाई की सलाह नहीं है',
-  'status.fertilizerTomorrow': 'गेहूं की फसल को कल उर्वरक चाहिए',
+  'status.fertilizerTomorrow': 'की फसल को कल उर्वरक चाहिए',
   'status.diseaseDetected': 'पत्ती रोग की संभावना पहचानी गई',
   'status.marketPriceUp': 'मंडी भाव ↑ +₹120 आज (₹2,450)',
 
@@ -833,7 +833,7 @@ const hi: Dict = {
   'guide.nextStep': 'अगला कदम ➔',
   'guide.actionToday': 'आज का कार्य',
   'guide.step1.title': 'चरण 1: फसल फोटो लें',
-  'guide.step1.sub': 'कीट या फफूंद पहचान के लिए गेहूं पत्ती स्कैन करें',
+  'guide.step1.sub': 'कीट या फफूंद पहचान के लिए पत्ती स्कैन करें',
   'guide.step1.action': 'कैमरा स्कैनर AI लीफ डायग्नोस्टिक इंजन से जुड़ता है।',
   'guide.step1.cta': 'अभी पत्ती स्कैन करें',
 
@@ -1265,7 +1265,7 @@ const gu: Dict = {
   // Status Pills
   'status.rainExpected': 'સાંજે 4 વાગ્યે વરસાદની શક્યતા (18mm)',
   'status.noIrrigation': 'આજે પિયત આપવાની ભલામણ નથી',
-  'status.fertilizerTomorrow': 'ઘઉંના પાકને કાલે ખાતર આપવું',
+  'status.fertilizerTomorrow': 'ના પાકને કાલે ખાતર આપવું',
   'status.diseaseDetected': 'પાનના રોગની શક્યતા જણાઈ છે',
   'status.marketPriceUp': 'માર્કેટ ભાવ ↑ +₹120 આજે (₹2,450)',
 
@@ -1274,7 +1274,7 @@ const gu: Dict = {
   'guide.nextStep': 'આગળનું પગલું ➔',
   'guide.actionToday': 'આજનું કાર્ય',
   'guide.step1.title': 'પગલું 1: પાકનો ફોટો લો',
-  'guide.step1.sub': 'જીવાત અથવા ફૂગની ઓળખ માટે ઘઉંના પાન સ્કેન કરો',
+  'guide.step1.sub': 'જીવાત અથવા ફૂગની ઓળખ માટે પાન સ્કેન કરો',
   'guide.step1.action': 'કેમેરા સ્કેનર AI લીફ ડાયગ્નોસ્ટિક એન્જિન સાથે જોડાય છે.',
   'guide.step1.cta': 'અત્યારે પાન સ્કેન કરો',
 
