@@ -1,16 +1,20 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, ResponsiveContainer,
   XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { Download, Droplets, IndianRupee, AlertTriangle, Sprout, Sparkles } from 'lucide-react';
+import { Download, Droplets, IndianRupee, AlertTriangle, Sprout, Sparkles, FileText, Sheet, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { useApp } from '@/i18n/AppContext';
 import { Card, SectionHeader, StatCard } from '@/components/ui';
 import { yieldTrend, waterUsage, monthlyIncome, profitSummary } from '@/data/mock';
 
 export function Reports() {
   const { t } = useApp();
+  const [exporting, setExporting] = useState(false);
 
   const diseaseHistory = [
     { name: 'Leaf Blight', value: 35, color: '#ef4444' },
@@ -25,13 +29,239 @@ export function Reports() {
     { month: 'May', cases: 5 }, { month: 'Jun', cases: 2 },
   ];
 
-  function handleExport() {
-    confetti({
-      particleCount: 80,
-      spread: 60,
-      origin: { y: 0.6 },
+  /* ── CSV Helper ── */
+  function downloadCSV() {
+    const lines: string[] = [];
+
+    // Summary
+    lines.push('=== Farm Summary ===');
+    lines.push('Metric,Value');
+    lines.push(`Total Yield,5.3 t/ac`);
+    lines.push(`Water Used,40500 L`);
+    lines.push(`Revenue,₹${profitSummary.revenue}`);
+    lines.push(`Cost,₹${profitSummary.cost}`);
+    lines.push(`Profit,₹${profitSummary.profit}`);
+    lines.push(`Margin,${profitSummary.margin}%`);
+    lines.push('');
+
+    // Yield Trend
+    lines.push('=== Yield Trend (ton/acre) ===');
+    lines.push('Month,Actual,Predicted');
+    yieldTrend.forEach(r => lines.push(`${r.month},${r.actual ?? ''},${r.predicted}`));
+    lines.push('');
+
+    // Water Usage
+    lines.push('=== Water Usage (liters/week) ===');
+    lines.push('Week,Liters');
+    waterUsage.forEach(r => lines.push(`${r.week},${r.liters}`));
+    lines.push('');
+
+    // Monthly Income
+    lines.push('=== Monthly Income (₹) ===');
+    lines.push('Month,Income');
+    monthlyIncome.forEach(r => lines.push(`${r.month},${r.income}`));
+    lines.push('');
+
+    // Disease History
+    lines.push('=== Disease Distribution ===');
+    lines.push('Disease,Percentage');
+    diseaseHistory.forEach(r => lines.push(`${r.name},${r.value}%`));
+    lines.push('');
+
+    // Disease Timeline
+    lines.push('=== Disease Timeline ===');
+    lines.push('Month,Cases');
+    diseaseTimeline.forEach(r => lines.push(`${r.month},${r.cases}`));
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `KrushiMitra_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── PDF Helper ── */
+  function downloadPDF() {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const now = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    let y = 15;
+
+    // Header with brand color
+    doc.setFillColor(22, 163, 74); // green-600
+    doc.rect(0, 0, pageWidth, 32, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.text('KrushiMitra AI — Farm Report', pageWidth / 2, 15, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated on: ${now}`, pageWidth / 2, 24, { align: 'center' });
+
+    y = 42;
+    doc.setTextColor(30, 41, 59); // slate-800
+
+    // ── Section 1: Farm Summary
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Farm Summary', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Metric', 'Value']],
+      body: [
+        ['Total Yield', '5.3 ton/acre'],
+        ['Water Consumed', '40,500 Liters'],
+        ['Revenue', `₹${profitSummary.revenue.toLocaleString('en-IN')}`],
+        ['Cost', `₹${profitSummary.cost.toLocaleString('en-IN')}`],
+        ['Profit', `₹${profitSummary.profit.toLocaleString('en-IN')}`],
+        ['Profit Margin', `${profitSummary.margin}%`],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [22, 163, 74], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
     });
-    alert('Official Agricultural Summary Report (PDF & CSV) generated!');
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // ── Section 2: Yield Trend
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Yield Trend (ton/acre)', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Month', 'Actual', 'Predicted']],
+      body: yieldTrend.map(r => [r.month, r.actual?.toString() ?? '—', r.predicted.toString()]),
+      theme: 'striped',
+      headStyles: { fillColor: [34, 197, 94], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // ── Section 3: Water Usage
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Water Usage (liters/week)', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Week', 'Liters']],
+      body: waterUsage.map(r => [r.week, r.liters.toLocaleString('en-IN')]),
+      theme: 'striped',
+      headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // ── Section 4: Monthly Income
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Monthly Income (₹)', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Month', 'Income (₹)']],
+      body: monthlyIncome.map(r => [r.month, `₹${r.income.toLocaleString('en-IN')}`]),
+      theme: 'striped',
+      headStyles: { fillColor: [245, 158, 11], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // Check if we need a new page
+    if (y > 230) {
+      doc.addPage();
+      y = 20;
+    }
+
+    // ── Section 5: Disease Distribution
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Disease Distribution', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Disease', 'Percentage']],
+      body: diseaseHistory.map(r => [r.name, `${r.value}%`]),
+      theme: 'grid',
+      headStyles: { fillColor: [239, 68, 68], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // ── Section 6: Disease Timeline
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Disease Timeline (Monthly Cases)', 14, y);
+    y += 3;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Month', 'Cases']],
+      body: diseaseTimeline.map(r => [r.month, r.cases.toString()]),
+      theme: 'striped',
+      headStyles: { fillColor: [239, 68, 68], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(148, 163, 184);
+      doc.text(
+        `KrushiMitra AI • Page ${i} of ${pageCount} • ${now}`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 8,
+        { align: 'center' },
+      );
+    }
+
+    doc.save(`KrushiMitra_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+  }
+
+  /* ── Export Handler ── */
+  function handleExport(type: 'pdf' | 'csv') {
+    setExporting(true);
+    try {
+      if (type === 'pdf') {
+        downloadPDF();
+      } else {
+        downloadCSV();
+      }
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 },
+      });
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Export failed. Please try again.');
+    } finally {
+      setExporting(false);
+    }
   }
 
   return (
@@ -41,9 +271,14 @@ export function Reports() {
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight gradient-text">{t('reports.title')}</h1>
           <p className="mt-1 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">{t('reports.subtitle')}</p>
         </div>
-        <button onClick={handleExport} className="btn-primary text-xs shadow-glow">
-          <Download className="h-4 w-4" /> {t('reports.export')} PDF & CSV
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => handleExport('pdf')} disabled={exporting} className="btn-primary text-xs shadow-glow disabled:opacity-50">
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />} {t('reports.export')} PDF
+          </button>
+          <button onClick={() => handleExport('csv')} disabled={exporting} className="btn-primary text-xs shadow-glow disabled:opacity-50">
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sheet className="h-4 w-4" />} Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Summary Stats */}
