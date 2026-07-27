@@ -5,7 +5,69 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, cn } from '@/components/ui';
-import { schemes } from '@/data/mock';
+
+const schemes = [
+  {
+    id: 'pmkisan',
+    name: 'PM-Kisan Samman Nidhi',
+    name_hi: 'PM-किसान सम्मान निधि',
+    name_gu: 'PM-કિસાન સન્માન નિધિ',
+    benefit: '₹6,000/year direct cash transfer',
+    benefit_hi: '₹6,000/वर्ष सीधे नकद हस्तांतरण',
+    benefit_gu: '₹6,000/વર્ષ સીધું રોકડ હસ્તાંતરણ',
+    deadline: 'Ongoing',
+    docs: ['Aadhaar', 'Land records', 'Bank account'],
+    eligibility: 'All landholding farmers',
+  },
+  {
+    id: 'pmfby',
+    name: 'PM Fasal Bima Yojana',
+    name_hi: 'PM फसल बीमा योजना',
+    name_gu: 'PM ફસલ બીમા યોજના',
+    benefit: 'Crop insurance up to ₹50,000/hectare',
+    benefit_hi: '₹50,000/हेक्टेयर तक फसल बीमा',
+    benefit_gu: '₹50,000/હેક્ટર સુધી પાક વીમો',
+    deadline: '15 Aug 2026',
+    docs: ['Aadhaar', 'Land records', 'Bank account', 'Sowing certificate'],
+    eligibility: 'Loanee and non-loanee farmers',
+  },
+  {
+    id: 'soil',
+    name: 'Soil Health Card Scheme',
+    name_hi: 'मृदा स्वास्थ्य कार्ड योजना',
+    name_gu: 'જમીન સ્વાસ્થ્ય કાર્ડ યોજના',
+    benefit: 'Free soil testing & nutrient recommendations',
+    benefit_hi: 'मुफ्त मिट्टी परीक्षण और पोषक सलाह',
+    benefit_gu: 'મફત જમીન ચકાસણી અને પોષક સલાહ',
+    deadline: 'Ongoing',
+    docs: ['Aadhaar', 'Land records'],
+    eligibility: 'All farmers',
+  },
+  {
+    id: 'kcc',
+    name: 'Kisan Credit Card',
+    name_hi: 'किसान क्रेडिट कार्ड',
+    name_gu: 'કિસાન ક્રેડિટ કાર્ડ',
+    benefit: 'Low-interest credit up to ₹3,00,000',
+    benefit_hi: '₹3,00,000 तक कम ब्याज क्रेडिट',
+    benefit_gu: '₹3,00,000 સુધી ઓછા વ્યાજ ક્રેડિટ',
+    deadline: '31 Dec 2026',
+    docs: ['Aadhaar', 'Land records', 'Bank account', 'Identity proof'],
+    eligibility: 'All farmers, sharecroppers, tenant farmers',
+  },
+  {
+    id: 'irrigation',
+    name: 'Pradhan Mantri Krishi Sinchayee Yojana',
+    name_hi: 'प्रधानमंत्री कृषि सिंचाई योजना',
+    name_gu: 'પ્રધાનમંત્રી કૃષિ સિંચાઈ યોજના',
+    benefit: '45-55% subsidy on drip/sprinkler irrigation',
+    benefit_hi: 'ड्रिप/स्प्रिंकलर पर 45-55% सब्सिडी',
+    benefit_gu: 'ડ્રિપ/સ્પ્રિન્કલર પર 45-55% સબસિડી',
+    deadline: '30 Sep 2026',
+    docs: ['Aadhaar', 'Land records', 'Bank account', 'Quotation'],
+    eligibility: 'All farmers with cultivable land',
+  },
+];
 
 export function Schemes() {
   const { t, lang } = useApp();

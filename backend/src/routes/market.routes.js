@@ -18,4 +18,7 @@ router.get('/crops', marketController.getAllCrops);
 // GET /api/market/markets - Fetch all supported markets
 router.get('/markets', marketController.getAllMarkets);
 
+// POST /api/market/sync - Trigger live sync from data.gov.in
+router.post('/sync', marketController.syncMandiPrices);
+
 export default router;

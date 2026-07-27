@@ -7,6 +7,7 @@ import app from './app.js';
 import connectDB from './config/database.js';
 import logger from './config/logger.js';
 import { seedSuperAdmin } from './utils/seeder.js';
+import { startMandiCron, runInitialSync, stopMandiCron } from './scripts/mandiCron.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -26,19 +27,26 @@ const startServer = async () => {
       logger.info(`Health check available at http://localhost:${PORT}/`);
     });
 
+    // Start background sync jobs
+    startMandiCron();
+    runInitialSync();
+
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (err) => {
       logger.error(`Unhandled Rejection Error: ${err.message}`, { stack: err.stack });
+      stopMandiCron();
       server.close(() => process.exit(1));
     });
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (err) => {
       logger.error(`Uncaught Exception Error: ${err.message}`, { stack: err.stack });
+      stopMandiCron();
       process.exit(1);
     });
   } catch (error) {
     logger.error(`Failed to start server: ${error.message}`);
+    stopMandiCron();
     process.exit(1);
   }
 };

@@ -3,7 +3,25 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianG
 import { Droplets, CloudRain, Clock, Save, Sparkles, Activity, ShieldCheck } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, AIResponsePanel } from '@/components/ui';
-import { irrigationData, waterUsage } from '@/data/mock';
+
+const irrigationData = {
+  requirement: 9200,
+  rainExpected: 28,
+  nextIrrigation: '2 days',
+  saving: 23,
+  schedule: [
+    { zone: 'Field A (Wheat)', time: '6:00 AM', duration: '45 min', status: 'scheduled' },
+    { zone: 'Field B (Cotton)', time: '7:00 AM', duration: '60 min', status: 'scheduled' },
+    { zone: 'Field C (Tomato)', time: '5:30 PM', duration: '30 min', status: 'today' },
+  ],
+};
+
+const waterUsage = [
+  { week: 'W1', liters: 12000 },
+  { week: 'W2', liters: 10500 },
+  { week: 'W3', liters: 9200 },
+  { week: 'W4', liters: 8800 },
+];
 
 export function Irrigation() {
   const { t, lang } = useApp();

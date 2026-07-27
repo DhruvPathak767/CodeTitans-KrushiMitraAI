@@ -3,7 +3,16 @@ import { motion } from 'framer-motion';
 import { CalendarDays, Sparkles, CheckCircle2, Circle, Cloud, Cpu } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, cn } from '@/components/ui';
-import { weeklyPlanner } from '@/data/mock';
+
+const weeklyPlanner = [
+  { day: 'mon', tasks: ['Apply nitrogen fertilizer', 'Check soil moisture sensors'] },
+  { day: 'tue', tasks: ['Scout cotton for pests', 'Repair drip line section B'] },
+  { day: 'wed', tasks: ['Rain expected — delay spraying', 'Prepare drainage channels'] },
+  { day: 'thu', tasks: ['Post-rain disease scouting', 'Harvest tomato batch'] },
+  { day: 'fri', tasks: ['Sell tomato at Surat mandi', 'Apply potash to wheat'] },
+  { day: 'sat', tasks: ['Maintain farm equipment', 'Update farm diary'] },
+  { day: 'sun', tasks: ['Review weekly AI report', 'Plan next week'] },
+];
 
 export function Planner() {
   const { t, lang } = useApp();

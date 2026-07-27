@@ -1,4 +1,5 @@
 import marketService from '../services/market.service.js';
+import mandiSyncService from '../services/mandiSync.service.js';
 import ApiResponse from '../utils/apiResponse.js';
 import ApiError from '../utils/ApiError.js';
 
@@ -65,6 +66,31 @@ class MarketController {
     try {
       const markets = await marketService.getAllMarkets();
       return res.status(200).json(new ApiResponse(200, 'Supported markets fetched successfully', markets));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/market/sync
+   * Trigger a live sync of APMC mandi prices from data.gov.in.
+   */
+  async syncMandiPrices(req, res, next) {
+    try {
+      const { maxRecords = 500, state, district, commodity } = req.body || {};
+      const filters = {};
+      if (state) filters.state = state;
+      if (district) filters.district = district;
+      if (commodity) filters.commodity = commodity;
+
+      const result = await mandiSyncService.syncLatestPrices({
+        maxRecords: Math.min(parseInt(maxRecords, 10) || 500, 1000),
+        filters,
+      });
+
+      return res.status(200).json(
+        new ApiResponse(200, `Mandi sync completed: ${result.synced} records synced`, result)
+      );
     } catch (error) {
       next(error);
     }

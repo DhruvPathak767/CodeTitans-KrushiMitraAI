@@ -12,7 +12,13 @@ import { LanguageSwitcher, ThemeToggle } from '@/components/Controls';
 import { FutureBackground } from '@/components/FutureBackground';
 import { CursorSpotlight } from '@/components/CursorSpotlight';
 import { CropGlobe3D } from '@/components/3d/CropGlobe3D';
-import { weatherNow, marketPrices, testimonials } from '@/data/mock';
+
+const testimonials = [
+  { name: 'Ramesh Patel', village: 'Anand, Gujarat', text: 'KrishiMitra detected leaf blight early and saved 30% of my tomato crop. The AI advisory is remarkably accurate.', rating: 5 },
+  { name: 'Sunita Devi', village: 'Kota, Rajasthan', text: 'The market intelligence feature helped me sell wheat at the right time. I earned ₹40,000 more this season.', rating: 5 },
+  { name: 'Gurpreet Singh', village: 'Ludhiana, Punjab', text: 'Smart irrigation cut my water usage by 25% while maintaining yield. The weekly planner keeps me organized.', rating: 5 },
+  { name: 'Lakshmi Naidu', village: 'Coimbatore, Tamil Nadu', text: 'Voice assistant in Tamil is a game changer. I get crop advice without typing. Government schemes section got me PM-Kisan benefits.', rating: 5 },
+];
 import { WeatherIcon, getWeatherType } from '@/components/WeatherIcons';
 
 const stats = [

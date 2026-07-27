@@ -10,7 +10,38 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useApp } from '@/i18n/AppContext';
 import { Card, SectionHeader, StatCard } from '@/components/ui';
-import { yieldTrend, waterUsage, monthlyIncome, profitSummary } from '@/data/mock';
+
+const profitSummary = {
+  revenue: 485000,
+  cost: 198000,
+  profit: 287000,
+  margin: 59,
+};
+
+const yieldTrend = [
+  { month: 'Jan', actual: 4.2, predicted: 4.3 },
+  { month: 'Feb', actual: 4.5, predicted: 4.4 },
+  { month: 'Mar', actual: 4.8, predicted: 4.7 },
+  { month: 'Apr', actual: 5.1, predicted: 5.0 },
+  { month: 'May', actual: 5.3, predicted: 5.2 },
+  { month: 'Jun', actual: null, predicted: 5.4 },
+];
+
+const waterUsage = [
+  { week: 'W1', liters: 12000 },
+  { week: 'W2', liters: 10500 },
+  { week: 'W3', liters: 9200 },
+  { week: 'W4', liters: 8800 },
+];
+
+const monthlyIncome = [
+  { month: 'Jan', income: 42000 },
+  { month: 'Feb', income: 38000 },
+  { month: 'Mar', income: 65000 },
+  { month: 'Apr', income: 58000 },
+  { month: 'May', income: 72000 },
+  { month: 'Jun', income: 48000 },
+];
 
 export function Reports() {
   const { t } = useApp();
