@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { TrendingUp, MapPin, Sparkles, ArrowRight, Activity, RefreshCw, Search, Filter, Loader2, AlertCircle } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
+import { useFarm } from '@/context/FarmContext';
 import { Card, Badge, SectionHeader, cn } from '@/components/ui';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,6 +27,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function Market() {
   const { t, lang } = useApp();
+  const { activeFarm } = useFarm();
   const navigate = useNavigate();
   const fmt = (n: number) => n.toLocaleString(lang === 'en' ? 'en-IN' : undefined);
 
@@ -36,17 +38,29 @@ export function Market() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [availableCrops, setAvailableCrops] = useState<string[]>([]);
 
+  const farmCrop = activeFarm?.cropName?.trim();
+  const farmDistrict = activeFarm?.address?.district?.trim();
+  const farmState = activeFarm?.address?.state?.trim();
+
+  // The first market view must reflect the crop registered on the active farm.
+  // A manual crop selection remains intact until the farmer switches farms.
+  useEffect(() => {
+    if (farmCrop) setSelectedCrop(farmCrop);
+  }, [activeFarm?._id, farmCrop]);
+
   const fetchMarketPrices = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      let url = `${API_BASE_URL}/api/market/prices?limit=50`;
-      if (selectedCrop && selectedCrop !== 'All') {
-        url += `&crop=${encodeURIComponent(selectedCrop)}`;
-      }
-      if (searchTerm) {
-        url += `&search=${encodeURIComponent(searchTerm)}`;
-      }
+      const params = new URLSearchParams({ limit: '50' });
+      const crop = selectedCrop === 'All' ? farmCrop : selectedCrop;
+      if (crop) params.set('crop', crop);
+      // Do not silently broaden to state- or India-wide records. A market
+      // must match the farmer's registered district when one is available.
+      if (farmDistrict) params.set('district', farmDistrict);
+      if (farmState) params.set('state', farmState);
+      if (searchTerm) params.set('search', searchTerm);
+      const url = `${API_BASE_URL}/api/market/prices?${params.toString()}`;
 
       const response = await fetch(url);
       if (!response.ok) {
@@ -78,7 +92,7 @@ export function Market() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCrop, searchTerm, t]);
+  }, [farmCrop, farmDistrict, farmState, selectedCrop, searchTerm, t]);
 
   const fetchCrops = useCallback(async () => {
     try {
@@ -104,7 +118,9 @@ export function Market() {
     fetchMarketPrices();
   }, [fetchMarketPrices]);
 
-  const bestMarket = prices.reduce<MarketItem | null>((best, item) => !best || item.price > best.price ? item : best, null);
+  // The backend sorts by newest price first. Using the first result prevents
+  // an older, more expensive record from replacing the current local rate.
+  const bestMarket = prices[0] ?? null;
   const combined = prices.map((item) => ({ label: item.crop, price: item.price }));
 
   return (

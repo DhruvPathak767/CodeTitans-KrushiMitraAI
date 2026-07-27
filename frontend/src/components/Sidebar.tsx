@@ -27,19 +27,17 @@ export function Sidebar() {
       <div className="flex h-full flex-col justify-between overflow-hidden bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800">
         <div className="flex flex-col flex-1 min-h-0">
           {/* Logo Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
-            <NavLink to="/app/home" className="flex items-center gap-3">
-              <div className="grid place-items-center rounded-2xl bg-emerald-600 p-2.5 text-white shadow-md">
-                <Leaf className="h-6 w-6" />
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+            <NavLink
+              to="/app/home"
+              className="flex items-center gap-3 rounded-2xl glass-strong px-4 py-2 border border-white/40 dark:border-white/10 shadow-card"
+            >
+              <div className="grid place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 p-2 shadow-glow">
+                <Leaf className="h-5 w-5 text-white" />
               </div>
-              <div>
-                <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                  KrishiMitra AI
-                </p>
-                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  Farmer Decision Guide
-                </p>
-              </div>
+              <span className="font-display text-base font-extrabold tracking-tight gradient-text">
+                {t('app.name')}
+              </span>
             </NavLink>
           </div>
 
