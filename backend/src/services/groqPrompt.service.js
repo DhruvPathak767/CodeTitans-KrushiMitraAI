@@ -48,8 +48,8 @@ FARMER & CROP TELEMETRY:
 
 MARKET TELEMETRY:
 - Current Mandi Price: ₹${currentPrice} / Quintal
-- 30-Day Market Trend: ${historicalTrend?.trend || 'STABLE'}
-- Average 30-Day Price: ₹${historicalTrend?.avgPrice || currentPrice} / Quintal
+- 15-Day Market AI Forecast Trend: ${historicalTrend?.trend || 'STABLE'}
+- Projected 15-Day Price: ₹${historicalTrend?.predictedPrice || currentPrice} / Quintal
 
 WEATHER TELEMETRY:
 - Rain Probability: ${weather?.current?.rainProbability || weather?.rainProbability || 10}%

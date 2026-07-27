@@ -10,6 +10,7 @@ class PricePredictionRequest(BaseModel):
     crop: str = Field(..., example="Cotton")
     market: str = Field(..., example="Rajkot APMC")
     district: str = Field(..., example="Rajkot")
+    current_price: float = Field(None, example=2500.0)
 
 class PricePredictionResponse(BaseModel):
     today: int
@@ -36,7 +37,8 @@ async def predict_price(payload: PricePredictionRequest):
         prediction = price_prediction_service_singleton.predict_price(
             crop=payload.crop,
             market=payload.market,
-            district=payload.district
+            district=payload.district,
+            current_price=payload.current_price
         )
         return prediction
     except HTTPException as he:

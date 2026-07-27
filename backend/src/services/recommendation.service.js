@@ -1,3 +1,4 @@
+import pricePredictionService from './pricePrediction.service.js';
 import recommendationRepository from '../repositories/recommendation.repository.js';
 import marketRepository from '../repositories/market.repository.js';
 import ruleEngineService from './ruleEngine.service.js';
@@ -42,21 +43,24 @@ class RecommendationService {
 
     let currentPrice = latestPrices.data[0]?.price || 7250;
     
-    // Fetch 30-day Market History Trend
-    let history = await marketRepository.findPriceHistory({ crop, days: 30 });
+    // Fetch 15-Day Market Forecast from Python AI
     let trend = 'STABLE';
-    let avgPrice = currentPrice;
-
-    if (history && history.length >= 2) {
-      const firstPrice = history[0].price;
-      const lastPrice = history[history.length - 1].price;
-      const diff = lastPrice - firstPrice;
-      if (diff > 50) trend = 'INCREASING';
-      else if (diff < -50) trend = 'DECREASING';
-      avgPrice = Math.round(history.reduce((acc, h) => acc + h.price, 0) / history.length);
+    let predictedFuturePrice = currentPrice;
+    try {
+      const prediction = await pricePredictionService.predictPrice({
+        crop,
+        market: district ? `${district} APMC` : 'Rajkot APMC',
+        district,
+        farmId,
+        farmerId,
+      });
+      trend = prediction.trend.toUpperCase();
+      predictedFuturePrice = prediction.after15days;
+    } catch (e) {
+      logger.warn('Failed to fetch Python AI prediction for recommendation. Defaulting to STABLE.');
     }
 
-    const historicalTrend = { trend, avgPrice, totalRecords: history.length };
+    const marketForecast = { trend, predictedPrice: predictedFuturePrice };
 
     // Fetch Weather Telemetry
     const weather = {
@@ -83,7 +87,7 @@ class RecommendationService {
       crop,
       quantity,
       currentPrice,
-      historicalTrend,
+      historicalTrend: marketForecast,
       weather,
       diseaseReport: diseaseStatus,
       storageAvailable: Boolean(storageAvailable),

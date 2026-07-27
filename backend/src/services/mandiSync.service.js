@@ -73,10 +73,17 @@ class MandiSyncService {
    *             min_price, max_price, modal_price, arrival_date
    */
   mapRecord(raw) {
+    const cropStr = raw.commodity || raw.Commodity || '';
+    const marketStr = raw.market || raw.Market || '';
+    const districtStr = raw.district || raw.District || '';
+    const stateStr = raw.state || raw.State || '';
+    const modalPriceStr = raw.modal_price || raw.Modal_Price || 0;
+    const arrivalDateStr = raw.arrival_date || raw.Arrival_Date || '';
+
     // Parse the arrival_date — OGD uses DD/MM/YYYY format
     let parsedDate;
-    if (raw.arrival_date) {
-      const parts = raw.arrival_date.split('/');
+    if (arrivalDateStr) {
+      const parts = arrivalDateStr.split('/');
       if (parts.length === 3) {
         // DD/MM/YYYY → YYYY-MM-DD
         parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
@@ -87,11 +94,11 @@ class MandiSyncService {
     }
 
     return {
-      crop: this.titleCase(raw.commodity || ''),
-      market: this.titleCase(raw.market || ''),
-      district: this.titleCase(raw.district || ''),
-      state: this.titleCase(raw.state || ''),
-      price: Number(raw.modal_price) || 0,
+      crop: this.titleCase(cropStr),
+      market: this.titleCase(marketStr),
+      district: this.titleCase(districtStr),
+      state: this.titleCase(stateStr),
+      price: Number(modalPriceStr) || 0,
       unit: 'Quintal',
       date: parsedDate,
       source: 'data.gov.in',
@@ -160,6 +167,8 @@ class MandiSyncService {
 
     if (mapped.length === 0) {
       console.log('⚠️ [MandiSync] All records failed validation.');
+      console.log('Sample raw:', allRecords[0]);
+      console.log('Sample mapped:', this.mapRecord(allRecords[0]));
       return { synced: 0, total: allRecords.length };
     }
 

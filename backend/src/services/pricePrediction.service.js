@@ -16,12 +16,19 @@ class PricePredictionService {
     try {
       logger.info(`Sending price prediction request to Python AI Microservice (${PYTHON_AI_URL}/predict-price)...`);
 
+      const latestPrices = await marketRepository.findLatestPrices({
+        filters: { crop: { $regex: new RegExp(`^${crop}$`, 'i') } },
+        limit: 1,
+      });
+      const currentPrice = latestPrices.data[0]?.price || 2200;
+
       const response = await axios.post(
         `${PYTHON_AI_URL}/predict-price`,
         {
           crop,
           market,
           district,
+          current_price: currentPrice
         },
         { timeout: 5000 }
       );
@@ -35,12 +42,7 @@ class PricePredictionService {
 
     // Fallback mathematical model if FastAPI is unreachable
     if (!predictionResult) {
-      const latestPrices = await marketRepository.findLatestPrices({
-        filters: { crop: { $regex: new RegExp(`^${crop}$`, 'i') } },
-        limit: 1,
-      });
-
-      const todayVal = latestPrices.data[0]?.price || 2200;
+      const todayVal = currentPrice || 2200;
       const after3days = Math.round(todayVal * 1.03);
       const after7days = Math.round(todayVal * 1.08);
       const after15days = Math.round(todayVal * 1.14);
