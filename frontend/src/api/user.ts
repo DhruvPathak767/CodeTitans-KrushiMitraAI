@@ -9,7 +9,7 @@ export interface UserLanguageResponse {
 
 export async function getUserLanguageApi(): Promise<UserLanguageResponse> {
   const token = getAccessToken();
-  if (!token) return { language: 'en', preferredLanguage: 'English' };
+  if (!token) throw new Error('You must be signed in to load language preferences');
 
   const res = await fetch(`${API_BASE_URL}/api/user/language`, {
     headers: {
@@ -25,7 +25,7 @@ export async function getUserLanguageApi(): Promise<UserLanguageResponse> {
 
 export async function updateUserLanguageApi(language: 'en' | 'hi' | 'gu'): Promise<UserLanguageResponse> {
   const token = getAccessToken();
-  if (!token) return { language, preferredLanguage: language === 'hi' ? 'Hindi' : language === 'gu' ? 'Gujarati' : 'English' };
+  if (!token) throw new Error('You must be signed in to save language preferences');
 
   const res = await fetch(`${API_BASE_URL}/api/user/language`, {
     method: 'PUT',

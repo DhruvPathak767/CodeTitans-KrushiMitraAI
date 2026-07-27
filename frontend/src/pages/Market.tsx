@@ -3,10 +3,9 @@ import { motion } from 'framer-motion';
 import {
   AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
-import { TrendingUp, TrendingDown, Store, MapPin, Sparkles, ArrowRight, Activity, RefreshCw, Search, Filter, Loader2, AlertCircle } from 'lucide-react';
+import { TrendingUp, MapPin, Sparkles, ArrowRight, Activity, RefreshCw, Search, Filter, Loader2, AlertCircle } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, SectionHeader, cn } from '@/components/ui';
-import { marketPrices as fallbackMarketPrices, priceTrend, priceForecast, cropIcon } from '@/data/mock';
 import { useNavigate } from 'react-router-dom';
 
 interface MarketItem {
@@ -66,33 +65,20 @@ export function Market() {
           price: item.price,
           unit: item.unit || 'Quintal',
           date: item.date,
-          change: Number((((idx % 5) - 2) * 1.5).toFixed(1)),
-          demand: idx % 3 === 0 ? 'high' : idx % 3 === 1 ? 'medium' : 'low',
+          change: item.change,
+          demand: item.demand,
         }));
         setPrices(mapped);
       } else {
         setPrices([]);
       }
     } catch (err: any) {
-      console.warn('Backend Market API offline or error, utilizing static mock fallback:', err.message);
-      setError('Live market service unavailable. Showing offline APMC price snapshot.');
-      
-      let filtered = [...fallbackMarketPrices];
-      if (selectedCrop !== 'All') {
-        filtered = filtered.filter((m) => m.crop.toLowerCase() === selectedCrop.toLowerCase());
-      }
-      if (searchTerm) {
-        filtered = filtered.filter(
-          (m) =>
-            m.crop.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.mandi.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      setPrices(filtered);
+      setError(err.message || t('state.error'));
+      setPrices([]);
     } finally {
       setLoading(false);
     }
-  }, [selectedCrop, searchTerm]);
+  }, [selectedCrop, searchTerm, t]);
 
   const fetchCrops = useCallback(async () => {
     try {
@@ -104,11 +90,11 @@ export function Market() {
           return;
         }
       }
-    } catch (err) {
-      // Ignore crop fetch error and fallback to unique crops from mock
+    } catch {
+      setError(t('state.error'));
     }
-    setAvailableCrops(['All', 'Cotton', 'Wheat', 'Rice', 'Potato', 'Tomato', 'Soybean', 'Groundnut', 'Onion', 'Maize']);
-  }, []);
+    setAvailableCrops(['All']);
+  }, [t]);
 
   useEffect(() => {
     fetchCrops();
@@ -118,9 +104,8 @@ export function Market() {
     fetchMarketPrices();
   }, [fetchMarketPrices]);
 
-  const displayPrices = prices.length > 0 ? prices : fallbackMarketPrices;
-  const bestMarket = displayPrices.reduce((a, b) => ((a.change || 0) > (b.change || 0) ? a : b), displayPrices[0]);
-  const combined = [...priceTrend, ...priceForecast];
+  const bestMarket = prices.reduce<MarketItem | null>((best, item) => !best || item.price > best.price ? item : best, null);
+  const combined = prices.map((item) => ({ label: item.crop, price: item.price }));
 
   return (
     <div className="space-y-6">
@@ -162,18 +147,18 @@ export function Market() {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/30 border border-amber-400/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 mb-2 backdrop-blur-md animate-float">
-              <Sparkles className="h-3 w-3 text-amber-400 animate-pulse" /> Highest Price Momentum
+              <Sparkles className="h-3 w-3 text-amber-400 animate-pulse" /> {t('market.best')}
             </span>
             <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-white">
-              {cropIcon[bestMarket.crop] || '🌾'} {bestMarket.crop}
+              🌾 {bestMarket?.crop || t('state.noData')}
             </h2>
             <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-200">
-              <MapPin className="h-4 w-4 text-amber-400" /> {(bestMarket as any).mandi || (bestMarket as any).market} • ₹{fmt(bestMarket.price)} / Quintal
+              <MapPin className="h-4 w-4 text-amber-400" /> {bestMarket?.mandi || bestMarket?.market || '—'} • {bestMarket ? `₹${fmt(bestMarket.price)}` : '—'}
             </p>
           </div>
           <div className="text-left sm:text-right">
             <p className="font-display text-4xl sm:text-5xl font-black tracking-tight text-brand-400 drop-shadow">
-              {(bestMarket.change || 0) >= 0 ? '+' : ''}{bestMarket.change || 4.2}%
+              {bestMarket ? `₹${fmt(bestMarket.price)}` : '—'}
             </p>
             <button
               onClick={() => navigate('/app/sellstore')}
@@ -209,19 +194,15 @@ export function Market() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#94a3b820" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#94a3b8" />
+              <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(15,23,42,0.9)', color: '#fff', fontSize: 12 }} />
-              <Area type="monotone" dataKey="wheat" stroke="#22c55e" strokeWidth={3} fill="url(#wheatG)" />
-              <Area type="monotone" dataKey="cotton" stroke="#3b82f6" strokeWidth={3} fill="url(#cottonG)" />
-              <Area type="monotone" dataKey="tomato" stroke="#ef4444" strokeWidth={3} fill="url(#tomatoG)" />
+              <Area type="monotone" dataKey="price" stroke="#22c55e" strokeWidth={3} fill="url(#wheatG)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-3 flex gap-6 text-xs font-bold">
-          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-brand-500 shadow-glow" /> Wheat</span>
-          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-sky-500 shadow-glow-sky" /> Cotton</span>
-          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-red-500" /> Tomato</span>
+          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-brand-500 shadow-glow" /> {t('market.price')}</span>
         </div>
       </Card>
 
@@ -298,7 +279,7 @@ export function Market() {
                     className="hover:bg-slate-200/40 dark:hover:bg-white/5 transition-colors"
                   >
                     <td className="py-3.5 font-extrabold">
-                      {cropIcon[m.crop] || '🌾'} {m.crop}
+                      🌾 {m.crop}
                     </td>
                     <td className="py-3.5 text-slate-600 dark:text-slate-300 font-medium">
                       {m.mandi || m.market} {m.district ? `(${m.district})` : ''}
@@ -308,14 +289,11 @@ export function Market() {
                     </td>
                     <td className="py-3.5 text-center">
                       <span className={cn('inline-flex items-center gap-1 font-extrabold', (m.change || 0) >= 0 ? 'text-brand-600 dark:text-brand-400' : 'text-red-500')}>
-                        {(m.change || 0) >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                        {(m.change || 0) >= 0 ? '+' : ''}{m.change || 0}%
+                        {m.change === undefined ? '—' : <><TrendingUp className="h-3.5 w-3.5" />{m.change > 0 ? '+' : ''}{m.change}%</>}
                       </span>
                     </td>
                     <td className="py-3.5 text-center">
-                      <Badge variant={m.demand === 'high' ? 'success' : m.demand === 'medium' ? 'warning' : 'neutral'} pulse>
-                        {t(`market.demand.${m.demand || 'medium'}`)}
-                      </Badge>
+                      {m.demand ? <Badge variant={m.demand === 'high' ? 'success' : m.demand === 'medium' ? 'warning' : 'neutral'} pulse>{t(`market.demand.${m.demand}`)}</Badge> : '—'}
                     </td>
                   </motion.tr>
                 ))}

@@ -1,23 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Cloud, AlertCircle, Store, Landmark, Sparkles, Bell, Check, Trash2,
 } from 'lucide-react';
 import { useApp } from '@/i18n/AppContext';
 import { Card, Badge, EmptyState, cn } from '@/components/ui';
-import { notifications as initial } from '@/data/mock';
+import {
+  deleteNotificationApi,
+  getNotificationsApi,
+  markAllNotificationsReadApi,
+  markNotificationReadApi,
+  type NotificationItem,
+} from '@/api/notifications';
 
 type Filter = 'all' | 'weather' | 'disease' | 'market' | 'gov' | 'ai';
 
 export function Notifications() {
   const { t, lang } = useApp();
-  const langSuffix = lang === 'hi' ? '_hi' : lang === 'gu' ? '_gu' : '';
-  const [items, setItems] = useState(initial);
+  const [items, setItems] = useState<NotificationItem[]>([]);
   const [filter, setFilter] = useState<Filter>('all');
+  const [error, setError] = useState<string | null>(null);
 
-  const titleKey = `title${langSuffix}` as 'title' | 'title_hi' | 'title_gu';
-  const filtered = filter === 'all' ? items : items.filter((n) => n.type === filter);
+  const category = (type: NotificationItem['type']): Filter => {
+    if (type === 'rain' || type === 'heat' || type === 'irrigation' || type === 'spray') return 'weather';
+    if (type === 'scheme') return 'gov';
+    return type === 'disease' || type === 'market' || type === 'ai' ? type : 'ai';
+  };
+  const filtered = filter === 'all' ? items : items.filter((n) => category(n.type) === filter);
   const unread = items.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    getNotificationsApi()
+      .then((data) => setItems(data.notifications))
+      .catch((requestError: Error) => setError(requestError.message || t('state.error')));
+  }, [lang, t]);
 
   const typeConfig: Record<string, { icon: typeof Cloud; color: string }> = {
     weather: { icon: Cloud, color: 'text-sky-500 bg-sky-500/20 shadow-glow-sky' },
@@ -29,14 +45,29 @@ export function Notifications() {
 
   const filters: Filter[] = ['all', 'weather', 'disease', 'market', 'gov', 'ai'];
 
-  function markAll() {
-    setItems((p) => p.map((n) => ({ ...n, read: true })));
+  async function markAll() {
+    try {
+      await markAllNotificationsReadApi();
+      setItems((p) => p.map((n) => ({ ...n, read: true })));
+    } catch (requestError: unknown) {
+      setError(requestError instanceof Error ? requestError.message : t('state.error'));
+    }
   }
-  function markOne(id: number) {
-    setItems((p) => p.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  async function markOne(id: string) {
+    try {
+      await markNotificationReadApi(id);
+      setItems((p) => p.map((n) => (n._id === id ? { ...n, read: true } : n)));
+    } catch (requestError: unknown) {
+      setError(requestError instanceof Error ? requestError.message : t('state.error'));
+    }
   }
-  function clearAll() {
-    setItems([]);
+  async function clearAll() {
+    try {
+      await deleteNotificationApi();
+      setItems([]);
+    } catch (requestError: unknown) {
+      setError(requestError instanceof Error ? requestError.message : t('state.error'));
+    }
   }
 
   return (
@@ -55,6 +86,8 @@ export function Notifications() {
           </button>
         </div>
       </div>
+
+      {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
 
       {/* Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1">
@@ -85,17 +118,17 @@ export function Notifications() {
         <div className="space-y-3">
           <AnimatePresence>
             {filtered.map((n, i) => {
-              const cfg = typeConfig[n.type];
+              const cfg = typeConfig[category(n.type)] || typeConfig.ai;
               const Icon = cfg.icon;
               return (
                 <motion.div
-                  key={n.id}
+                  key={n._id}
                   layout
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 300 }}
                   transition={{ delay: i * 0.04 }}
-                  onClick={() => markOne(n.id)}
+                  onClick={() => markOne(n._id)}
                 >
                   <Card hover tilt className={cn('cursor-pointer', !n.read && 'border-brand-500/40 bg-brand-500/10')}>
                     <div className="flex items-start gap-4">
@@ -104,13 +137,13 @@ export function Notifications() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-xs sm:text-sm font-bold">{n[titleKey]}</h3>
+                          <h3 className="text-xs sm:text-sm font-bold">{n.title}</h3>
                           {!n.read && <span className="h-2 w-2 rounded-full bg-brand-500 animate-ping" />}
                         </div>
-                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{n.desc}</p>
-                        <p className="mt-1.5 text-[10px] text-slate-400 font-mono">{n.time}</p>
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{n.message}</p>
+                        <p className="mt-1.5 text-[10px] text-slate-400 font-mono">{new Date(n.createdAt).toLocaleString(lang === 'en' ? 'en-IN' : undefined)}</p>
                       </div>
-                      <Badge variant="neutral">{t(`notif.${n.type}`)}</Badge>
+                      <Badge variant="neutral">{t(`notif.${category(n.type)}`)}</Badge>
                     </div>
                   </Card>
                 </motion.div>

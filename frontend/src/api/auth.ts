@@ -7,6 +7,7 @@ export interface UserProfile {
   phone?: string;
   role: string;
   preferredLanguage?: string;
+  language?: 'en' | 'hi' | 'gu';
   profileImage?: string;
   emailVerified?: boolean;
   activeFarm?: string | any;

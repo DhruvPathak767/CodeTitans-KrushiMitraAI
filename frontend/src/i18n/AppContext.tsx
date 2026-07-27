@@ -15,6 +15,7 @@ import {
   getAccessToken,
   clearTokens,
 } from '@/api/auth';
+import { getUserLanguageApi, updateUserLanguageApi } from '@/api/user';
 
 type Theme = 'light' | 'dark';
 
@@ -58,6 +59,10 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
+function isLang(value: unknown): value is Lang {
+  return value === 'en' || value === 'hi' || value === 'gu';
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => load<Lang>(STORAGE.lang, 'en'));
   const [theme, setThemeState] = useState<Theme>(() => load<Theme>(STORAGE.theme, 'light'));
@@ -77,6 +82,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const res = await getProfileApi();
         if (res.data?.user) {
           setUserState(res.data.user);
+          try {
+            const savedLanguage = await getUserLanguageApi();
+            if (isLang(savedLanguage.language)) setLangState(savedLanguage.language);
+          } catch (languageError) {
+            // A preference lookup must not invalidate an otherwise valid session.
+            console.warn('Failed to load saved language preference:', languageError);
+          }
         }
       } catch (err: any) {
         // Try refreshing token if expired
@@ -85,6 +97,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           const res = await getProfileApi();
           if (res.data?.user) {
             setUserState(res.data.user);
+            try {
+              const savedLanguage = await getUserLanguageApi();
+              if (isLang(savedLanguage.language)) setLangState(savedLanguage.language);
+            } catch (languageError) {
+              console.warn('Failed to load saved language preference:', languageError);
+            }
           }
         } catch {
           clearTokens();
@@ -127,10 +145,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE.lang, JSON.stringify(l));
     setLangState(l);
 
-    // Sync user language preference with backend database asynchronously
-    import('@/api/user').then(({ updateUserLanguageApi }) => {
-      updateUserLanguageApi(l).catch((err) => console.warn('Failed to sync lang with backend:', err));
-    });
+    // Persist the preference for signed-in users. Local storage remains the
+    // immediate UI cache; the server is the source of truth on the next login.
+    if (getAccessToken()) {
+      updateUserLanguageApi(l).catch((err) => console.warn('Failed to sync language preference:', err));
+    }
   }, []);
   const toggleTheme = useCallback(
     () => setThemeState((p) => (p === 'light' ? 'dark' : 'light')),
