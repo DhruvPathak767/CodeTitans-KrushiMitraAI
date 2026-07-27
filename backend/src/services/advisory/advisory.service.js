@@ -2,6 +2,7 @@ import CropAdvisory from '../../models/CropAdvisory.js';
 import weatherService from '../weather/weather.service.js';
 import groqService from '../ai/groq.service.js';
 import farmRepository from '../../repositories/farm/farm.repository.js';
+import irrigationEngine from '../irrigation/irrigationEngine.service.js';
 import logger from '../../config/logger.js';
 
 class AdvisoryService {
@@ -39,12 +40,14 @@ class AdvisoryService {
     const isHighTemp = current.temperature >= 35;
     const isHighHumid = current.humidity >= 80;
 
+    const smartIrrigation = irrigationEngine.evaluate({ farm, weather });
+
     return {
       cropHealthScore: isHighHumid && isHighRain ? 78 : isHighTemp ? 82 : 91,
       priority: isHighRain || isHighHumid ? 'High' : 'Medium',
       irrigation: {
-        status: isHighRain ? 'Delay Irrigation' : isHighTemp ? 'Schedule Evening Irrigation' : 'Normal Schedule',
-        reason: isHighRain ? 'Natural rain expected' : isHighTemp ? 'High evaporation rate' : 'Moisture balanced',
+        status: smartIrrigation.status,
+        reason: smartIrrigation.todayRecommendation,
       },
       fertilizer: {
         status: isHighRain ? 'Postpone Application' : 'Apply Standard Dose',

@@ -17,6 +17,7 @@ import marketRoutes from './routes/market.routes.js';
 import recommendationRoutes from './routes/recommendation.routes.js';
 import pricePredictionRoutes from './routes/pricePrediction.routes.js';
 import locationRoutes from './routes/location.routes.js';
+import irrigationRoutes from './routes/irrigation.routes.js';
 import notFoundMiddleware from './middleware/notFound.middleware.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
@@ -108,6 +109,10 @@ app.use('/api/recommendation', recommendationRoutes);
 // Mount Crop Price Prediction Routes
 app.use('/price-prediction', pricePredictionRoutes);
 app.use('/api/price-prediction', pricePredictionRoutes);
+
+// Mount Smart Irrigation Routes
+app.use('/irrigation', irrigationRoutes);
+app.use('/api/irrigation', irrigationRoutes);
 
 // 404 Route Handler
 app.use(notFoundMiddleware);

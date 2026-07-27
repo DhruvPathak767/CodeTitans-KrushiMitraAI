@@ -83,6 +83,10 @@ const farmSchema = new mongoose.Schema(
       trim: true,
       default: 'Drip Irrigation',
     },
+    lastIrrigationDate: {
+      type: Date,
+      default: null,
+    },
     status: {
       type: String,
       enum: Object.values(FARM_STATUS),

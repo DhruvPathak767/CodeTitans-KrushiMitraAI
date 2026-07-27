@@ -14,6 +14,8 @@ import Upload, { IMAGE_TYPES } from './Upload.js';
 import MarketTrend, { TREND_DIRECTIONS } from './MarketTrend.js';
 import SpoilagePrediction from './SpoilagePrediction.js';
 
+import IrrigationCache from './IrrigationCache.js';
+
 export {
   // Developer A Models
   User,
@@ -40,6 +42,7 @@ export {
   MarketTrend,
   TREND_DIRECTIONS,
   SpoilagePrediction,
+  IrrigationCache,
 };
 
 export default {
@@ -58,4 +61,5 @@ export default {
   Upload,
   MarketTrend,
   SpoilagePrediction,
+  IrrigationCache,
 };
