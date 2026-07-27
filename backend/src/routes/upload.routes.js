@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { uploadImage, deleteImage } from '../controllers/upload.controller.js';
 import { uploadSingleImage } from '../middleware/upload.middleware.js';
+import { authenticate } from '../middleware/auth.middleware.js';
 
 const router = Router();
+
+// All upload/delete endpoints require authentication
+router.use(authenticate);
 
 /**
  * Upload Image Routes
@@ -22,3 +26,4 @@ router.delete('/*publicId', deleteImage);
 router.delete('/', deleteImage);
 
 export default router;
+

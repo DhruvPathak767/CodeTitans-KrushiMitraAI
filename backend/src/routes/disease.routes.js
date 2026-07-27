@@ -6,8 +6,12 @@ import {
   deleteDiseaseReport,
   clearAllDiseaseHistory,
 } from '../controllers/disease.controller.js';
+import { authenticate } from '../middleware/auth.middleware.js';
 
 const router = Router();
+
+// All disease detection endpoints require authentication
+router.use(authenticate);
 
 /**
  * Disease Detection Routes
@@ -24,3 +28,4 @@ router.get('/:id', getDiseaseReportById);
 router.delete('/:id', deleteDiseaseReport);
 
 export default router;
+

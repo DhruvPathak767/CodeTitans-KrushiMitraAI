@@ -28,9 +28,11 @@ export interface HistoryItem {
 
 const STORAGE_KEY = 'km_upload_history';
 
-function loadHistory(): HistoryItem[] {
+function loadUserHistory(userId?: string): HistoryItem[] {
+  if (!userId) return [];
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const key = `km_upload_history_${userId}`;
+    const saved = localStorage.getItem(key);
     return saved ? (JSON.parse(saved) as HistoryItem[]) : [];
   } catch {
     return [];
@@ -38,7 +40,10 @@ function loadHistory(): HistoryItem[] {
 }
 
 export function DiseaseDetection() {
-  const { t, lang } = useApp();
+  const { t, lang, user } = useApp();
+  const userId = user?._id;
+  const storageKey = userId ? `km_upload_history_${userId}` : null;
+
   const langSuffix = lang === 'hi' ? '_hi' : lang === 'gu' ? '_gu' : '';
   const [phase, setPhase] = useState<Phase>('idle');
   const [preview, setPreview] = useState<string | null>(null);
@@ -59,25 +64,60 @@ export function DiseaseDetection() {
   const [predictError, setPredictError] = useState<string | null>(null);
 
   // Upload History & Preview Lightbox State
-  const [history, setHistory] = useState<HistoryItem[]>(loadHistory);
+  const [history, setHistory] = useState<HistoryItem[]>(() => loadUserHistory(userId));
   const [selectedPreviewItem, setSelectedPreviewItem] = useState<HistoryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
 
+  // Reset or reload history when active user changes
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    } catch {}
-  }, [history]);
+    setHistory(loadUserHistory(userId));
+  }, [userId]);
 
-  // Sync backend history on initial load
+  // Persist history changes to user-scoped localStorage
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(history));
+    } catch {}
+  }, [history, storageKey]);
+
+  // Clipboard Paste Image Event Handler (Ctrl+V / Cmd+V)
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (uploading || phase === 'scanning') return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) {
+            e.preventDefault();
+            performUpload(file);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [uploading, phase]);
+
+
+  // Sync backend history for authenticated user on mount or user switch
   useEffect(() => {
     async function syncBackendHistory() {
+      if (!userId) {
+        setHistory([]);
+        return;
+      }
       try {
         const res = await getDiseaseHistoryApi();
-        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           const backendItems: HistoryItem[] = res.data.map((report) => {
             const diseaseName = report.disease || (report as any).prediction?.disease || 'Leaf Blight';
             const conf = report.confidence || (report as any).prediction?.confidence || 98.42;
@@ -104,20 +144,17 @@ export function DiseaseDetection() {
             };
           });
 
-          setHistory((prev) => {
-            const combined = [...backendItems];
-            prev.forEach((p) => {
-              if (!combined.some((b) => b.imageUrl === p.imageUrl)) {
-                combined.push(p);
-              }
-            });
-            return combined;
-          });
+          setHistory(backendItems);
+          if (storageKey) {
+            try {
+              localStorage.setItem(storageKey, JSON.stringify(backendItems));
+            } catch {}
+          }
         }
       } catch {}
     }
     syncBackendHistory();
-  }, []);
+  }, [userId, storageKey]);
 
   const saveToHistory = (data: UploadData, pred?: PredictionDetail) => {
     const newItem: HistoryItem = {
@@ -140,7 +177,15 @@ export function DiseaseDetection() {
       confidence: pred?.confidence,
     };
 
-    setHistory((prev) => [newItem, ...prev.filter((item) => item.publicId !== data.publicId)]);
+    setHistory((prev) => {
+      const updated = [newItem, ...prev.filter((item) => item.publicId !== data.publicId)];
+      if (storageKey) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+        } catch {}
+      }
+      return updated;
+    });
   };
 
   const performUpload = async (file: File) => {
@@ -290,9 +335,11 @@ export function DiseaseDetection() {
             item.id !== deleteKey &&
             (reportId ? item.reportId !== reportId && item.id !== reportId : true)
         );
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        } catch {}
+        if (storageKey) {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(updated));
+          } catch {}
+        }
         return updated;
       });
       if (uploadedData?.publicId === publicId) {
@@ -317,10 +364,13 @@ export function DiseaseDetection() {
       }
     });
     setHistory([]);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {}
+    if (storageKey) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch {}
+    }
   };
+
 
   const handleSelectHistoryItem = (item: HistoryItem) => {
     setUploadedData({
@@ -425,12 +475,21 @@ export function DiseaseDetection() {
                 <div>
                   <h2 className="font-display text-xl font-extrabold">{t('disease.upload.title')}</h2>
                   <p className="mt-1.5 max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Drag & drop your crop leaf photo here or click to upload (JPG, PNG, WEBP max 5MB)
+                    Drag & drop your leaf image here, paste from clipboard (<kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-brand-400">Ctrl+V</kbd>), or click to browse (JPG, PNG, WEBP max 5MB)
                   </p>
                 </div>
 
                 <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} className="hidden" />
-                <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+
+                {/* Upload Options Info Badges */}
+                <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] font-bold text-slate-400">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/60 border border-white/5">
+                    <Upload className="h-3.5 w-3.5 text-brand-400" /> Drag & Drop File
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/60 border border-white/5">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Paste Image (Ctrl+V / Cmd+V)
+                  </span>
+                </div>
 
                 {/* Progress / Loading Bar */}
                 {uploading && (
@@ -577,23 +636,16 @@ export function DiseaseDetection() {
                 {!uploadedData && (
                   <div className="flex flex-wrap items-center justify-center gap-3">
                     <button
-                      onClick={() => cameraRef.current?.click()}
-                      disabled={uploading}
-                      className="btn-primary shadow-glow disabled:opacity-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-2xl min-h-[56px] text-base"
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span>Take Photo from Camera</span>
-                    </button>
-                    <button
                       onClick={() => fileRef.current?.click()}
                       disabled={uploading}
-                      className="btn-secondary disabled:opacity-50 flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3.5 px-6 rounded-2xl min-h-[56px] text-base border border-slate-700"
+                      className="btn-primary shadow-glow disabled:opacity-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-8 rounded-2xl min-h-[56px] text-base"
                     >
-                      <Upload className="h-5 w-5 text-emerald-400" />
+                      <Upload className="h-5 w-5 text-white" />
                       <span>Choose File from Device</span>
                     </button>
                   </div>
                 )}
+
               </div>
             </Card>
 

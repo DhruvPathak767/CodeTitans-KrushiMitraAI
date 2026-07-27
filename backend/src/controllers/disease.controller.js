@@ -20,14 +20,12 @@ export const predictDisease = async (req, res, next) => {
       throw new ApiError(400, 'imageUrl is required in request body');
     }
 
-    const farmerId = req.user?._id || req.user?.id || null;
-
     const predictionData = await predictDiseaseService({
       imageUrl,
       publicId,
       crop: crop || 'Tomato',
       farmId: farmId || 'default_farm',
-      farmerId,
+      user: req.user,
     });
 
     const responsePayload = {
@@ -82,10 +80,9 @@ export const predictDisease = async (req, res, next) => {
  */
 export const getDiseaseHistory = async (req, res, next) => {
   try {
-    const farmerId = req.user?._id || req.user?.id || null;
     const limit = parseInt(req.query.limit, 10) || 20;
 
-    const reports = await getDiseaseHistoryService(farmerId, limit);
+    const reports = await getDiseaseHistoryService(req.user, limit);
 
     return res
       .status(200)
@@ -102,7 +99,7 @@ export const getDiseaseHistory = async (req, res, next) => {
 export const getDiseaseReportById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const report = await getDiseaseReportByIdService(id);
+    const report = await getDiseaseReportByIdService(id, req.user);
 
     return res
       .status(200)
@@ -119,8 +116,7 @@ export const getDiseaseReportById = async (req, res, next) => {
 export const deleteDiseaseReport = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const farmerId = req.user?._id || req.user?.id || null;
-    const result = await deleteDiseaseReportService(id, farmerId);
+    const result = await deleteDiseaseReportService(id, req.user);
 
     return res
       .status(200)
@@ -136,8 +132,7 @@ export const deleteDiseaseReport = async (req, res, next) => {
  */
 export const clearAllDiseaseHistory = async (req, res, next) => {
   try {
-    const farmerId = req.user?._id || req.user?.id || null;
-    const result = await clearAllDiseaseHistoryService(farmerId);
+    const result = await clearAllDiseaseHistoryService(req.user);
 
     return res
       .status(200)
@@ -146,3 +141,4 @@ export const clearAllDiseaseHistory = async (req, res, next) => {
     next(error);
   }
 };
+

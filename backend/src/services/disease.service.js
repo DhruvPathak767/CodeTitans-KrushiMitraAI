@@ -9,11 +9,12 @@ const PYTHON_AI_URL = process.env.PYTHON_AI_URL || 'http://localhost:8000';
 /**
  * Service to call Python FastAPI TensorFlow multi-stage inference pipeline & store report in MongoDB
  */
-export const predictDiseaseService = async ({ imageUrl, publicId, crop = 'Cotton', farmId = 'default_farm', farmerId }) => {
+export const predictDiseaseService = async ({ imageUrl, publicId, crop = 'Cotton', farmId = 'default_farm', farmerId, user }) => {
   if (!imageUrl) {
     throw new ApiError(400, 'Image URL is required for disease prediction');
   }
 
+  const userId = user?._id || user?.id || farmerId || null;
   const startTime = Date.now();
   let aiData = null;
 
@@ -54,9 +55,9 @@ export const predictDiseaseService = async ({ imageUrl, publicId, crop = 'Cotton
   const diseaseInfo = aiData.diseasePrediction || aiData.prediction || { disease: 'Healthy Leaf', confidence: 95.0, severity: 'low' };
   const treatmentInfo = aiData.treatment || { fungicide: '', organic: '', prevention: '' };
 
-  // Persist ONLY Valid Predictions into MongoDB DiseaseReports collection
+  // Persist ONLY Valid Predictions into MongoDB DiseaseReports collection linked to the authenticated user
   const report = await DiseaseReport.create({
-    farmerId: farmerId || null,
+    farmerId: userId,
     farmId: farmId || 'default_farm',
     crop: cropInfo.crop || crop || 'Cotton',
     imageUrl,
@@ -94,10 +95,17 @@ export const predictDiseaseService = async ({ imageUrl, publicId, crop = 'Cotton
 };
 
 /**
- * Service to fetch disease prediction history for authenticated farmer
+ * Service to fetch disease prediction history for authenticated farmer (or all if SUPER_ADMIN)
  */
-export const getDiseaseHistoryService = async (farmerId, limit = 20) => {
-  const query = farmerId ? { farmerId } : {};
+export const getDiseaseHistoryService = async (user, limit = 20) => {
+  if (!user) {
+    return [];
+  }
+
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const userId = user._id || user.id || (typeof user === 'string' ? user : null);
+
+  const query = isSuperAdmin ? {} : { farmerId: userId };
   const reports = await DiseaseReport.find(query)
     .sort({ createdAt: -1 })
     .limit(limit);
@@ -107,37 +115,44 @@ export const getDiseaseHistoryService = async (farmerId, limit = 20) => {
 /**
  * Service to fetch single disease report details by ID
  */
-export const getDiseaseReportByIdService = async (reportId) => {
+export const getDiseaseReportByIdService = async (reportId, user) => {
   if (!reportId) {
     throw new ApiError(400, 'Report ID is required');
   }
 
-  const report = await DiseaseReport.findById(reportId);
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const userId = user?._id || user?.id || (typeof user === 'string' ? user : null);
+
+  const query = isSuperAdmin ? { _id: reportId } : { _id: reportId, farmerId: userId };
+  const report = await DiseaseReport.findOne(query);
+
   if (!report) {
-    throw new ApiError(404, `Disease report with ID '${reportId}' not found`);
+    throw new ApiError(404, `Disease report with ID '${reportId}' not found or access denied`);
   }
 
   return report;
 };
 
 /**
- * Service to delete a disease report from MongoDB (and Cloudinary if publicId exists)
+ * Service to delete a disease report from MongoDB (and Cloudinary if publicId exists) with user role check
  */
-export const deleteDiseaseReportService = async (reportId, farmerId) => {
+export const deleteDiseaseReportService = async (reportId, user) => {
   if (!reportId) {
     throw new ApiError(400, 'Report ID or public ID is required for deletion');
   }
 
-  const query = farmerId ? { farmerId, $or: [{ _id: reportId }, { publicId: reportId }] } : { $or: [{ publicId: reportId }] };
-  
-  let report = null;
-  try {
-    report = await DiseaseReport.findOne(farmerId ? { _id: reportId, farmerId } : { _id: reportId });
-  } catch {}
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const userId = user?._id || user?.id || (typeof user === 'string' ? user : null);
 
-  if (!report) {
-    report = await DiseaseReport.findOne(farmerId ? { publicId: reportId, farmerId } : { publicId: reportId });
-  }
+  let report = null;
+
+  // Search by MongoDB _id or publicId
+  const idQuery = { $or: [{ _id: reportId }, { publicId: reportId }] };
+  const query = isSuperAdmin ? idQuery : { ...idQuery, farmerId: userId };
+
+  try {
+    report = await DiseaseReport.findOne(query);
+  } catch {}
 
   if (report) {
     if (report.publicId) {
@@ -151,7 +166,11 @@ export const deleteDiseaseReportService = async (reportId, farmerId) => {
     return { success: true, message: 'Disease report deleted successfully' };
   }
 
-  // If no report in DB, still attempt Cloudinary deletion
+  if (!isSuperAdmin) {
+    throw new ApiError(403, 'Forbidden: You do not have authorization to delete this report');
+  }
+
+  // If super admin and no report in DB, still attempt Cloudinary deletion
   try {
     await deleteFromCloudinary(reportId);
   } catch {}
@@ -160,11 +179,19 @@ export const deleteDiseaseReportService = async (reportId, farmerId) => {
 };
 
 /**
- * Service to clear all disease reports for farmer
+ * Service to clear all disease reports for authenticated farmer
  */
-export const clearAllDiseaseHistoryService = async (farmerId) => {
-  const query = farmerId ? { farmerId } : {};
+export const clearAllDiseaseHistoryService = async (user) => {
+  if (!user) {
+    throw new ApiError(401, 'User authentication required to clear history');
+  }
+
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const userId = user._id || user.id || (typeof user === 'string' ? user : null);
+
+  const query = isSuperAdmin ? {} : { farmerId: userId };
   const reports = await DiseaseReport.find(query);
+
   for (const r of reports) {
     if (r.publicId) {
       try {
@@ -175,3 +202,4 @@ export const clearAllDiseaseHistoryService = async (farmerId) => {
   await DiseaseReport.deleteMany(query);
   return { success: true, message: 'All disease history reports cleared successfully' };
 };
+

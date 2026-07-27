@@ -45,19 +45,46 @@ export const deleteImage = async (req, res, next) => {
     // Decode publicId if URL encoded (e.g. KrishiMitraAI%2Fleaf-images%2Fsample_leaf)
     publicId = decodeURIComponent(publicId);
 
+    const isSuperAdmin = req.user?.role === 'SUPER_ADMIN';
+    const userId = req.user?._id || req.user?.id;
+
+    // Verify ownership of the report associated with this Cloudinary image
+    const matchingReport = await DiseaseReport.findOne({
+      $or: [
+        { publicId: publicId },
+        { imageUrl: { $regex: publicId, $options: 'i' } },
+      ],
+    });
+
+    if (matchingReport && !isSuperAdmin) {
+      if (matchingReport.farmerId && matchingReport.farmerId.toString() !== userId?.toString()) {
+        throw new ApiError(403, 'Forbidden: You can only delete your own uploaded images');
+      }
+    }
+
     try {
       await deleteFromCloudinary(publicId);
     } catch (err) {
       console.warn('Cloudinary image delete error:', err.message);
     }
 
-    // Also purge matching DiseaseReport entries from MongoDB
-    await DiseaseReport.deleteMany({
-      $or: [
-        { publicId: publicId },
-        { imageUrl: { $regex: publicId, $options: 'i' } },
-      ],
-    });
+    // Purge matching DiseaseReport entries from MongoDB for this user (or all if SUPER_ADMIN)
+    const deleteQuery = isSuperAdmin
+      ? {
+          $or: [
+            { publicId: publicId },
+            { imageUrl: { $regex: publicId, $options: 'i' } },
+          ],
+        }
+      : {
+          farmerId: userId,
+          $or: [
+            { publicId: publicId },
+            { imageUrl: { $regex: publicId, $options: 'i' } },
+          ],
+        };
+
+    await DiseaseReport.deleteMany(deleteQuery);
 
     return res
       .status(200)
@@ -66,3 +93,4 @@ export const deleteImage = async (req, res, next) => {
     next(error);
   }
 };
+
